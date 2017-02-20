@@ -1,0 +1,111 @@
+<body>
+<div id="wrapper">
+    <br />
+    <table class="heading" style="width:100%;">
+        <tr>
+            <td style="width:80mm;">
+
+            </td>
+            <td rowspan="2" valign="top" align="right" style="padding:3mm;">
+                <table>
+                    <tr><td><pre><span style="font-size: 11px">'.$row["Direccion"].' Telefono: '.$row["Telefono"].'</span></pre></td></tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <table>
+      <tr>
+        <td style="width:140mm;"><h3>RECIBO</h3></td>
+        <td rowspan="2" valign="top" align="right" style="padding:3mm;">
+            <h3>REF.U91-2015</h3>
+        </td>
+      </tr>
+      <tr>
+        <td>
+            <h3>$'.$Tot_a_pagar.'</h3>
+        </td>
+      </tr>
+    </table>
+
+    <div id="content">
+
+        <div id="invoice_body">
+            <table>
+            <tr style="background:#eee;">
+                <td style="width:8%;"><b>Sl. No.</b></td>
+                <td><b>Product</b></td>
+                <td style="width:15%;"><b>Quantity</b></td>
+                <td style="width:15%;"><b>Rate</b></td>
+                <td style="width:15%;"><b>Total</b></td>
+            </tr>
+            </table>
+
+            <table>
+            <tr>
+                <td style="width:8%;">1</td>
+                <td style="text-align:left; padding-left:10px;">Software Development<br />Description : Upgradation of telecrm</td>
+                <td class="mono" style="width:15%;">1</td><td style="width:15%;" class="mono">157.00</td>
+                <td style="width:15%;" class="mono">157.00</td>
+            </tr>
+            <tr>
+                <td colspan="3"></td>
+                <td></td>
+                <td></td>
+            </tr>
+
+            <tr>
+                <td colspan="3"></td>
+                <td>Total :</td>
+                <td class="mono">157.00</td>
+            </tr>
+        </table>
+        </div>
+        <div id="invoice_total">
+            Total Amount :
+            <table>
+                <tr>
+                    <td style="text-align:left; padding-left:10px;">One  Hundred And Fifty Seven  only</td>
+                    <td style="width:15%;">USD</td>
+                    <td style="width:15%;" class="mono">157.00</td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <hr />
+        <br />
+
+        <table style="width:100%; height:35mm;">
+            <tr>
+                <td style="width:65%;" valign="top">
+                    Payment Information :<br />
+                    Please make cheque payments payable to : <br />
+                    <b>ABC Corp</b>
+                    <br /><br />
+                    The Invoice is payable within 7 days of issue.<br /><br />
+                </td>
+                <td>
+                <div id="box">
+                    E &amp; O.E.<br />
+                    For ABC Corp<br /><br /><br /><br />
+                    Authorised Signatory
+                </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <br />
+
+</div>
+
+    <htmlpagefooter name="footer">
+        <hr />
+        <div id="footer">
+            <table>
+                <tr><td>Software Solutions</td><td>Mobile Solutions</td><td>Web Solutions</td></tr>
+            </table>
+        </div>
+    </htmlpagefooter>
+    <sethtmlpagefooter name="footer" value="on" />
+    </body>
