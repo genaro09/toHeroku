@@ -783,10 +783,9 @@
 													 	 //Se termino lo de PHP
 													 	//document.getElementById("MontoV").value=Tot_a_pagar.toFixed(2);
 													 }else{
-													 	alert("khe");
 													 	swal("La fecha "+d_mala+" Ya se encuentra en el calculo de "+d_rango1+" - "+d_rango2);
 													 }
-				 
+
 										}
 										});
 									//FIN AJAX
@@ -834,40 +833,68 @@
 									}else if(fecha_contratacion>d1){
 										swal("La fecha de inicial no puede ser mayor a la fecha de contratacion en Aguinaldo");
 									}else{
-													var salario_mensual = parseFloat($("#SMensual").val());
-													//Esto es para PHP
-														//esto se enviara al PHP
-														var parametros = {
-															"opc" : 4,
-															"d1"	:	d1,
-															"d2"	:	d2,
-															"salario_mensual" : salario_mensual,
-															"fecha_contratacion"	:	fecha_contratacion
-														};
-														$.ajax({
-																	 data:  parametros,
-																	 url:   'Calculos_Prestaciones_Laborales.php',
-																	 type:  'post',
-																	 dataType: 'json',
-																	 cache: false,
-																	 beforeSend: function () {
-																					 $("#resultado").html("Procesando, espere por favor...");
-																	 },
-																	 success:  function (response) {
-																					$("#MontoA").val(parseFloat(response[0]));
-																					reciboResumido();
-																					codPL['A']=1;
-																					habilitar_btn_imprimir();
-																	 }
-													 });
 
-													//Se termino lo de PHP
+										//AJAX
+										var d1A = stringToDate($("#dateAI").val());
+										var d2A = stringToDate($("#dateAF").val());
+										var NumeroDocumento = <?php echo $NumeroDocumento; ?>;
+										$.ajax({
+											url:'../php/verificar_fechas.php',
+											type:'POST',
+											dataType: 'json',
+											cache: false,
+											data:{
+												Tp:3,
+												d1:d1A,
+												d2:d2A,
+												NumeroDocumento:NumeroDocumento
+											},
+											beforeSend: function(){
+												respAlert("info","Verificando datos...");
+											},
+											success:  function (response) {
+														 flag=parseInt(response[0]);
+														 d_mala=response[1];
+														 d_rango1=response[2];
+														 d_rango2=response[3];
+														 alert("1:"+flag+" dmala:"+d_mala+" d_r1"+d_rango1+" d_r2"+d_rango2);
+														 alert("Estoy despues de AJAX:"+flag);
+														 if(flag==1){
+														 	var salario_mensual = parseFloat($("#SMensual").val());
+														 	//Esto es para PHP
+														 		//esto se enviara al PHP
+														 		var parametros = {
+														 			"opc" : 4,
+														 			"d1"	:	d1,
+														 			"d2"	:	d2,
+														 			"salario_mensual" : salario_mensual,
+														 			"fecha_contratacion"	:	fecha_contratacion
+														 		};
+														 		$.ajax({
+														 					 data:  parametros,
+														 					 url:   'Calculos_Prestaciones_Laborales.php',
+														 					 type:  'post',
+														 					 dataType: 'json',
+														 					 cache: false,
+														 					 beforeSend: function () {
+														 									 $("#resultado").html("Procesando, espere por favor...");
+														 					 },
+														 					 success:  function (response) {
+														 									$("#MontoA").val(parseFloat(response[0]));
+														 									reciboResumido();
+														 									codPL['A']=1;
+														 									habilitar_btn_imprimir();
+														 					 }
+														 	 });
+														 }else{
+														 	swal("La fecha "+d_mala+" Ya se encuentra en el calculo de "+d_rango1+" - "+d_rango2);
+														 }
 
-													//alert(d1+" "+d2+" Tot: "+diff);
-													//document.getElementById("MontoA").value=Tot_a_pagar.toFixed(2);
-													//habilitar_btn_imprimir();
-									};
-									reciboResumido();
+											}
+											});
+										//FIN AJAX
+
+									}
 						}
 
 						//Salario

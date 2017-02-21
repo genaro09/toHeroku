@@ -5,18 +5,16 @@
             Tip 3: you can change the color of the sidebar with data-background-color="white | black"
         -->
 
-            <div class="logo">
-                <a href="menu.php" class="simple-text">
-                    ASCAS, S.A. DE C.V.
-                </a>
-            </div>
-
-            <div class="logo logo-mini">
-                <a href="menu.php" class="simple-text">
-                </a>
-            </div>
 
                 <div class="sidebar-wrapper">
+                  <div style="padding-bottom:2px;" class="user">
+                    <div style="width: 120px;height: 140px;overflow: hidden;  margin: 0 auto;">
+                      <a href="menu.php" class="simple-text">
+		                    <img  style="height:100%;width:100%;" src="../img/LogoBlanco.png" />
+                      </a>
+		                </div>
+
+                  </div>
                     <div class="user">
                         <div class="info">
                             <a data-toggle="collapse" href="#collapseExample" class="collapsed">
@@ -105,20 +103,29 @@
                                 </div>
                               </li> ";
                       };
+                      echo "
+                        <li>
+                         <a data-toggle='collapse' href='#componentsExamples2'>
+                           <p>CONTROL R.R.H.H. <b class='caret'></b> </p>
+                           </a>
+                           <div class='collapse' id='componentsExamples2'>
+                             <ul class='nav'>
+                               <li><a href='#'>Departamentos</a></li>
+                               <li><a href='#'>Cargos</a></li>
+                               <li><a href='#'>Constancias de Salarios</a></li>
+                               <li><a href='#'>Expedientes de Empleados</a></li>
+                             </ul>
+                           </div>
+                         </li>
+
+
+
+
+                      ";
+
                     ?>
 
-                     <li>
-                        <a data-toggle="collapse" href="#componentsExamples2">
-                          <p>CONTROL R.R.H.H. <b class="caret"></b> </p>
-                          </a>
-                          <div class="collapse" id="componentsExamples2">
-                            <ul class="nav">
-                              <li><a href="#">Constancias de Salarios</a></li>
-                              <li><a href="usuarios.html">Expedientes de Empleados</a></li>
-                              <li><a href="#">Prestaciones Laborales</a></li>
-                            </ul>
-                          </div>
-                        </li>
+
                       </ul>
 
 

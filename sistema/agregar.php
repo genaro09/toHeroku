@@ -24,9 +24,9 @@
 			break;
 		case '2':
 			# code...
-			if(!isset($_POST["NumeroDocumento"])||!isset($_POST["Pass"])||!isset($_POST["PrimerNombre"])||!isset($_POST["PrimerApellido"])||!isset($_POST["Nit"])||!isset($_POST["NumeroIsss"])||!isset($_POST["SalarioNominal"])){
+			if(!isset($_POST["NumeroDocumento"])||!isset($_POST["FechaIngreso"])||!isset($_POST["Pass"])||!isset($_POST["PrimerNombre"])||!isset($_POST["PrimerApellido"])||!isset($_POST["Nit"])||!isset($_POST["NumeroIsss"])||!isset($_POST["SalarioNominal"])){
 				echo "0";
-			}elseif(!(isset($_POST["Desde"]) && isset($_POST["Hasta"]))){
+			}elseif(!(isset($_POST["Desde"]) || !isset($_POST["Hasta"]))){
 					echo "5";
 			}elseif(!(verify_time_format($_POST["Desde"]) && verify_time_format($_POST["Hasta"]))){
 				echo "4";
@@ -109,7 +109,31 @@
 		    }
 
 		break;
+		case '5':
+			if((empty($_POST["NumeroDocumento"]))||(empty($_POST["PrimerNombre"]))||(empty($_POST["PrimerApellido"]))||(empty($_POST["Pass"]))||(empty($_POST["SMensual"]))||(empty($_POST["Desde"]))||(empty($_POST["Hasta"]))){
+				echo "0";
+			}elseif((empty($_POST["FechaIngreso"]))||($_POST["idTurno"]==0)){
+				echo "0";
+			}elseif(isUserExist($_POST["NumeroDocumento"])){
+				echo "7";
+			}elseif($_POST["idCargos"]==0){
+				echo "8";
+			}elseif($_POST["idTurno"]==0){
+				echo "6";
+			}elseif(!(isset($_POST["Desde"])) || !isset($_POST["Hasta"])){
+					echo "5";
+			}elseif($_POST["Desde"]>=$_POST["Hasta"]){
+				echo "3";
+			}else{
+				if(AgregarEmpleado($_POST["Tdocumento"],$_POST["NumeroDocumento"],$_POST["PrimerNombre"],$_POST["PrimerApellido"],$_POST["Pass"],$_POST["SMensual"],$_POST["Desde"],$_POST["Hasta"],$_POST["FechaIngreso"],$_POST["idTurno"],$_POST["activo"],$_POST["idCargos"])){
+					echo "2";
+				}else {
+					echo "1";
+				}
 
+
+			}
+		break;
 		default:
 			# code...
 			echo "nada";

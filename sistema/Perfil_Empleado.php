@@ -210,7 +210,7 @@
 																		<div class="form-group">
 																			<label>Estado Civil<star>*</star></label>
 																			<br>
-																			<select id="Ecivil" name="Ecivil" class="selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
+																			<select id="Ecivil" name="Ecivil" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
 																				<?php
 																					if($empleado->getEstadocivil()=='S'){
 																						echo "
@@ -275,13 +275,19 @@
 																	<div class="col-sm-6 col-lg-3">
 																		<div class="form-group">
 																			<label>Fecha de Nacimiento<star>*</star></label>
-																			<input id="Fnacimiento" type="text" class="form-control datetimepicker" placeholder="Ejemplo: 01/01/2016"/>
+																			<?php
+																					if($empleado->getFecharetiro()){
+																						echo "<input  type='text' class='form-control' value=".$empleado->getFechanacimiento()." name='date' id='Fnacimiento' data-select='datepicker'/>";
+																					}else{
+																						echo "<input  type='text' class='form-control' placeholder=".date("d")."/".date("m")."/".date("Y")." name='date' id='Fnacimiento' data-select='datepicker'/>";
+																					}
+																			 ?>
 																		</div>
 																	</div>
 																	<div class="col-sm-6 col-lg-3">
 																		<div class="form-group">
 																			<label>Tipo de Documento<star>*</star></label>
-																			<select disabled id="Tdocumento" name="cities" class="selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
+																			<select disabled id="Tdocumento" name="cities" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
 																				<?php
 																					if($empleado->getTipodocumento()=='CAR'){
 																						echo "
@@ -337,7 +343,7 @@
 																		<div class="form-group">
 																			<label>Pais<star>*</star></label>
 																			<br>
-																			<select id="pais" name="pais" class="selectpicker">
+																			<select id="pais" name="pais" class="form-control selectpicker">
 																				<option value='0'>NINGUNO</option>
 																				<?php
 																					$pilaPT=obtCodPaises();
@@ -359,7 +365,7 @@
 																		<div class="form-group">
 																			<label>Departamento<star>*</star></label>
 																			<br>
-																				<select id="C_departamento" name="C_departamento" class="selectpicker">
+																				<select id="C_departamento" name="C_departamento" class="form-control selectpicker">
 																					<?php
 																						include_once "get_Cod_D_M.php";
 																						get_Cod_D($empleado->getDepartamento());
@@ -371,7 +377,7 @@
 																		<div class="form-group">
 																			<label>Municipio<star>*</star></label>
 																			<br>
-																				<select id="C_municipio" name="C_municipio" class="selectpicker">
+																				<select id="C_municipio" name="C_municipio" class="form-control selectpicker">
 																					<?php
 																						include_once "get_cod_M.php";
 																						get_Cod_M($empleado->getMunicipio());
@@ -389,7 +395,7 @@
 																		<div class="form-group">
 																			<label>Genero<star>*</star></label>
 																			<br>
-																			<select id='Genero' class="selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
+																			<select id='Genero' class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
 																				<?php
 																				if($empleado->getGenero()=='M'||$empleado->getGenero()=='F'){
 																					if($empleado->getGenero()=='M'){
@@ -459,7 +465,7 @@
 																		<div class="form-group">
 																			<label>Activo:</label>
 																			<br>
-																			<select id="activo" name="T_Activo" class="selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+																			<select id="activo" name="T_Activo" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
 																			<?php
 																				if($empleado->getActivo()==1){
 																					echo "
@@ -480,7 +486,7 @@
 																		<div class="form-group">
 																			<label>Nombre de AFP<star>*</star></label>
 																			<br>
-																			<select id="NAFP" name="T_AFP" class="selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+																			<select id="NAFP" name="T_AFP" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
 																				<?php
 																					if($empleado->getInstitucionprevisional()=='MAX'){
 																						echo "<option selected value='MAX'>AFP CRECER</option>";
@@ -521,14 +527,11 @@
 																		<div class="form-group">
 																			<label>Area de Trabajo<star>*</star></label>
 																			<br>
-																			<select id='AreaTrabajo' name="AreaTrabajo" class="selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
-
+																			<select id='AreaTrabajo' name="AreaTrabajo" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
 																					 <?php
 																					 	include 'get_Departamentos.php';
 																					 	get_Departamentos($empleado->getIdcargos());
 																					 ?>
-
-
 																			</select>
 																		</div>
 																	</div>
@@ -536,7 +539,7 @@
 																		<div class="form-group">
 																			<label>Cargo<star>*</star></label>
 																			<br>
-																			<select id='cargo' name="cargo" class="selectpicker Cargo" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+																			<select id='cargo' name="cargo" class="form-control selectpicker Cargo" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
 																				<?php
 																					get_Cargos($empleado->getIdcargos());
 																				?>
@@ -549,7 +552,13 @@
 																		<div class="form-group">
 																			<label>Fecha de Ingreso<star>*</star></label>
 																			<div class='input-group date' id='datetimepicker1'>
-																				<input  type='text' class="form-control" placeholder="<?php echo date("d")."/".date("m")."/".date("Y"); ?>" value=<?php echo $empleado->getFechaingreso(); ?> name="date" id="FechaIngreso" data-select="datepicker"/>
+																				<?php
+																						if($empleado->getFecharetiro()){
+																							echo "<input  type='text' class='form-control' value=".$empleado->getFechaingreso()." name='date' id='FechaIngreso' data-select='datepicker'/>";
+																						}else{
+																							echo "<input  type='text' class='form-control' placeholder=".date("d")."/".date("m")."/".date("Y")." name='date' id='FechaIngreso' data-select='datepicker'/>";
+																						}
+																				 ?>
 																			</div>
 																		</div>
 																	</div>
@@ -597,7 +606,7 @@
 																		<div class="form-group">
 																			<label>Turno</label>
 																			<br>
-																			<select id="idTurno" name="idTurno">
+																			<select id="idTurno" name="idTurno" class="form-control selectpicker">
 																				<?php
 																					$NitEmpresa=getNitEmpresa($_SESSION['usuario_sesion']);
 																					include "get_SelectTurno.php";
@@ -611,7 +620,7 @@
 																		<div class="form-group">
 																			<label>Banco</label>
 																			<br>
-																			<select name="T_AFP" class="selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+																			<select name="T_AFP" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
 																				<option value="00">Cuscatlan</option>
 																				<option value="01">America Cental</option>
 																				<option value="02">Promerica</option>

@@ -111,7 +111,47 @@ $(document).ready(function(){
 		});
 	});
 
-
+//Eliminar turno
+$("#btnEliminarTruno").click(function(){
+	var idTurno=document.getElementById("idTurno").value;
+	//alert("user: "+user+" - pass: "+contra);
+	$.ajax({
+		url:'../php/Eliminar.php',
+		type:'POST',
+		data:{
+			opc:1,
+			idTurno:idTurno
+		},
+		beforeSend: function(){
+			respAlert("info","Verificando datos...");
+		},
+		success:function(data){
+			console.log(data);
+			switch(data[0]){
+				case "0":
+					respAlert("warning","Existen empleados en este turno, No es posible eliminar");
+				break;
+				case "1":
+					respAlert("warning","Error en BD contacte para mas informacion");
+				break;
+				case "2":
+					setTimeout(function(){
+						respAlert("success","Correcto...");
+						redireccionar("../sistema/turno.php");
+					},1000);
+				break;
+			}
+			//respAlert("success",data[0]);
+			/*setTimeout(function(){
+				redireccionar("sistema/home.php");
+			},1000);*/
+		},
+		error:function(data){
+			console.log(data);
+			respAlert("danger","Error...");
+		}
+	});
+});
 
 
 	$("#btnLogin").click(function(){
@@ -213,28 +253,36 @@ $(document).ready(function(){
 
 
 //guardarSemana
-$("#btnGuardarSemana").click(function(){
-		var idSemanal=document.getElementById("idSemanal").value;
-		var SLunes=$("#SLunes").val();
-		var SMartes=$("#SMartes").val();
-		var SMiercoles=$("#SMiercoles").val();
-		var SJueves=$("#SJueves").val();
-		var SViernes=$("#SViernes").val();
-		var SSabado=$("#SSabado").val();
-		var SDomingo=$("#SDomingo").val();
+$("#btnAgregarUsuario").click(function(){
+			var Tdocumento=$("#Tdocumento").val();
+			var NumeroDocumento=document.getElementById("NumeroDocumento").value;
+			var PrimerNombre=document.getElementById("PrimerNombre").value;
+			var PrimerApellido=document.getElementById("PrimerApellido").value;
+			var Pass=document.getElementById("Pass").value;
+			var SMensual=document.getElementById("SMensual").value;
+			var Desde=document.getElementById("Desde").value;
+			var Hasta=document.getElementById("Hasta").value;
+			var FechaIngreso=document.getElementById("FechaIngreso").value;
+			var idTurno=$("#idTurno").val();
+			var activo=$("#activo").val();
+			var idCargos=$("#cargo").val();
 		$.ajax({
 			url: 'agregar.php',
 			type:'POST',
 			data:{
-				opc:4,
-				idSemanal:idSemanal,
-				SLunes:SLunes,
-				SMartes:SMartes,
-				SMiercoles:SMiercoles,
-				SJueves:SJueves,
-				SViernes:SViernes,
-				SSabado:SSabado,
-				SDomingo:SDomingo
+				opc:5,
+				Tdocumento:Tdocumento,
+					NumeroDocumento:NumeroDocumento,
+					PrimerNombre:PrimerNombre,
+					PrimerApellido:PrimerApellido,
+					Pass:Pass,
+					SMensual:SMensual,
+					Desde:Desde,
+					Hasta:Hasta,
+					FechaIngreso:FechaIngreso,
+					idTurno:idTurno,
+					activo:activo,
+					idCargos:idCargos
 			},
 			beforeSend: function(){
 				respAlert("info","Verificando datos...");
@@ -243,76 +291,37 @@ $("#btnGuardarSemana").click(function(){
 				console.log(data);
 				switch(data[0]){
 					case "0":
-						respAlert("warning","Error en envio de datos");
-					break;
-					case "1":
-						respAlert("warning","No se encontro semanal anterior");
-					break;
-					case "2":
-						setTimeout(function(){
-							respAlert("success","Guardado Exitoso");
-						},2000);
-					break;
-					case "3":
-						respAlert("warning","Error en conexion a base de datos");
-					break;
-				}
-				//respAlert("success",data[0]);
-				/*setTimeout(function(){
-					redireccionar("sistema/home.php");
-				},1000);*/
-			},
-			error:function(data){
-				console.log(data);
-				respAlert("danger","Error...");
-			}
-		});
-	});
-
-
-
-
-
-$("#btnAgregarUsuario").click(function(){
-		var email=document.getElementById("email").value;
-		var nombre=document.getElementById("nombre").value;
-		var dui=document.getElementById("dui").value;
-		var telefono=document.getElementById("telefono").value;
-		var activo=$("#activo").val();
-		$.ajax({
-			url:'php/agregar_empleado.php',
-			type:'POST',
-			data:{
-				opc: 1,
-				email:email,
-				nombre:nombre,
-				dui:dui,
-				telefono:telefono,
-				activo:activo
-			},
-			beforeSend: function(){
-				respAlert("info","Verificando datos...");
-			},
-			success:function(data){
-				console.log(data);
-				switch(data[0]){
-					case "0":
-						respAlert("warning","Ya existe el usuario: "+email);
+						respAlert("warning","LLene completamente los datos");
 					break;
 					case "1":
 						respAlert("warning","No se ha podido insertar a la BD");
 					break;
 					case "2":
 						setTimeout(function(){
-							respAlert("success","Correcto...redireccionando al inicio");
+							respAlert("success","Guardado Exitoso");
 							redireccionar("AgregarEmpleado.php");
-						},1000);
+						},2000);
+					break;
+					case "3":
+						respAlert("warning","El horario de Entrada tiene que ser menor al de salida");
+					break;
+					case "4":
+						respAlert("warning","Ingrese un turno primero");
+					break;
+					case "5":
+						respAlert("warning","El Tiempo tien que ser en formato de 24hrs ej:13:00:00 o 07:00:00");
+					break;
+					case "6":
+						respAlert("warning","Ingrese Horario de Entrada y Horario de Salida");
+					break;
+					case "7":
+						respAlert("warning","Ya existe un usuario con el mismo numero de Documento");
+					break;
+					case "8":
+						respAlert("warning","Seleccione un Cargo valido");
 					break;
 				}
-				//respAlert("success",data[0]);
-				/*setTimeout(function(){
-					redireccionar("sistema/home.php");
-				},1000);*/
+
 			},
 			error:function(data){
 				console.log(data);
@@ -321,6 +330,65 @@ $("#btnAgregarUsuario").click(function(){
 		});
 	});
 
+	//Nuevo Usuario
+	$("#btnGuardarSemana").click(function(){
+			var idSemanal=document.getElementById("idSemanal").value;
+			var SLunes=$("#SLunes").val();
+			var SMartes=$("#SMartes").val();
+			var SMiercoles=$("#SMiercoles").val();
+			var SJueves=$("#SJueves").val();
+			var SViernes=$("#SViernes").val();
+			var SSabado=$("#SSabado").val();
+			var SDomingo=$("#SDomingo").val();
+			$.ajax({
+				url: 'agregar.php',
+				type:'POST',
+				data:{
+					opc:4,
+					idSemanal:idSemanal,
+					SLunes:SLunes,
+					SMartes:SMartes,
+					SMiercoles:SMiercoles,
+					SJueves:SJueves,
+					SViernes:SViernes,
+					SSabado:SSabado,
+					SDomingo:SDomingo
+				},
+				beforeSend: function(){
+					respAlert("info","Verificando datos...");
+				},
+				success:function(data){
+					console.log(data);
+					switch(data[0]){
+						case "0":
+							respAlert("warning","Error en envio de datos");
+						break;
+						case "1":
+							respAlert("warning","No se encontro semanal anterior");
+						break;
+						case "2":
+							setTimeout(function(){
+								respAlert("success","Guardado Exitoso");
+							},2000);
+						break;
+						case "3":
+							respAlert("warning","Error en conexion a base de datos");
+						break;
+					}
+					//respAlert("success",data[0]);
+					/*setTimeout(function(){
+						redireccionar("sistema/home.php");
+					},1000);*/
+				},
+				error:function(data){
+					console.log(data);
+					respAlert("danger","Error...");
+				}
+			});
+		});
+
+
+//Actualizar Usuario
 	$("#btnActualizarUsuario").click(function(){
 		var NumeroDocumento = document.getElementById("Ndocumento").value;
 		var TipoDocumento = $("#Tdocumento").val();
@@ -420,7 +488,7 @@ $("#btnAgregarUsuario").click(function(){
 					case "4":
 						respAlert("warning","El Tiempo tien que ser en formato de 24hrs ej:13:00:00 o 07:00:00");
 					break;
-					case "4":
+					case "5":
 						respAlert("warning","Ingrese Horario de Entrada y Horario de Salida");
 					break;
 				}

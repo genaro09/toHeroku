@@ -305,7 +305,22 @@
 		return $estado;
 
 	}
+function eliminarTurno($idTurno){
+	$cnx=cnx();
+	$estado=1;
+	$query2=sprintf("SELECT * FROM htrabajo where idTurno='%s'",mysqli_real_escape_string($cnx,$idTurno));
+	$result2=mysqli_query($cnx,$query2);
+	while ($row2=mysqli_fetch_array($result2)) {
+		$estado=2;
+	}
+	if($estado==1){
+		$query=sprintf("DELETE FROM turno WHERE idTurno='%s'",mysqli_real_escape_string($cnx,$idTurno));
+		$estado = mysqli_query($cnx, $query);
+	}
 
+	mysqli_close($cnx);
+	return $estado;
+}
 
 
 
@@ -371,7 +386,32 @@
 		return $estado;
 
 	}
-
+	function AgregarEmpleado($TipoDocumento,$NumeroDocumento,$PrimerNombre,$PrimerApellido,$Pass,$SalarioNominal,$Desde,$Hasta,$FechaIngreso,$idTurno,$Activo,$idCargos){
+		$cnx = cnx();
+		$query = sprintf("INSERT INTO empleado(NumeroDocumento,TipoDocumento,Pass,Activo,PrimerNombre,PrimerApellido,SalarioNominal,FechaIngreso,idCargos) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+			mysqli_real_escape_string($cnx,$NumeroDocumento),
+			mysqli_real_escape_string($cnx,$TipoDocumento),
+			mysqli_real_escape_string($cnx,$Pass),
+			mysqli_real_escape_string($cnx,$Activo),
+			mysqli_real_escape_string($cnx,$PrimerNombre),
+			mysqli_real_escape_string($cnx,$PrimerApellido),
+			mysqli_real_escape_string($cnx,$SalarioNominal),
+			mysqli_real_escape_string($cnx,$FechaIngreso),
+			mysqli_real_escape_string($cnx,$idCargos)
+		);
+		$estado = mysqli_query($cnx, $query);
+		if($estado){
+			$query = sprintf("INSERT INTO htrabajo(NumeroDocumento,Desde,Hasta,idTurno) VALUES ('%s','%s','%s','%s')",
+				mysqli_real_escape_string($cnx,$NumeroDocumento),
+				mysqli_real_escape_string($cnx,$Desde),
+				mysqli_real_escape_string($cnx,$Hasta),
+				mysqli_real_escape_string($cnx,$idTurno)
+			);
+			$estado = mysqli_query($cnx, $query);
+		}
+		mysqli_close($cnx);
+		return $estado;
+	}
 
 	function actualizarTurno($idTurno,$nombreTurno,$Desde,$Hasta,$Descanso,$H_Descanso){
 		$cnx = cnx();

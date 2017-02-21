@@ -1,4 +1,4 @@
-<?php 
+<?php
 	include '../php/funciones.php';
 	include '../php/verificar_sesion.php';
 	 ?>
@@ -65,19 +65,19 @@
 												<div class="form-group">
 													<label for="exampleInputEmail1">Nombre Turno<star>*</star></label>
 														<input id="Njornada" type="text" class="form-control" placeholder="Nombre Turno" value="<?php echo $turno->getNombreturno(); ?>" required>
-													</div>        
+													</div>
 											</div>
 											<div class="col-md-4">
 												<div class="form-group">
 													<label for="exampleInputEmail1">Desde<star>*</star></label>
 														<input id="desde" type="text" class="form-control timepicker" placeholder="04:00" value="<?php echo $turno->getDesde(); ?>"  required/>
-													</div>        
+													</div>
 											</div>
 											<div class="col-md-4">
 												<div class="form-group">
 													<label for="exampleInputEmail1">Hasta<star>*</star></label>
 														<input id="hasta" type="text" class="form-control timepicker" placeholder="14:00" value="<?php echo $turno->getHasta(); ?>"  required/>
-													</div>        
+													</div>
 											</div>
 											<div class="col-md-4">
 												<div class="form-group">
@@ -98,9 +98,9 @@
 																}
 
 															?>
-															
+
 														</select>
-													</div>        
+													</div>
 											</div>
 
 										    <?php
@@ -110,7 +110,7 @@
 														<div class='form-group'>
 															<label for='exampleInputEmail1'>Tiempo de Descanso<star>'</star></label>
 															<input id='H_Descanso' type='text' class='form-control timepicker' placeholder='14:00' value=".$turno->getHDescanso()." required/>
-														</div>        
+														</div>
 													</div>
 
 													";
@@ -121,22 +121,23 @@
 												<div class="form-group">
 													<label for="exampleInputEmail1">Tiempo de Descanso<star>*</star></label>
 													<input id="H_Descanso" type="text" class="form-control timepicker" placeholder="01:00" value="<?php echo $turno->getHDescanso(); ?>" required/>
-												</div>        
+												</div>
 											</div>
 											<div class="col-md-4">
 												<div class="text-center">
 													<br>
-	                                    			<a href="#" id="btnMTruno" class="btn btn-fill btn-primary btn-wd">Modificar</a>
-	                                			</div> 
+	                        <a href="#" id="btnMTruno" class="btn btn-fill btn-primary btn-wd">Modificar</a>
+													<a href="#" id="btnEliminarTruno" class="btn btn-danger">Eliminar</a>
+	                      </div>
 											</div>
 											<input type='hidden' id='idTurno' value="<?php echo $idTurno; ?>">
-											<div class="col-md-12">	
-	                                			<div class="text-center" id="respuestaAlert"></div>   
-	                                		</div>	
+											<div class="col-md-12">
+	                    	<div class="text-center" id="respuestaAlert"></div>
+	                    </div>
 										</div>
 	       						</form>
 	            				</div>
-	            			</div>	
+	            			</div>
 	            		</div>
 	            	</div>
 	            </div>
