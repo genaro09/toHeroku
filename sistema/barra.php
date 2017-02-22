@@ -110,7 +110,7 @@
                            </a>
                            <div class='collapse' id='componentsExamples2'>
                              <ul class='nav'>
-                               <li><a href='#'>Departamentos</a></li>
+                               <li><a href='departamento.php'>Departamentos</a></li>
                                <li><a href='#'>Cargos</a></li>
                                <li><a href='#'>Constancias de Salarios</a></li>
                                <li><a href='#'>Expedientes de Empleados</a></li>

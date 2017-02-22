@@ -134,6 +134,18 @@
 
 			}
 		break;
+		case '6':
+			if(empty($_POST["NombreDepartamento"])||empty($_POST["CuentaContable"])||empty($_POST["idSalario_Minimo"])){
+				echo "0";
+			}elseif(checkNombreDepartamento($_POST["NombreDepartamento"],$_POST["NitEmpresa"])){
+				echo "1";
+			}else{
+				$estado=AgregarDepartamento($_POST["NombreDepartamento"],$_POST["CuentaContable"],$_POST["idSalario_Minimo"],$_POST["NitEmpresa"]);
+				if($estado){
+					echo "2";
+				}else echo "3";
+			}
+		break;
 		default:
 			# code...
 			echo "nada";

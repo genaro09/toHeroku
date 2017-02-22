@@ -626,7 +626,7 @@
 			}
 		}
 
-		//Liquidacion
+		//Liquidacion / ahora Indemnizacion
 		function Funcion_verificar_calculo_Liquidacion(){
 			var d1 = new Date(stringToDate($("#dateLI").val()));
 			var d2 = new Date(stringToDate($("#dateLF").val()));
@@ -639,39 +639,70 @@
 					}else if(d1>d2){
 						swal("La fecha de inicial no puede ser mayor a la final en Liquidacion");
 					}else{
-									var salario_minimo_mensual = parseFloat($("#salario_minimo_mensual").val());
-									var salario_mensual = parseFloat($("#SMensual").val());
-									//Esto es para PHP
-										//esto se enviara al PHP
-										var parametros = {
-											"opc" : 3,
-											"d1"	:	d1,
-											"d2"	:	d2,
-											"salario_mensual" : salario_mensual,
-											"salario_minimo_mensual" : salario_minimo_mensual
-										};
-										$.ajax({
-													 data:  parametros,
-													 url:   'Calculos_Prestaciones_Laborales.php',
-													 type:  'post',
-													 dataType: 'json',
-													 cache: false,
-													 beforeSend: function () {
-																	 $("#resultado").html("Procesando, espere por favor...");
-													 },
-													 success:  function (response) {
-																	$("#MontoL").val(parseFloat(response[0]));
-																	alert("Dias"+response[1]+" Meses"+response[2]);
-																	codPL['L']=1;
-																	reciboResumido();
-																	habilitar_btn_imprimir();
-													 }
-									 });
+						//AJAX
+						var d1A = stringToDate($("#dateLI").val());
+						var d2A = stringToDate($("#dateLF").val());
+						var NumeroDocumento = <?php echo $NumeroDocumento; ?>;
+						$.ajax({
+							url:'../php/verificar_fechas.php',
+							type:'POST',
+							dataType: 'json',
+							cache: false,
+							data:{
+								Tp:2,
+								d1:d1A,
+								d2:d2A,
+								NumeroDocumento:NumeroDocumento
+							},
+							beforeSend: function(){
+							},
+							success:  function (response) {
+										 flag=parseInt(response[0]);
+										 d_mala=response[1];
+										 d_rango1=response[2];
+										 d_rango2=response[3];
+										 if(flag==1){
+										 	var salario_minimo_mensual = parseFloat($("#salario_minimo_mensual").val());
+											var salario_mensual = parseFloat($("#SMensual").val());
+											//Esto es para PHP
+											//esto se enviara al PHP
+											var parametros = {
+																	"opc" : 3,
+																	"d1"	:	d1,
+																	"d2"	:	d2,
+																	"salario_mensual" : salario_mensual,
+																	"salario_minimo_mensual" : salario_minimo_mensual
+																};
+																$.ajax({
+																			 data:  parametros,
+																			 url:   'Calculos_Prestaciones_Laborales.php',
+																			 type:  'post',
+																			 dataType: 'json',
+																			 cache: false,
+																			 beforeSend: function () {
+																							 $("#resultado").html("Procesando, espere por favor...");
+																			 },
+																			 success:  function (response) {
+																							$("#MontoL").val(parseFloat(response[0]));
+																							codPL['L']=1;
+																							reciboResumido();
+																							habilitar_btn_imprimir();
+																			 }
+															 });
 
-									//Se termino lo de PHP
-									//alert(d1+" "+d2+" Tot: "+diff);
-									//document.getElementById("MontoL").value=Tot_a_pagar.toFixed(2);
-									//habilitar_btn_imprimir();
+															//Se termino lo de PHP
+															//alert(d1+" "+d2+" Tot: "+diff);
+															//document.getElementById("MontoL").value=Tot_a_pagar.toFixed(2);
+															//habilitar_btn_imprimir();
+										 }else{
+										 	swal("La fecha "+d_mala+" Ya se encuentra en el calculo de "+d_rango1+" - "+d_rango2);
+										 }
+
+							}
+							});
+						//FIN AJAX
+
+
 					};
 
 		}
@@ -736,17 +767,13 @@
 											NumeroDocumento:NumeroDocumento
 										},
 										beforeSend: function(){
-											respAlert("info","Verificando datos...");
 										},
 										success:  function (response) {
 													 flag=parseInt(response[0]);
 													 d_mala=response[1];
 													 d_rango1=response[2];
 													 d_rango2=response[3];
-													 alert("1:"+flag+" dmala:"+d_mala+" d_r1"+d_rango1+" d_r2"+d_rango2);
-													 alert("Estoy despues de AJAX:"+flag);
 													 if(flag==1){
-													 	alert("Estoy despues de la flag 1");
 													 	var salario_mensual = parseFloat($("#SMensual").val());
 													 	//Eliminar renta anterior de salario
 													 	var renta_total=parseFloat($("#renta_total").val());
@@ -775,7 +802,6 @@
 													 									$("#MontoV").val(parseFloat(response[0]));
 													 									$("#aux_total_renta_vacacion").val(response[1]);
 													 									codPL['V']=1;
-													 									alert(response[3]);
 													 									reciboResumido();
 													 									habilitar_btn_imprimir();
 													 					 }
@@ -850,15 +876,12 @@
 												NumeroDocumento:NumeroDocumento
 											},
 											beforeSend: function(){
-												respAlert("info","Verificando datos...");
 											},
 											success:  function (response) {
 														 flag=parseInt(response[0]);
 														 d_mala=response[1];
 														 d_rango1=response[2];
 														 d_rango2=response[3];
-														 alert("1:"+flag+" dmala:"+d_mala+" d_r1"+d_rango1+" d_r2"+d_rango2);
-														 alert("Estoy despues de AJAX:"+flag);
 														 if(flag==1){
 														 	var salario_mensual = parseFloat($("#SMensual").val());
 														 	//Esto es para PHP
@@ -889,7 +912,6 @@
 														 }else{
 														 	swal("La fecha "+d_mala+" Ya se encuentra en el calculo de "+d_rango1+" - "+d_rango2);
 														 }
-
 											}
 											});
 										//FIN AJAX
@@ -937,44 +959,76 @@
 											}else if(fecha_contratacion>d1){
 												swal("No se le puede pagar Salario por meses en el que no pertenecia a la empresa, el usuario ingreso:"+formatDate(fecha_contratacion.toString()));
 											}else{
-															var salario_mensual = parseFloat($("#SMensual").val());
-															//Eliminar renta anterior de salario
-															var renta_total=parseFloat($("#renta_total").val());
-															var aux_total_renta_salario=parseFloat($("#aux_total_renta_salario").val());
-															var N_tot_renta=renta_total-aux_total_renta_salario;
-															document.getElementById("renta_total").value=N_tot_renta.toFixed(2);
-															document.getElementById("MontoTRenta").value=N_tot_renta.toFixed(2);
+												//AJAX
+												var d1A = stringToDate($("#dateSI").val());
+												var d2A = stringToDate($("#dateSF").val());
+												var NumeroDocumento = <?php echo $NumeroDocumento; ?>;
+												$.ajax({
+													url:'../php/verificar_fechas.php',
+													type:'POST',
+													dataType: 'json',
+													cache: false,
+													data:{
+														Tp:4,
+														d1:d1A,
+														d2:d2A,
+														NumeroDocumento:NumeroDocumento
+													},
+													beforeSend: function(){
 
-															//Esto es para PHP
-																//esto se enviara al PHP
-																var parametros = {
-																	"opc" : 2,
-																	"d1"	:	d1,
-																	"d2"	:	d2,
-																	"salario_mensual" : salario_mensual
-																};
-																$.ajax({
-																			 data:  parametros,
-																			 url:   'Calculos_Prestaciones_Laborales.php',
-																			 type:  'post',
-																			 dataType: 'json',
-						            	 						cache: false,
-																			 beforeSend: function () {
-																							 $("#resultado").html("Procesando, espere por favor...");
-																			 },
-																			 success:  function (response) {
-																							$("#MontoS").val(parseFloat(response[0]));
-																							$("#aux_total_renta_salario").val(response[1]);
-																							reciboResumido();
-																							codPL['S']=1;
-																							habilitar_btn_imprimir();
+													},
+													success:  function (response) {
+																 flag=parseInt(response[0]);
+																 d_mala=response[1];
+																 d_rango1=response[2];
+																 d_rango2=response[3];
+																 if(flag==1){
+																 	var salario_mensual = parseFloat($("#SMensual").val());
+																 	//Eliminar renta anterior de salario
+																 	var renta_total=parseFloat($("#renta_total").val());
+																 	var aux_total_renta_salario=parseFloat($("#aux_total_renta_salario").val());
+																 	var N_tot_renta=renta_total-aux_total_renta_salario;
+																 	document.getElementById("renta_total").value=N_tot_renta.toFixed(2);
+																 	document.getElementById("MontoTRenta").value=N_tot_renta.toFixed(2);
 
-																			 }
-															 });
-															//Se termino lo de PHP
+																 									//Esto es para PHP
+																 										//esto se enviara al PHP
+																 										var parametros = {
+																 											"opc" : 2,
+																 											"d1"	:	d1,
+																 											"d2"	:	d2,
+																 											"salario_mensual" : salario_mensual
+																 										};
+																 										$.ajax({
+																 													 data:  parametros,
+																 													 url:   'Calculos_Prestaciones_Laborales.php',
+																 													 type:  'post',
+																 													 dataType: 'json',
+																             	 						cache: false,
+																 													 beforeSend: function () {
+																 																	 $("#resultado").html("Procesando, espere por favor...");
+																 													 },
+																 													 success:  function (response) {
+																 																	$("#MontoS").val(parseFloat(response[0]));
+																 																	$("#aux_total_renta_salario").val(response[1]);
+																 																	reciboResumido();
+																 																	codPL['S']=1;
+																 																	habilitar_btn_imprimir();
 
-															//alert(d1+" "+d2+" Tot: "+diff);
-															//document.getElementById("MontoS").value=Tot_a_pagar.toFixed(2);
+																 													 }
+																 									 });
+																 									//Se termino lo de PHP
+
+																 									//alert(d1+" "+d2+" Tot: "+diff);
+																 									//document.getElementById("MontoS").value=Tot_a_pagar.toFixed(2);
+																 }else{
+																 	swal("La fecha "+d_mala+" Ya se encuentra en el calculo de "+d_rango1+" - "+d_rango2);
+																 }
+
+													}
+													});
+												//FIN AJAX
+
 											};
 								}
 
@@ -1019,38 +1073,69 @@
 													}else if(fecha_contratacion>d1){
 														swal("No se le puede pagar Retiro Voluntario por meses en el que no pertenecia a la empresa, el usuario ingreso:"+formatDate(fecha_contratacion.toString()));
 													}else{
-														var salario_minimo_mensual = parseFloat($("#salario_minimo_mensual").val());
-														var salario_mensual = parseFloat($("#SMensual").val());
+														//AJAX
+														var d1A = stringToDate($("#dateRVI").val());
+														var d2A = stringToDate($("#dateRVF").val());
+														var NumeroDocumento = <?php echo $NumeroDocumento; ?>;
+														$.ajax({
+															url:'../php/verificar_fechas.php',
+															type:'POST',
+															dataType: 'json',
+															cache: false,
+															data:{
+																Tp:5,
+																d1:d1A,
+																d2:d2A,
+																NumeroDocumento:NumeroDocumento
+															},
+															beforeSend: function(){
+															},
+															success:  function (response) {
+																		 flag=parseInt(response[0]);
+																		 d_mala=response[1];
+																		 d_rango1=response[2];
+																		 d_rango2=response[3];
+																		 if(flag==1){
+																		 	var salario_minimo_mensual = parseFloat($("#salario_minimo_mensual").val());
+																			var salario_mensual = parseFloat($("#SMensual").val());
+																			//Esto es para PHP
+																			//esto se enviara al PHP
+																			var parametros = {
+																														"opc" : 5,
+																														"d1"	:	d1,
+																														"d2"	:	d2,
+																														"salario_mensual" : salario_mensual,
+																														"salario_minimo_mensual"	:	salario_minimo_mensual
+																													};
+																													$.ajax({
+																																 data:  parametros,
+																																 url:   'Calculos_Prestaciones_Laborales.php',
+																																 type:  'post',
+																																 dataType: 'json',
+																																 cache: false,
+																																 beforeSend: function () {
+																																				 $("#resultado").html("Procesando, espere por favor...");
+																																 },
+																																 success:  function (response) {
+																																				$("#MontoRV").val(parseFloat(response[0]));
+																																				codPL['RV']=1;
+																																				reciboResumido();
+																																				habilitar_btn_imprimir();
+																																 }
+																												 });
 
-														//Esto es para PHP
-															//esto se enviara al PHP
-															var parametros = {
-																"opc" : 5,
-																"d1"	:	d1,
-																"d2"	:	d2,
-																"salario_mensual" : salario_mensual,
-																"salario_minimo_mensual"	:	salario_minimo_mensual
-															};
-															$.ajax({
-																		 data:  parametros,
-																		 url:   'Calculos_Prestaciones_Laborales.php',
-																		 type:  'post',
-																		 dataType: 'json',
-																		 cache: false,
-																		 beforeSend: function () {
-																						 $("#resultado").html("Procesando, espere por favor...");
-																		 },
-																		 success:  function (response) {
-																						$("#MontoRV").val(parseFloat(response[0]));
-																						codPL['RV']=1;
-																						reciboResumido();
-																						habilitar_btn_imprimir();
+																												//Se termino lo de PHP
+																															//alert(d1+" "+d2+" Tot: "+diff);
+																															//document.getElementById("MontoRV").value=Tot_a_pagar.toFixed(2);
+																		 }else{
+																		 	swal("La fecha "+d_mala+" Ya se encuentra en el calculo de "+d_rango1+" - "+d_rango2);
 																		 }
-														 });
 
-														//Se termino lo de PHP
-																	//alert(d1+" "+d2+" Tot: "+diff);
-																	//document.getElementById("MontoRV").value=Tot_a_pagar.toFixed(2);
+															}
+															});
+														//FIN AJAX
+
+
 													};
 										}
 		</script>

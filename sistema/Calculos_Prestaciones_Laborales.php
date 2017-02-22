@@ -142,15 +142,22 @@ $opc = $_POST['opc'];
   }else if($opc==4){
     //Aguinaldo
     $salario_mensual = $_POST['salario_mensual'];
-    $dias_a_cobrar= calcular_dias_anio($_POST['d1'],$_POST['d2']);
+    $d2=formatDate((string)$_POST['d2']);
+    $d1=formatDate((string)$_POST['d1']);
+    $datetime1 = new DateTime((string)$d1);
+    $datetime2 = new DateTime((string)$d2);
+    $interval = $datetime1->diff($datetime2);
+    $diasTotal=$interval->format('%a');
+    $diasTotal=$diasTotal+1;
+    $dias_a_cobrar= $diasTotal;
     $dias_toda_la_vida=calcular_dias_anio($_POST['fecha_contratacion'],$_POST['d2']);
     $Tot_a_pagar=0.00;
     $Tot_anios=0;
     $dias_aguinaldo=0;
     $Meses=$dias_toda_la_vida[0];
     $Dias=$dias_toda_la_vida[1];
-    $MesesDC=$dias_a_cobrar[0];
-    $DiasDC=$dias_a_cobrar[1];
+    $MesesDC=0;
+    $DiasDC=$diasTotal;
     while($Meses>12){
       $Tot_anios++;
       $Meses=$Meses-12;
@@ -166,9 +173,9 @@ $opc = $_POST['opc'];
       $Tot_a_pagar=$Tot_a_pagar+(($salario_mensual/30)*$dias_aguinaldo);
       $MesesDC=$MesesDC-12;
     }
-    $Tot_a_pagar=$Tot_a_pagar+(((($MesesDC*30)+$DiasDC)/(30*12))*(($salario_mensual/30)*$dias_aguinaldo));
+    $Tot_a_pagar=$Tot_a_pagar+((($DiasDC)/(365))*(($salario_mensual/30)*$dias_aguinaldo));
     $Tot_a_pagar=number_format((float)$Tot_a_pagar, 2, '.', '');
-    $array = array($Tot_a_pagar);//Aqui vamos a enviar todos los valores 1=total, 2=renta, 3=error
+    $array = array($Tot_a_pagar,$dias_a_cobrar,$dias_toda_la_vida);//Aqui vamos a enviar todos los valores 1=total, 2=renta, 3=error
     echo json_encode($array)  ;
 
   }else if($opc==5){

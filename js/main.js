@@ -56,7 +56,151 @@ $(document).ready(function(){
 			}
 		});
 	});
-
+	//Modificar Departamento btnMDepartamento
+	$("#btnMDepartamento").click(function(){
+		var NombreDepartamento=document.getElementById("NombreDepartamento").value;
+		var CuentaContable=document.getElementById("CContable").value;
+		var idSalario_Minimo=$("#idSalario_Minimo").val();
+		var NitEmpresa=document.getElementById("nitEmpresa").value;
+		var idDepartamento=document.getElementById("idDepartamento").value;
+		//alert("user: "+user+" - pass: "+contra);
+		$.ajax({
+			url:'../php/Modificar.php',
+			type:'POST',
+			data:{
+				opc:1,
+				NombreDepartamento:NombreDepartamento,
+				CuentaContable:CuentaContable,
+				idSalario_Minimo:idSalario_Minimo,
+				NitEmpresa:NitEmpresa,
+				idDepartamento:idDepartamento
+			},
+			beforeSend: function(){
+				respAlert("info","Verificando datos...");
+			},
+			success:function(data){
+				console.log(data);
+				switch(data[0]){
+					case "0":
+						respAlert("warning","Llene todo los campos");
+					break;
+					case "1":
+						respAlert("warning","Ya Existe un Departamento con el mismo nombre");
+					break;
+					case "2":
+						setTimeout(function(){
+							respAlert("success","Correcto...");
+							redireccionar("turno.php");
+						},1000);
+					break;
+					case "3":
+						respAlert("warning","Error en base ");
+					break;
+				}
+				//respAlert("success",data[0]);
+				/*setTimeout(function(){
+					redireccionar("sistema/home.php");
+				},1000);*/
+			},
+			error:function(data){
+				console.log(data);
+				respAlert("danger","Error...");
+			}
+		});
+	});
+	//Eliminar Departamento btnEliminarDepartamento
+	$("#btnEliminarDepartamento").click(function(){
+		var idDepartamento=document.getElementById("idDepartamento").value;
+		var NitEmpresa=document.getElementById("nitEmpresa").value;
+		//alert("user: "+user+" - pass: "+contra);
+		$.ajax({
+			url:'../php/Eliminar.php',
+			type:'POST',
+			data:{
+				opc:2,
+				idDepartamento:idDepartamento,
+				NitEmpresa:NitEmpresa
+			},
+			beforeSend: function(){
+				respAlert("info","Verificando datos...");
+			},
+			success:function(data){
+				console.log(data);
+				switch(data[0]){
+					case "0":
+						respAlert("warning","Error en base de datos");
+					break;
+					case "1":
+						setTimeout(function(){
+							respAlert("success","Correcto...");
+							redireccionar("departamento.php");
+						},1000);
+					break;
+					case "2":
+						respAlert("warning","Existe un Cargo en este Departamento, imposible eliminar");
+					break;
+				}
+				//respAlert("success",data[0]);
+				/*setTimeout(function(){
+					redireccionar("sistema/home.php");
+				},1000);*/
+			},
+			error:function(data){
+				console.log(data);
+				respAlert("danger","Error...");
+			}
+		});
+	});
+	//Agregar Departamento btnADepartamento
+	$("#btnADepartamento").click(function(){
+		var NombreDepartamento=document.getElementById("NDepartamento").value;
+		var CuentaContable=document.getElementById("CContable").value;
+		var idSalario_Minimo=$("#idSalario_Minimo").val();
+		var NitEmpresa=document.getElementById("nitEmpresa").value;
+		//alert("user: "+user+" - pass: "+contra);
+		$.ajax({
+			url:'../sistema/agregar.php',
+			type:'POST',
+			data:{
+				opc:6,
+				NombreDepartamento:NombreDepartamento,
+				CuentaContable:CuentaContable,
+				idSalario_Minimo:idSalario_Minimo,
+				NitEmpresa:NitEmpresa
+			},
+			beforeSend: function(){
+				respAlert("info","Verificando datos...");
+			},
+			success:function(data){
+				console.log(data);
+				switch(data[0]){
+					case "0":
+						respAlert("warning","Llene todo los campos");
+					break;
+					case "1":
+						respAlert("warning","Ya Existe un Departamento con el mismo nombre");
+					break;
+					case "2":
+						setTimeout(function(){
+							respAlert("success","Correcto...");
+							redireccionar("departamento.php");
+						},1000);
+					break;
+					case "3":
+						respAlert("warning","Error en base ");
+					break;
+				}
+				//respAlert("success",data[0]);
+				/*setTimeout(function(){
+					redireccionar("sistema/home.php");
+				},1000);*/
+			},
+			error:function(data){
+				console.log(data);
+				respAlert("danger","Error...");
+			}
+		});
+	});
 	//Agregar Turno
 	$("#btnATruno").click(function(){
 		var NitEmpresa=document.getElementById("nitEmpresa").value;

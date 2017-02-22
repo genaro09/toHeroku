@@ -67,7 +67,6 @@ if($cod["V"]==1){
     mysqli_real_escape_string($cnx,$result_F_P_PDF["1"])
     );
   $estado = mysqli_query($cnx,$query);
-
   //FIN
   $disp_tabla_resultados=$disp_tabla_resultados.'
                         <tr>
@@ -112,6 +111,25 @@ if($cod["S"]==1){
   $Tot_R=$Tot_R+$result_F_P_PDF["1"];//Renta
   $Tot_AFP=$Tot_AFP+number_format((float)($result_F_P_PDF["0"]*0.0625), 2, '.', '');//AFP
   $Tot_ISS=$Tot_ISS+number_format((float)($result_F_P_PDF["0"]*0.03), 2, '.', '');//ISS
+  //INSERTAR EN SALARIO tipo 4
+  $Desde=formatDatePD((string)$FES);
+  $Hasta=formatDatePD((string)$FSS);
+  $Desde=str_replace('/', '-', $Desde);
+  $Hasta=str_replace('/', '-', $Hasta);
+  $Desde=date('Y-m-d', strtotime($Desde));
+  $Hasta=date('Y-m-d', strtotime($Hasta));
+  $query = sprintf("INSERT INTO pagos_empleados(Tipo_Pago,idRecibo,Desde,Hasta,Monto,ISS,AFP,Renta) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
+    mysqli_real_escape_string($cnx,4),
+    mysqli_real_escape_string($cnx,$NumeroDeRecibo),
+    mysqli_real_escape_string($cnx,$Desde),
+    mysqli_real_escape_string($cnx,$Hasta),
+    mysqli_real_escape_string($cnx,$result_F_P_PDF["0"]),
+    mysqli_real_escape_string($cnx,number_format((float)($result_F_P_PDF["0"]*0.03), 2, '.', '')),
+    mysqli_real_escape_string($cnx,number_format((float)($result_F_P_PDF["0"]*0.0625), 2, '.', '')),
+    mysqli_real_escape_string($cnx,$result_F_P_PDF["1"])
+    );
+  $estado = mysqli_query($cnx,$query);
+  //FIN
   $disp_tabla_resultados=$disp_tabla_resultados.'
                         <tr>
                           <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FES).'</span></td>
@@ -137,6 +155,25 @@ if($cod["A"]==1){
                  );
   $result_F_P_PDF=funcion_validar_PDF($Array_valores);
   $Tot_SinD=$Tot_SinD+$result_F_P_PDF["0"];//Tot sin Descuentos
+  //INSERTAR EN AGUINALDO tipo 3
+  $Desde=formatDatePD((string)$FEA);
+  $Hasta=formatDatePD((string)$FSA);
+  $Desde=str_replace('/', '-', $Desde);
+  $Hasta=str_replace('/', '-', $Hasta);
+  $Desde=date('Y-m-d', strtotime($Desde));
+  $Hasta=date('Y-m-d', strtotime($Hasta));
+  $query = sprintf("INSERT INTO pagos_empleados(Tipo_Pago,idRecibo,Desde,Hasta,Monto,ISS,AFP,Renta) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
+    mysqli_real_escape_string($cnx,3),
+    mysqli_real_escape_string($cnx,$NumeroDeRecibo),
+    mysqli_real_escape_string($cnx,$Desde),
+    mysqli_real_escape_string($cnx,$Hasta),
+    mysqli_real_escape_string($cnx,$result_F_P_PDF["0"]),
+    mysqli_real_escape_string($cnx,0),
+    mysqli_real_escape_string($cnx,0),
+    mysqli_real_escape_string($cnx,0)
+    );
+  $estado = mysqli_query($cnx,$query);
+  //FIN
   $disp_tabla_resultados=$disp_tabla_resultados.'
                         <tr>
                           <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FEA).'</span></td>
@@ -162,6 +199,25 @@ if($cod["RV"]==1){
                  );
   $result_F_P_PDF=funcion_validar_PDF($Array_valores);
   $Tot_SinD=$Tot_SinD+$result_F_P_PDF["0"];//Tot sin Descuentos
+  //INSERTAR EN RETIRO VOLUNTARIO tipo 5
+  $Desde=formatDatePD((string)$FERV);
+  $Hasta=formatDatePD((string)$FSRV);
+  $Desde=str_replace('/', '-', $Desde);
+  $Hasta=str_replace('/', '-', $Hasta);
+  $Desde=date('Y-m-d', strtotime($Desde));
+  $Hasta=date('Y-m-d', strtotime($Hasta));
+  $query = sprintf("INSERT INTO pagos_empleados(Tipo_Pago,idRecibo,Desde,Hasta,Monto,ISS,AFP,Renta) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
+    mysqli_real_escape_string($cnx,5),
+    mysqli_real_escape_string($cnx,$NumeroDeRecibo),
+    mysqli_real_escape_string($cnx,$Desde),
+    mysqli_real_escape_string($cnx,$Hasta),
+    mysqli_real_escape_string($cnx,$result_F_P_PDF["0"]),
+    mysqli_real_escape_string($cnx,0),
+    mysqli_real_escape_string($cnx,0),
+    mysqli_real_escape_string($cnx,0)
+    );
+  $estado = mysqli_query($cnx,$query);
+  //FIN
   $disp_tabla_resultados=$disp_tabla_resultados.'
                         <tr>
                           <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FERV).'</span></td>
@@ -187,6 +243,25 @@ if($cod["L"]==1){
                  );
   $result_F_P_PDF=funcion_validar_PDF($Array_valores);
   $Tot_SinD=$Tot_SinD+$result_F_P_PDF["0"];//Tot sin Descuentos
+  //INSERTAR EN INDEMNIZACION tipo 2
+  $Desde=formatDatePD((string)$FEL);
+  $Hasta=formatDatePD((string)$FSL);
+  $Desde=str_replace('/', '-', $Desde);
+  $Hasta=str_replace('/', '-', $Hasta);
+  $Desde=date('Y-m-d', strtotime($Desde));
+  $Hasta=date('Y-m-d', strtotime($Hasta));
+  $query = sprintf("INSERT INTO pagos_empleados(Tipo_Pago,idRecibo,Desde,Hasta,Monto,ISS,AFP,Renta) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
+    mysqli_real_escape_string($cnx,2),
+    mysqli_real_escape_string($cnx,$NumeroDeRecibo),
+    mysqli_real_escape_string($cnx,$Desde),
+    mysqli_real_escape_string($cnx,$Hasta),
+    mysqli_real_escape_string($cnx,$result_F_P_PDF["0"]),
+    mysqli_real_escape_string($cnx,0),
+    mysqli_real_escape_string($cnx,0),
+    mysqli_real_escape_string($cnx,0)
+    );
+  $estado = mysqli_query($cnx,$query);
+  //FIN
   $disp_tabla_resultados=$disp_tabla_resultados.'
                         <tr>
                           <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FEL).'</span></td>

@@ -52,6 +52,32 @@
 		mysqli_close($cnx);
 		return $flag;
 	}
+	function checkNombreDepartamento($NombreDepartamento,$NitEmpresa){
+		$cnx=cnx();
+		$flag=FALSE;
+		$query=sprintf("SELECT * FROM departamento where NitEmpresa='%s'",mysqli_real_escape_string($cnx,$NitEmpresa));
+		$resul=mysqli_query($cnx,$query);
+		while($row=mysqli_fetch_array($resul)){
+			if(strcmp($row["NombreDepartamento"], $NombreDepartamento) == 0)
+				$flag=TRUE;
+		}
+		mysqli_close($cnx);
+		return $flag;
+
+	}
+	function checkNombreDepartamentoToModf($NombreDepartamento,$NitEmpresa,$idDepartamento){
+		$cnx=cnx();
+		$flag=FALSE;
+		$query=sprintf("SELECT * FROM departamento where NitEmpresa='%s' and idDepartamento!='%s'",mysqli_real_escape_string($cnx,$NitEmpresa),mysqli_real_escape_string($cnx,$idDepartamento));
+		$resul=mysqli_query($cnx,$query);
+		while($row=mysqli_fetch_array($resul)){
+			if(strcmp($row["NombreDepartamento"], $NombreDepartamento) == 0)
+				$flag=TRUE;
+		}
+		mysqli_close($cnx);
+		return $flag;
+
+	}
 	function isLoginOk($user,$Pass){
 		$cnx=cnx();
 		$query=sprintf("SELECT 	Pass FROM empleado where NumeroDocumento='%s'", mysqli_real_escape_string($cnx,$user));
@@ -135,6 +161,7 @@
 		return $turno;
 	}
 
+
 		function getInfoEmpleado($idEmpleado){
 		$cnx=cnx();
 		$query=sprintf("SELECT * FROM empleado where NumeroDocumento='%s'",mysqli_real_escape_string($cnx,$idEmpleado));
@@ -184,6 +211,21 @@
 		mysqli_close($cnx);
 		return $Salario_Mes[0];
 
+	}
+	function getSalariosM($idDepartamento){
+		$cnx=cnx();
+		$query2=sprintf("SELECT * FROM departamento  WHERE idDepartamento='%s'",mysqli_real_escape_string($cnx,$idDepartamento));
+		$result2=mysqli_query($cnx,$query2);
+		$row2=mysqli_fetch_array($result2);
+		$query=sprintf("SELECT * FROM salarios_minimos ");
+		$result=mysqli_query($cnx,$query);
+		while ($row=mysqli_fetch_array($result)) {
+			if($row["idSalario_Minimo"]==$row2["idSalario_Minimo"]){
+				echo "<option selected value='".$row["idSalario_Minimo"]."'>".$row["NombreRubro"]."</option>";
+			}else
+		  echo "<option value='".$row["idSalario_Minimo"]."'>".$row["NombreRubro"]."</option>";
+		}
+		mysqli_close($cnx);
 	}
 
 	function getInfoCargos($user){
@@ -303,7 +345,18 @@
 				}
 		mysqli_close($cnx);
 		return $estado;
-
+	}
+	function UpdateDepartamento($NombreDepartamento,$CuentaContable,$idSalario_Minimo,$idDepartamento){
+		$cnx=cnx();
+		$query = sprintf("UPDATE departamento SET  NombreDepartamento = '%s',idSalario_Minimo = '%s',CuentaContable = '%s' WHERE idDepartamento = '%s'",
+		mysqli_real_escape_string($cnx,$NombreDepartamento),
+		mysqli_real_escape_string($cnx,$idSalario_Minimo),
+		mysqli_real_escape_string($cnx,$CuentaContable),
+		mysqli_real_escape_string($cnx,$idDepartamento)
+		);
+		$estado = mysqli_query($cnx,$query);
+		mysqli_close($cnx);
+		return $estado;
 	}
 function eliminarTurno($idTurno){
 	$cnx=cnx();
@@ -322,8 +375,23 @@ function eliminarTurno($idTurno){
 	return $estado;
 }
 
+//eliminarDepartamento
+function eliminarDepartamento($idDepartamento,$NitEmpresa){
+	$cnx=cnx();
+	$estado=1;
+	$query2=sprintf("SELECT * FROM cargos where idDepartamento='%s'",mysqli_real_escape_string($cnx,$idDepartamento));
+	$result2=mysqli_query($cnx,$query2);
+	while ($row2=mysqli_fetch_array($result2)) {
+		$estado=2;
+	}
+	if($estado==1){
+		$query=sprintf("DELETE FROM departamento WHERE idDepartamento='%s'",mysqli_real_escape_string($cnx,$idDepartamento));
+		$estado = mysqli_query($cnx, $query);
+	}
 
-
+	mysqli_close($cnx);
+	return $estado;
+}
 	function actualizarUsuario($empleado,$htrabajo){
 		$cnx = cnx();
 		$query = sprintf("UPDATE empleado SET idCargos = '%s', Pass ='%s', Activo = '%s', Nup = '%s', InstitucionPrevisional = '%s', PrimerNombre = '%s',SegundoNombre = '%s' , PrimerApellido = '%s' , SegundoApellido = '%s' , ApellidoCasada = '%s' , ConocidoPor = '%s' , TipoDocumento = '%s' , NumeroDocumento = '%s' , Nit = '%s' , NumeroIsss = '%s' , NumeroInpep = '%s' , Genero = '%s' , Nacionalidad = '%s' , SalarioNominal = '%s' , FechaNacimiento = '%s' , EstadoCivil = '%s' , Direccion = '%s' , Departamento = '%s' , Municipio = '%s' , NumeroTelefonico = '%s' , CorreoElectronico = '%s' , FechaIngreso = '%s' , FechaRetiro = '%s' , FechaFallecimiento = '%s' WHERE NumeroDocumento = '%s'",
@@ -380,6 +448,19 @@ function eliminarTurno($idTurno){
 			mysqli_real_escape_string($cnx,$Hasta),
 			mysqli_real_escape_string($cnx,$Descanso),
 			mysqli_real_escape_string($cnx,$H_Descanso)
+		);
+		$estado = mysqli_query($cnx, $query);
+		mysqli_close($cnx);
+		return $estado;
+
+	}
+	function AgregarDepartamento($NombreDepartamento,$CuentaContable,$idSalario_Minimo,$NitEmpresa){
+		$cnx = cnx();
+		$query = sprintf("INSERT INTO departamento(NitEmpresa,NombreDepartamento,idSalario_Minimo,CuentaContable) VALUES ('%s','%s','%s','%s')",
+			mysqli_real_escape_string($cnx,$NitEmpresa),
+			mysqli_real_escape_string($cnx,$NombreDepartamento),
+			mysqli_real_escape_string($cnx,$idSalario_Minimo),
+			mysqli_real_escape_string($cnx,$CuentaContable)
 		);
 		$estado = mysqli_query($cnx, $query);
 		mysqli_close($cnx);

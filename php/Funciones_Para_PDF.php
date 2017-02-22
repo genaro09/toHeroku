@@ -52,6 +52,7 @@ function funcion_validar_PDF($Array_valores){
       $datetime2 = new DateTime((string)$d2);
       $interval = $datetime1->diff($datetime2);
       $diasTotal=$interval->format('%a');
+      $diasTotal=$diasTotal+1;
       $Tot_dias_P_A=$diasTotal;
       //FIN
       while($Meses>12){
@@ -111,6 +112,7 @@ function funcion_validar_PDF($Array_valores){
       $datetime2 = new DateTime((string)$d2);
       $interval = $datetime1->diff($datetime2);
       $diasTotal=$interval->format('%a');
+      $diasTotal=$diasTotal+1;
       $Tot_dias_P_A=$diasTotal;
       //FIN
       $Tot_a_pagar=number_format((float)$Tot_a_pagar, 2, '.', '');
@@ -173,6 +175,7 @@ function funcion_validar_PDF($Array_valores){
       $datetime2 = new DateTime((string)$d2);
       $interval = $datetime1->diff($datetime2);
       $diasTotal=$interval->format('%a');
+      $diasTotal=$diasTotal+1;
       $Tot_dias_P_A=$diasTotal;
       //FIN
       while($Meses>12){
@@ -191,7 +194,14 @@ function funcion_validar_PDF($Array_valores){
     }else if($opc==4){
       //Aguinaldo
       $salario_mensual = $Array_valores['salario_mensual'];
-      $dias_a_cobrar= calcular_dias_anio($Array_valores['d1'],$Array_valores['d2']);
+      $d2=formatDate((string)$Array_valores['d1']);
+      $d1=formatDate((string)$Array_valores['d2']);
+      $datetime1 = new DateTime((string)$d1);
+      $datetime2 = new DateTime((string)$d2);
+      $interval = $datetime1->diff($datetime2);
+      $diasTotal=$interval->format('%a');
+      $diasTotal=$diasTotal+1;
+      $dias_a_cobrar= $diasTotal;
       $dias_toda_la_vida=calcular_dias_anio($Array_valores['fecha_contratacion'],$Array_valores['d2']);
       $Tot_a_pagar=0.00;
       $Tot_anios=0;
@@ -199,16 +209,9 @@ function funcion_validar_PDF($Array_valores){
       $Meses=$dias_toda_la_vida[0];
       $Dias=$dias_toda_la_vida[1];
       //Calcular dias
-      $d2=formatDate((string)$Array_valores['d2']);
-      $d1=formatDate((string)$Array_valores['d1']);
-      $datetime1 = new DateTime((string)$d1);
-      $datetime2 = new DateTime((string)$d2);
-      $interval = $datetime1->diff($datetime2);
-      $diasTotal=$interval->format('%a');
       $Tot_dias_P_A=$diasTotal;
       //FIN
-      $MesesDC=$dias_a_cobrar[0];
-      $DiasDC=$dias_a_cobrar[1];
+      $DiasDC=$dias_a_cobrar;
       while($Meses>12){
         $Tot_anios++;
         $Meses=$Meses-12;
@@ -220,11 +223,7 @@ function funcion_validar_PDF($Array_valores){
       }else{
         $dias_aguinaldo=21;
       }
-      while($MesesDC>12){
-        $Tot_a_pagar=$Tot_a_pagar+(($salario_mensual/30)*$dias_aguinaldo);
-        $MesesDC=$MesesDC-12;
-      }
-      $Tot_a_pagar=$Tot_a_pagar+(((($MesesDC*30)+$DiasDC)/(30*12))*(($salario_mensual/30)*$dias_aguinaldo));
+      $Tot_a_pagar=$Tot_a_pagar+((($DiasDC)/(365))*(($salario_mensual/30)*$dias_aguinaldo));
       $Tot_a_pagar=number_format((float)$Tot_a_pagar, 2, '.', '');
       $array = array($Tot_a_pagar,$Tot_dias_P_A);//Aqui vamos a enviar todos los valores 1=total, 2=renta, 3=error
 
@@ -246,6 +245,7 @@ function funcion_validar_PDF($Array_valores){
       $datetime2 = new DateTime((string)$d2);
       $interval = $datetime1->diff($datetime2);
       $diasTotal=$interval->format('%a');
+      $diasTotal=$diasTotal+1;
       $Tot_dias_P_A=$diasTotal;
       //FIN
       while($Meses>12){

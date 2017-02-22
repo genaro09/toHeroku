@@ -336,7 +336,7 @@
 																	<div class="col-sm-6 col-lg-3">
 																		<div class="form-group">
 																			<label>Numero de Documento<star>*</star></label>
-																			<input disabled id="Ndocumento"  class="form-control" placeholder="Por Ejemplo: 042341492" value="<?php echo $empleado->getNumerodocumento();  ?>" required patterm="^[0-9]{9}$">
+																			<input disabled id="Ndocumento"  type="text" class="form-control" placeholder="Por Ejemplo: 042341492" value="<?php echo (String)$empleado->getNumerodocumento();  ?>">
 																		</div>
 																	</div>
 																	<div class="col-sm-6 col-lg-3">
@@ -446,19 +446,19 @@
 																	<div class="col-sm-4">
 																		<div class="form-group">
 																			<label>Numero de NIT<star>*</star></label>
-																			<input id="NNIT" type="text" class="form-control" placeholder="Por Ejemplo: 0614-240290-105-5" value="<?php echo (double)$empleado->getNit(); ?>" required>
+																			<input id="NNIT" type="text" class="form-control" placeholder="Por Ejemplo: 0614-240290-105-5" value="<?php echo (String)$empleado->getNit(); ?>" required>
 																		</div>
 																	</div>
 																	<div class="col-sm-4">
 																		<div class="form-group">
 																			<label>Numero de I.S.S.S.<star>*</star></label>
-																			<input id="NISSS" type="number" class="form-control" placeholder="Por Ejemplo: 198953837" value="<?php echo $empleado->getNumeroisss(); ?>">
+																			<input id="NISSS" type="text" class="form-control" placeholder="Por Ejemplo: 198953837" value="<?php echo $empleado->getNumeroisss(); ?>">
 																		</div>
 																	</div>
 																	<div class="col-sm-4">
 																		<div class="form-group">
 																			<label>Numero del IMPEP</label>
-																			<input id="NIMPEP"type="text" class="form-control" placeholder="Por Ejemplo: 04234149-2" value="<?php $empleado->getNumeroinpep(); ?>">
+																			<input id="NIMPEP"type="text" class="form-control" placeholder="Por Ejemplo: 04234149-2" value="<?php echo $empleado->getNumeroinpep(); ?>">
 																		</div>
 																	</div>
 																	<div class="col-sm-4">
