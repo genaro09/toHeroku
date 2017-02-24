@@ -84,7 +84,7 @@
                                 <div class="col-md-6">
                                   <div class="form-group">
                                     <label>NIT</label>
-                                    <input disabled id="nit" type="text" class="form-control" placeholder="Se necesita actualizar" value="<?php echo (double)$empleado->getNit(); ?>">
+                                    <input disabled id="nit" type="text" class="form-control" placeholder="Se necesita actualizar" value="<?php echo $empleado->getNit(); ?>">
                                   </div>
                                 </div>
                                 <div class="col-md-6">

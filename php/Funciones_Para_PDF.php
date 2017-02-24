@@ -1,6 +1,6 @@
 <?php
 include_once '../php/cn.php';
-function Realizar_Recibo($user,$NumeroDocumento,$V,$S,$A,$L,$RV){
+function Realizar_Recibo($user,$NumeroDocumento,$V,$S,$A,$L,$RV,$Salario_Mensual,$Cargo_Empleado){
   $cnx=cnx();
   $NameDataBase=NameDataBase();
   //El proximo ID
@@ -8,7 +8,7 @@ function Realizar_Recibo($user,$NumeroDocumento,$V,$S,$A,$L,$RV){
   $result=mysqli_query($cnx,$query);
   $row=mysqli_fetch_array($result);
   $NumeroDeRecibo=$row["AUTO_INCREMENT"];
-  $query = sprintf("INSERT INTO recibo(idRecibo,Fecha_Generado,NumeroDocumento_Para,NumeroDocumento_Por,Vacacion,Indemnizacion,Aguinaldo,Salario,Retiro_Voluntario) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+  $query = sprintf("INSERT INTO recibo(idRecibo,Fecha_Generado,NumeroDocumento_Para,NumeroDocumento_Por,Vacacion,Indemnizacion,Aguinaldo,Salario,Retiro_Voluntario,Salario_Mensual,Cargo_Empleado) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
     mysqli_real_escape_string($cnx,$NumeroDeRecibo),
     mysqli_real_escape_string($cnx,date('Y/m/d h:i:s', time())),
     mysqli_real_escape_string($cnx,$NumeroDocumento),
@@ -17,7 +17,9 @@ function Realizar_Recibo($user,$NumeroDocumento,$V,$S,$A,$L,$RV){
     mysqli_real_escape_string($cnx,$L),
     mysqli_real_escape_string($cnx,$A),
     mysqli_real_escape_string($cnx,$S),
-    mysqli_real_escape_string($cnx,$RV)
+    mysqli_real_escape_string($cnx,$RV),
+    mysqli_real_escape_string($cnx,$Salario_Mensual),
+    mysqli_real_escape_string($cnx,$Cargo_Empleado)
     );
   $estado = mysqli_query($cnx,$query);
   if(!($estado)){

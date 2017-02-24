@@ -1,25 +1,36 @@
 <?php
 //variables a necesitar
 include '../php/funciones.php';
-include '../php/Funciones_Para_PDF.php';
 include '../php/verificar_sesion.php';
 require_once('../php/clases/NumberToLetterConverter.class.php');
 $user = $_SESSION['usuario_sesion'];
-$NumeroDocumento=$_POST["NumeroDeDocumento"];
+$idRecibo=$_POST["idRecibo"];
 //$NumeroDocumento=$_POST["numDoc"];
 $cnx=cnx();
-$empleado=new empleado_class();
-$empleado=getInfoEmpleado($NumeroDocumento);
-$salario_mensual=number_format((double)$empleado->getSalarionominal(), 2, '.', '');
-$salario_diario=number_format(($salario_mensual/30), 2, '.', '');
-$cargoNE=getInfoCargos($empleado->getIdcargos());
-$Nitempresa=getNitEmpresa($empleado);
-$query=sprintf("SELECT * FROM empresa where NitEmpresa='%s'",mysqli_real_escape_string($cnx,$Nitempresa));
+//Obtener los datos del recibo
+$query=sprintf("SELECT * FROM recibo where idRecibo='%s'",mysqli_real_escape_string($cnx,$idRecibo));
 $result=mysqli_query($cnx,$query);
 $row=mysqli_fetch_array($result);
-//$row["idDepartamento"]
-$cod=json_decode($_POST["CODACCESS"], true);//ya se pueden obtener por [V]||S||A||L||RV
-$NumeroDeRecibo=Realizar_Recibo($user,$NumeroDocumento,$cod["V"],$cod["S"],$cod["A"],$cod["L"],$cod["RV"],$empleado->getSalarionominal(),$cargoNE->getNombrecargo());
+//Crear clase
+$empleado =new empleado_class();
+$empleado =new empleado_class();
+
+$empleado=getInfoEmpleado($row["NumeroDocumento_Para"]);
+$cargoNE=getInfoCargos($empleado->getIdcargos());
+$Nitempresa=getNitEmpresa($empleado);
+//Datos de la empresa
+$queryME=sprintf("SELECT * FROM empresa where NitEmpresa='%s'",mysqli_real_escape_string($cnx,$Nitempresa));
+$resultME=mysqli_query($cnx,$queryME);
+$rowME=mysqli_fetch_array($resultME);
+
+//haciendo el codigo para ver si hay V, S, RV, L, A
+$cod=array("V"=>$row["Vacacion"],
+                 "L"=>$row["Indemnizacion"],//Liquidacion=Indemnizacion
+                 "A"=>$row["Aguinaldo"],
+                 "S"=>$row["Salario"],
+                 "RV"=>$row["Retiro_Voluntario"]
+               );
+
 //Sacar el TOTAL a pagar
 $Tot_a_pagar=0;//Total a Pagar
 $Tot_ISS=0;//Total ISS
@@ -33,41 +44,29 @@ $disp_tabla_resultados="";//lo que se va a imprimir en el concepto
 $count=0;
 $Recibo_de_Nombres="";
 $str="";
+$salario_mensual=number_format((double)$row["Salario_Mensual"], 2, '.', '');
+$salario_diario=number_format(($salario_mensual/30), 2, '.', '');
 if($cod["V"]==1){
-  $FEV=$_POST["FEV"];
-  $FSV=$_POST["FSV"];
-  //Calcular valores vacacion
-  $Array_valores=array("opc"=>1,
-                   "salario_mensual"=>$salario_mensual,
-                   "d1"=>$FEV,
-                   "d2"=>$FSV
-                 );
-  $result_F_P_PDF=funcion_validar_PDF($Array_valores);
-  $Tot_SinD=$Tot_SinD+$result_F_P_PDF["0"];//Tot sin Descuentos
-  $Tot_R=$Tot_R+$result_F_P_PDF["1"];//Renta
-  $Tot_AFP=$Tot_AFP+number_format((float)($result_F_P_PDF["0"]*0.0625), 2, '.', '');//AFP
-  $Tot_ISS=$Tot_ISS+number_format((float)($result_F_P_PDF["0"]*0.03), 2, '.', '');//ISS
-  $Salario_quincenal_vaca=number_format((float)($result_F_P_PDF["0"]/1.3), 2, '.', '');//SALARIO quincenal
-  $Vacacion_proporcional=number_format((float)$result_F_P_PDF["0"]-(float)($result_F_P_PDF["0"]/1.3), 2, '.', '');
-  //INSERTAR EN VACACION
-  $Desde=formatDatePD((string)$FEV);
-  $Hasta=formatDatePD((string)$FSV);
-  $Desde=str_replace('/', '-', $Desde);
-  $Hasta=str_replace('/', '-', $Hasta);
-  $Desde=date('Y-m-d', strtotime($Desde));
-  $Hasta=date('Y-m-d', strtotime($Hasta));
-  $query = sprintf("INSERT INTO pagos_empleados(Tipo_Pago,idRecibo,Desde,Hasta,Monto,ISS,AFP,Renta) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
-    mysqli_real_escape_string($cnx,1),
-    mysqli_real_escape_string($cnx,$NumeroDeRecibo),
-    mysqli_real_escape_string($cnx,$Desde),
-    mysqli_real_escape_string($cnx,$Hasta),
-    mysqli_real_escape_string($cnx,$result_F_P_PDF["0"]),
-    mysqli_real_escape_string($cnx,number_format((float)($result_F_P_PDF["0"]*0.03), 2, '.', '')),
-    mysqli_real_escape_string($cnx,number_format((float)($result_F_P_PDF["0"]*0.0625), 2, '.', '')),
-    mysqli_real_escape_string($cnx,$result_F_P_PDF["1"])
-    );
-  $estado = mysqli_query($cnx,$query);
+  $queryV=sprintf("SELECT * FROM pagos_empleados where idRecibo='%s' and Tipo_Pago=1",mysqli_real_escape_string($cnx,$idRecibo));
+  $resultV=mysqli_query($cnx,$queryV);
+  $rowV=mysqli_fetch_array($resultV);
+  $FEV=$rowV["Desde"];
+  $FSV=$rowV["Hasta"];
+  //Calcular dias
+  $datetime1 = new DateTime($FEV);
+  $datetime2 = new DateTime($FSV);
+  $interval = $datetime1->diff($datetime2);
+  $diasTotal=$interval->format('%a');
+  $diasTotal=$diasTotal+1;
+  $Tot_dias_P_A=$diasTotal;
   //FIN
+  //Calcular valores vacacion
+  $Tot_SinD=$Tot_SinD+$rowV["Monto"];//Tot sin Descuentos
+  $Tot_R=$Tot_R+$rowV["Renta"];//Renta
+  $Tot_AFP=$Tot_AFP+number_format((float)($rowV["AFP"]), 2, '.', '');//AFP
+  $Tot_ISS=$Tot_ISS+number_format((float)($rowV["ISS"]), 2, '.', '');//ISS
+  $Salario_quincenal_vaca=number_format((float)($rowV["Monto"]/1.3), 2, '.', '');//SALARIO quincenal
+  $Vacacion_proporcional=number_format((float)$rowV["Monto"]-(float)($rowV["Monto"]/1.3), 2, '.', '');
   $disp_tabla_resultados=$disp_tabla_resultados.'
                         <tr>
                           <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FEV).'</span></td>
@@ -97,46 +96,32 @@ if($cod["V"]==1){
   $str=$str."-Vacacion";
 }
 if($cod["S"]==1){
-  $FES=$_POST["FES"];
-  $FSS=$_POST["FSS"];
+  $queryS=sprintf("SELECT * FROM pagos_empleados where idRecibo='%s' and Tipo_Pago=4",mysqli_real_escape_string($cnx,$idRecibo));
+  $resultS=mysqli_query($cnx,$queryS);
+  $rowS=mysqli_fetch_array($resultS);
+  $FES=$rowS["Desde"];
+  $FSS=$rowS["Hasta"];
   $str=$str."-Salario";
-  //Calcular valores Salario
-  $Array_valores=array("opc"=>2,
-                   "salario_mensual"=>$salario_mensual,
-                   "d1"=>$FES,
-                   "d2"=>$FSS
-                 );
-  $result_F_P_PDF=funcion_validar_PDF($Array_valores);
-  $Tot_SinD=$Tot_SinD+$result_F_P_PDF["0"];//Tot sin Descuentos
-  $Tot_R=$Tot_R+$result_F_P_PDF["1"];//Renta
-  $Tot_AFP=$Tot_AFP+number_format((float)($result_F_P_PDF["0"]*0.0625), 2, '.', '');//AFP
-  $Tot_ISS=$Tot_ISS+number_format((float)($result_F_P_PDF["0"]*0.03), 2, '.', '');//ISS
-  //INSERTAR EN SALARIO tipo 4
-  $Desde=formatDatePD((string)$FES);
-  $Hasta=formatDatePD((string)$FSS);
-  $Desde=str_replace('/', '-', $Desde);
-  $Hasta=str_replace('/', '-', $Hasta);
-  $Desde=date('Y-m-d', strtotime($Desde));
-  $Hasta=date('Y-m-d', strtotime($Hasta));
-  $query = sprintf("INSERT INTO pagos_empleados(Tipo_Pago,idRecibo,Desde,Hasta,Monto,ISS,AFP,Renta) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
-    mysqli_real_escape_string($cnx,4),
-    mysqli_real_escape_string($cnx,$NumeroDeRecibo),
-    mysqli_real_escape_string($cnx,$Desde),
-    mysqli_real_escape_string($cnx,$Hasta),
-    mysqli_real_escape_string($cnx,$result_F_P_PDF["0"]),
-    mysqli_real_escape_string($cnx,number_format((float)($result_F_P_PDF["0"]*0.03), 2, '.', '')),
-    mysqli_real_escape_string($cnx,number_format((float)($result_F_P_PDF["0"]*0.0625), 2, '.', '')),
-    mysqli_real_escape_string($cnx,$result_F_P_PDF["1"])
-    );
-  $estado = mysqli_query($cnx,$query);
+  //Calcular dias
+  $datetime1 = new DateTime($FES);
+  $datetime2 = new DateTime($FSS);
+  $interval = $datetime1->diff($datetime2);
+  $diasTotal=$interval->format('%a');
+  $diasTotal=$diasTotal+1;
+  $Tot_dias_P_A=$diasTotal;
   //FIN
+  //Calcular valores Salario
+  $Tot_SinD=$Tot_SinD+$rowS["Monto"];//Tot sin Descuentos
+  $Tot_R=$Tot_R+$rowS["Renta"];//Renta
+  $Tot_AFP=$Tot_AFP+number_format((float)($rowS["AFP"]), 2, '.', '');//AFP
+  $Tot_ISS=$Tot_ISS+number_format((float)($rowS["ISS"]), 2, '.', '');//ISS
   $disp_tabla_resultados=$disp_tabla_resultados.'
                         <tr>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FES).'</span></td>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FSS).'</span></td>
-                          <td style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$result_F_P_PDF["3"].'</span></td>
+                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FES.'</span></td>
+                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FSS.'</span></td>
+                          <td style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$Tot_dias_P_A.'</span></td>
                           <td align="left" style="width:45%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;"> SALARIO</span></td>
-                          <td align="right" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">$'.$result_F_P_PDF["0"].'</span></td>
+                          <td align="right" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">$'.$rowS["Monto"].'</span></td>
                         </tr>
                           ';
   //FIN
@@ -155,25 +140,6 @@ if($cod["A"]==1){
                  );
   $result_F_P_PDF=funcion_validar_PDF($Array_valores);
   $Tot_SinD=$Tot_SinD+$result_F_P_PDF["0"];//Tot sin Descuentos
-  //INSERTAR EN AGUINALDO tipo 3
-  $Desde=formatDatePD((string)$FEA);
-  $Hasta=formatDatePD((string)$FSA);
-  $Desde=str_replace('/', '-', $Desde);
-  $Hasta=str_replace('/', '-', $Hasta);
-  $Desde=date('Y-m-d', strtotime($Desde));
-  $Hasta=date('Y-m-d', strtotime($Hasta));
-  $query = sprintf("INSERT INTO pagos_empleados(Tipo_Pago,idRecibo,Desde,Hasta,Monto,ISS,AFP,Renta) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
-    mysqli_real_escape_string($cnx,3),
-    mysqli_real_escape_string($cnx,$NumeroDeRecibo),
-    mysqli_real_escape_string($cnx,$Desde),
-    mysqli_real_escape_string($cnx,$Hasta),
-    mysqli_real_escape_string($cnx,$result_F_P_PDF["0"]),
-    mysqli_real_escape_string($cnx,0),
-    mysqli_real_escape_string($cnx,0),
-    mysqli_real_escape_string($cnx,0)
-    );
-  $estado = mysqli_query($cnx,$query);
-  //FIN
   $disp_tabla_resultados=$disp_tabla_resultados.'
                         <tr>
                           <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FEA).'</span></td>
@@ -199,25 +165,6 @@ if($cod["RV"]==1){
                  );
   $result_F_P_PDF=funcion_validar_PDF($Array_valores);
   $Tot_SinD=$Tot_SinD+$result_F_P_PDF["0"];//Tot sin Descuentos
-  //INSERTAR EN RETIRO VOLUNTARIO tipo 5
-  $Desde=formatDatePD((string)$FERV);
-  $Hasta=formatDatePD((string)$FSRV);
-  $Desde=str_replace('/', '-', $Desde);
-  $Hasta=str_replace('/', '-', $Hasta);
-  $Desde=date('Y-m-d', strtotime($Desde));
-  $Hasta=date('Y-m-d', strtotime($Hasta));
-  $query = sprintf("INSERT INTO pagos_empleados(Tipo_Pago,idRecibo,Desde,Hasta,Monto,ISS,AFP,Renta) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
-    mysqli_real_escape_string($cnx,5),
-    mysqli_real_escape_string($cnx,$NumeroDeRecibo),
-    mysqli_real_escape_string($cnx,$Desde),
-    mysqli_real_escape_string($cnx,$Hasta),
-    mysqli_real_escape_string($cnx,$result_F_P_PDF["0"]),
-    mysqli_real_escape_string($cnx,0),
-    mysqli_real_escape_string($cnx,0),
-    mysqli_real_escape_string($cnx,0)
-    );
-  $estado = mysqli_query($cnx,$query);
-  //FIN
   $disp_tabla_resultados=$disp_tabla_resultados.'
                         <tr>
                           <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FERV).'</span></td>
@@ -243,25 +190,6 @@ if($cod["L"]==1){
                  );
   $result_F_P_PDF=funcion_validar_PDF($Array_valores);
   $Tot_SinD=$Tot_SinD+$result_F_P_PDF["0"];//Tot sin Descuentos
-  //INSERTAR EN INDEMNIZACION tipo 2
-  $Desde=formatDatePD((string)$FEL);
-  $Hasta=formatDatePD((string)$FSL);
-  $Desde=str_replace('/', '-', $Desde);
-  $Hasta=str_replace('/', '-', $Hasta);
-  $Desde=date('Y-m-d', strtotime($Desde));
-  $Hasta=date('Y-m-d', strtotime($Hasta));
-  $query = sprintf("INSERT INTO pagos_empleados(Tipo_Pago,idRecibo,Desde,Hasta,Monto,ISS,AFP,Renta) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
-    mysqli_real_escape_string($cnx,2),
-    mysqli_real_escape_string($cnx,$NumeroDeRecibo),
-    mysqli_real_escape_string($cnx,$Desde),
-    mysqli_real_escape_string($cnx,$Hasta),
-    mysqli_real_escape_string($cnx,$result_F_P_PDF["0"]),
-    mysqli_real_escape_string($cnx,0),
-    mysqli_real_escape_string($cnx,0),
-    mysqli_real_escape_string($cnx,0)
-    );
-  $estado = mysqli_query($cnx,$query);
-  //FIN
   $disp_tabla_resultados=$disp_tabla_resultados.'
                         <tr>
                           <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FEL).'</span></td>
@@ -353,7 +281,7 @@ while($count<count($str)-1){
 }
 //Fin de Aplicaciones legales del pago
 //Tiempo LABORALES
-$queryHT=sprintf("SELECT * FROM htrabajo where  NumeroDocumento='%s' ",mysqli_real_escape_string($cnx,$NumeroDocumento));
+$queryHT=sprintf("SELECT * FROM htrabajo where  NumeroDocumento='%s' ",mysqli_real_escape_string($cnx,$empleado->getNumerodocumento()));
 $resultHT=mysqli_query($cnx,$queryHT);
 $rowHT=mysqli_fetch_array($resultHT);
 
@@ -379,11 +307,12 @@ if($fraction==0){
 $Tot_a_pagar_en_texto=$whole;
 //Fin
 //Fecha a mostrar del dia
+$fecha_de_ahora=$row["Fecha_Generado"];
 $meses_espa=array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
-$fecha_de_ahora=date('d/m/Y ', time());
-$fecha_de_ahora = split("/", $fecha_de_ahora);
+$fecha_de_ahora = split(" ", $fecha_de_ahora);
+$fecha_de_ahora = split("-", $fecha_de_ahora[0]);
 $MesDeAhora=floatval($fecha_de_ahora[1])-1;
-$fecha_de_ahora=$fecha_de_ahora[0]." de ".$meses_espa[$MesDeAhora]." del ".$fecha_de_ahora[2];
+$fecha_de_ahora=$fecha_de_ahora[2]." de ".$meses_espa[$MesDeAhora]." del ".$fecha_de_ahora[0];
 //FIN
 $NumberToLetterConverter = new NumberToLetterConverter;
 $Nombre_Completo=$empleado->getPrimernombre().' '.$empleado->getSegundonombre().' '.$empleado->getPrimerapellido().' '.$empleado->getSegundoapellido();
@@ -548,7 +477,7 @@ $html = '
             </td>
             <td rowspan="2" valign="top" align="right" style="border:none;padding:3mm;">
                 <table cellspacing="0" cellpadding="0" style="border:none;">
-                    <tr style=" border:0;"><td style="border:none;"><pre><span style="font-size: 11px">'.$row["Direccion"].' Telefono: '.$row["Telefono"].'</span></pre></td></tr>
+                    <tr style=" border:0;"><td style="border:none;"><pre><span style="font-size: 11px">'.$rowME["Direccion"].' Telefono: '.$rowME["Telefono"].'</span></pre></td></tr>
                 </table>
             </td>
         </tr>
@@ -574,12 +503,12 @@ $html = '
 
     <div id="content">
         <div>
-        Yo, <span style="font-weight:bold;">'.strtoupper($Nombre_Completo).'</span>, recibi de '.$row["NombreEmpresa"].'; la cantidad de '.$NumberToLetterConverter->to_word($Tot_a_pagar_en_texto).' CON '.$fraction.'/100 DOLARES en concepto de pago de '.$Recibo_de_Nombres.', segun el siguiente detalle:
+        Yo, <span style="font-weight:bold;">'.strtoupper($Nombre_Completo).'</span>, recibi de '.$rowME["NombreEmpresa"].'; la cantidad de '.$NumberToLetterConverter->to_word($Tot_a_pagar_en_texto).' CON '.$fraction.'/100 DOLARES en concepto de pago de '.$Recibo_de_Nombres.', segun el siguiente detalle:
         <br>
         <br>
         Politica de goce de '.$Recibo_de_Nombres.': Anual
         <br>
-        Cargo que desempeña:'.$cargoNE->getNombrecargo().'
+        Cargo que desempeña:'.$row["Cargo_Empleado"].'
         </div>
         <div id="invoice_body">
 
@@ -715,6 +644,7 @@ function Revisar_ALDP($str,$n,$str_ALDP,$arreglo_de_ART){
   }
   return $str_ALDP;
 }
+
 function RevisarTiempo($valor,$HIni,$HFin,$Des){
   $HFin=new DateTime($HFin);
   $HIni=new DateTime($HIni);
@@ -745,7 +675,6 @@ function RevisarTiempo($valor,$HIni,$HFin,$Des){
 return $valorN;
 
 }
-
 
 
 ?>
