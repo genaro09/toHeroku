@@ -669,7 +669,7 @@ $html = '
             <td style="text-align:center;width:35%;font-size:9pt;padding:0.5mm;"><span style="font-weight:bold;font-size: 12px;">'.strtoupper($Nombre_Completo).'</span></td>
             <td style="text-align:center;width:20%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px">'.$empleado->getNumerodocumento().'</span></td>
             <td style="text-align:center;width:20%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px">'.$empleado->getNit().'</span></td>
-            <td style="text-align:center;width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px"></span></td>
+            <td style="text-align:center;width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px"><br><br></span></td>
         </tr>
         </table>
     </div>

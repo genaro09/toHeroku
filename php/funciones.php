@@ -52,6 +52,55 @@
 		mysqli_close($cnx);
 		return $flag;
 	}
+	function displayDepartamentos($NitEmpresa,$flag){
+		if($flag==0){
+			$cnx=cnx();
+			$query=sprintf("SELECT * FROM departamento where NitEmpresa='%s'",mysqli_real_escape_string($cnx,$NitEmpresa));
+			$resul=mysqli_query($cnx,$query);
+			while($row=mysqli_fetch_array($resul)){
+				echo "<option value='".$row["idDepartamento"]."'>".$row["NombreDepartamento"]."</option>";
+			}
+			mysqli_close($cnx);
+		}else{
+			$cnx=cnx();
+			$query=sprintf("SELECT * FROM departamento where NitEmpresa='%s'",mysqli_real_escape_string($cnx,$NitEmpresa));
+			$resul=mysqli_query($cnx,$query);
+			while($row=mysqli_fetch_array($resul)){
+				if($flag==$row["idDepartamento"]){
+					echo "<option selected value='".$row["idDepartamento"]."'>".$row["NombreDepartamento"]."</option>";
+				}else
+				echo "<option value='".$row["idDepartamento"]."'>".$row["NombreDepartamento"]."</option>";
+			}
+			mysqli_close($cnx);
+		}
+
+	}
+	function checkNombreCargos($NombreCargo,$idDepartamento,$idCargos){
+		if($idCargos==0){
+			$cnx=cnx();
+			$flag=FALSE;
+			$query=sprintf("SELECT * FROM cargos  WHERE idDepartamento='%s'",mysqli_real_escape_string($cnx,$idDepartamento));
+			$resul=mysqli_query($cnx,$query);
+			while($row=mysqli_fetch_array($resul)){
+				if(strcmp($row["NombreCargo"], $NombreCargo) == 0)
+					$flag=TRUE;
+			}
+			mysqli_close($cnx);
+			return $flag;
+		}else{
+			$cnx=cnx();
+			$flag=FALSE;
+			$query=sprintf("SELECT * FROM cargos  WHERE idDepartamento='%s' and idCargos!='%s'",mysqli_real_escape_string($cnx,$idDepartamento),mysqli_real_escape_string($cnx,$idCargos));
+			$resul=mysqli_query($cnx,$query);
+			while($row=mysqli_fetch_array($resul)){
+				if(strcmp($row["NombreCargo"], $NombreCargo) == 0)
+					$flag=TRUE;
+			}
+			mysqli_close($cnx);
+			return $flag;
+		}
+
+	}
 	function checkNombreDepartamento($NombreDepartamento,$NitEmpresa){
 		$cnx=cnx();
 		$flag=FALSE;
@@ -358,6 +407,20 @@
 		mysqli_close($cnx);
 		return $estado;
 	}
+	function UpdateCargos($NombreCargo,$Descripcion,$idDepartamento,$PEmpleado,$PPlanilla,$idCargos){
+		$cnx=cnx();
+		$query = sprintf("UPDATE cargos SET  idDepartamento = '%s',NombreCargo = '%s',Descripcion = '%s',PEmpleado = '%s',PPlanilla = '%s' WHERE idCargos = '%s'",
+		mysqli_real_escape_string($cnx,$idDepartamento),
+		mysqli_real_escape_string($cnx,$NombreCargo),
+		mysqli_real_escape_string($cnx,$Descripcion),
+		mysqli_real_escape_string($cnx,$PEmpleado),
+		mysqli_real_escape_string($cnx,$PPlanilla),
+		mysqli_real_escape_string($cnx,$idCargos)
+		);
+		$estado = mysqli_query($cnx,$query);
+		mysqli_close($cnx);
+		return $estado;
+	}
 function eliminarTurno($idTurno){
 	$cnx=cnx();
 	$estado=1;
@@ -386,6 +449,23 @@ function eliminarDepartamento($idDepartamento,$NitEmpresa){
 	}
 	if($estado==1){
 		$query=sprintf("DELETE FROM departamento WHERE idDepartamento='%s'",mysqli_real_escape_string($cnx,$idDepartamento));
+		$estado = mysqli_query($cnx, $query);
+	}
+
+	mysqli_close($cnx);
+	return $estado;
+}
+//eliminarCargos
+function eliminarCargos($idCargos,$NitEmpresa){
+	$cnx=cnx();
+	$estado=1;
+	$query2=sprintf("SELECT * FROM empleado where idCargos='%s'",mysqli_real_escape_string($cnx,$idCargos));
+	$result2=mysqli_query($cnx,$query2);
+	while ($row2=mysqli_fetch_array($result2)) {
+		$estado=2;
+	}
+	if($estado==1){
+		$query=sprintf("DELETE FROM cargos WHERE idCargos='%s'",mysqli_real_escape_string($cnx,$idCargos));
 		$estado = mysqli_query($cnx, $query);
 	}
 
@@ -461,6 +541,21 @@ function eliminarDepartamento($idDepartamento,$NitEmpresa){
 			mysqli_real_escape_string($cnx,$NombreDepartamento),
 			mysqli_real_escape_string($cnx,$idSalario_Minimo),
 			mysqli_real_escape_string($cnx,$CuentaContable)
+		);
+		$estado = mysqli_query($cnx, $query);
+		mysqli_close($cnx);
+		return $estado;
+
+	}
+	function AgregarCargos($NombreCargo,$Descripcion,$idDepartamento,$PEmpleado,$PPlanilla){
+		$cnx = cnx();
+		$query = sprintf("INSERT INTO cargos(idDepartamento,NombreCargo,Descripcion,PEmpleado,PPlanilla,PJefe) VALUES ('%s','%s','%s','%s','%s','%s')",
+			mysqli_real_escape_string($cnx,$idDepartamento),
+			mysqli_real_escape_string($cnx,$NombreCargo),
+			mysqli_real_escape_string($cnx,$Descripcion),
+			mysqli_real_escape_string($cnx,$PEmpleado),
+			mysqli_real_escape_string($cnx,$PPlanilla),
+			mysqli_real_escape_string($cnx,0)
 		);
 		$estado = mysqli_query($cnx, $query);
 		mysqli_close($cnx);

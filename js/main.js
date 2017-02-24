@@ -201,6 +201,169 @@ $(document).ready(function(){
 			}
 		});
 	});
+
+	//Agregar Cargo
+	$("#btnACargo").click(function(){
+		var NombreCargo=document.getElementById("NombreCargo").value;
+		var Descripcion=document.getElementById("Descripcion").value;
+		var idDepartamento=$("#idDepartamento").val();
+		var PEmpleado=document.getElementById("PEmpleado").checked;
+		var PPlanilla=document.getElementById("PPlanilla").checked;
+		if(PPlanilla){
+			PPlanilla=1;
+		}else PPlanilla=0;
+		if(PEmpleado){
+			PEmpleado=1;
+		}else PEmpleado=0;		//alert("user: "+user+" - pass: "+contra);
+		$.ajax({
+			url:'../sistema/agregar.php',
+			type:'POST',
+			data:{
+				opc:7,
+				NombreCargo:NombreCargo,
+				Descripcion:Descripcion,
+				idDepartamento:idDepartamento,
+				PEmpleado:PEmpleado,
+				PPlanilla:PPlanilla
+			},
+			beforeSend: function(){
+				respAlert("info","Verificando datos...");
+			},
+			success:function(data){
+				console.log(data);
+				switch(data[0]){
+					case "0":
+						respAlert("warning","Llene el campo Nombre");
+					break;
+					case "1":
+						respAlert("warning","Ya Existe un Cargo en el departamento con el mismo nombre");
+					break;
+					case "2":
+						setTimeout(function(){
+							respAlert("success","Correcto...");
+							redireccionar("cargos.php");
+						},1000);
+					break;
+					case "3":
+						respAlert("warning","Error en base ");
+					break;
+				}
+				//respAlert("success",data[0]);
+				/*setTimeout(function(){
+					redireccionar("sistema/home.php");
+				},1000);*/
+			},
+			error:function(data){
+				console.log(data);
+				respAlert("danger","Error...");
+			}
+		});
+	});
+	//Modificar Cargo btnMCargos
+	$("#btnMCargos").click(function(){
+		var NombreCargo=document.getElementById("NombreCargo").value;
+		var Descripcion=document.getElementById("Descripcion").value;
+		var idDepartamento=$("#idDepartamento").val();
+		var NitEmpresa=document.getElementById("nitEmpresa").value;
+		var PEmpleado=document.getElementById("PEmpleado").checked;
+		var PPlanilla=document.getElementById("PPlanilla").checked;
+		var idCargos=document.getElementById("idCargos").value;
+		if(PPlanilla){
+			PPlanilla=1;
+		}else PPlanilla=0;
+		if(PEmpleado){
+			PEmpleado=1;
+		}else PEmpleado=0;
+		//alert("user: "+user+" - pass: "+contra);
+		$.ajax({
+			url:'../php/Modificar.php',
+			type:'POST',
+			data:{
+				opc:2,
+				NombreCargo:NombreCargo,
+				Descripcion:Descripcion,
+				idDepartamento:idDepartamento,
+				NitEmpresa:NitEmpresa,
+				PEmpleado:PEmpleado,
+				PPlanilla:PPlanilla,
+				idCargos:idCargos
+			},
+			beforeSend: function(){
+				respAlert("info","Verificando datos...");
+			},
+			success:function(data){
+				console.log(data);
+				switch(data[0]){
+					case "0":
+						respAlert("warning","Llene el nombre");
+					break;
+					case "1":
+						respAlert("warning","Ya Existe un Cargo con el mismo nombre en el mismo departamento");
+					break;
+					case "2":
+						setTimeout(function(){
+							respAlert("success","Correcto...");
+							redireccionar("cargos.php");
+						},1000);
+					break;
+					case "3":
+						respAlert("warning","Error en base ");
+					break;
+				}
+				//respAlert("success",data[0]);
+				/*setTimeout(function(){
+					redireccionar("sistema/home.php");
+				},1000);*/
+			},
+			error:function(data){
+				console.log(data);
+				respAlert("danger","Error...");
+			}
+		});
+	});
+	//Eliminar cargo btnEliminarCargos
+	$("#btnEliminarCargos").click(function(){
+		var idCargos=document.getElementById("idCargos").value;
+		var NitEmpresa=document.getElementById("nitEmpresa").value;
+		//alert("user: "+user+" - pass: "+contra);
+		$.ajax({
+			url:'../php/Eliminar.php',
+			type:'POST',
+			data:{
+				opc:3,
+				idCargos:idCargos,
+				NitEmpresa:NitEmpresa
+			},
+			beforeSend: function(){
+				respAlert("info","Verificando datos...");
+			},
+			success:function(data){
+				console.log(data);
+				switch(data[0]){
+					case "0":
+						respAlert("warning","Error en base de datos");
+					break;
+					case "1":
+						setTimeout(function(){
+							respAlert("success","Correcto...");
+							redireccionar("cargos.php");
+						},1000);
+					break;
+					case "2":
+						respAlert("warning","Existe un Empleado en este Cargo, imposible eliminar");
+					break;
+				}
+				//respAlert("success",data[0]);
+				/*setTimeout(function(){
+					redireccionar("sistema/home.php");
+				},1000);*/
+			},
+			error:function(data){
+				console.log(data);
+				respAlert("danger","Error...");
+			}
+		});
+	});
 	//Agregar Turno
 	$("#btnATruno").click(function(){
 		var NitEmpresa=document.getElementById("nitEmpresa").value;

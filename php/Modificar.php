@@ -16,6 +16,18 @@
         }else echo "3";
       }
 		break;
+		case "2":
+		if(empty($_POST["NombreCargo"])){
+			echo "0";
+		}elseif(checkNombreCargos($_POST["NombreCargo"],$_POST["idDepartamento"],$_POST["idCargos"])){
+			echo "1";
+		}else{
+			$estado=UpdateCargos($_POST["NombreCargo"],$_POST["Descripcion"],$_POST["idDepartamento"],$_POST["PEmpleado"],$_POST["PPlanilla"],$_POST["idCargos"]);
+			if($estado){
+				echo "2";
+			}else echo "3";
+		}
+		break;
 		default:
 			# code...
 			echo "nada";

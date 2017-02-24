@@ -135,12 +135,26 @@
 			}
 		break;
 		case '6':
-			if(empty($_POST["NombreDepartamento"])||empty($_POST["CuentaContable"])||empty($_POST["idSalario_Minimo"])){
+			//Departamento
+			if(empty($_POST["NombreDepartamento"])||empty($_POST["idSalario_Minimo"])){
 				echo "0";
 			}elseif(checkNombreDepartamento($_POST["NombreDepartamento"],$_POST["NitEmpresa"])){
 				echo "1";
 			}else{
 				$estado=AgregarDepartamento($_POST["NombreDepartamento"],$_POST["CuentaContable"],$_POST["idSalario_Minimo"],$_POST["NitEmpresa"]);
+				if($estado){
+					echo "2";
+				}else echo "3";
+			}
+		break;
+		case '7':
+			//Cargos
+			if(empty($_POST["NombreCargo"])){
+				echo "0";
+			}elseif(checkNombreCargos($_POST["NombreCargo"],$_POST["idDepartamento"],0)){
+				echo "1";
+			}else{
+				$estado=AgregarCargos($_POST["NombreCargo"],$_POST["Descripcion"],$_POST["idDepartamento"],$_POST["PEmpleado"],$_POST["PPlanilla"]);
 				if($estado){
 					echo "2";
 				}else echo "3";

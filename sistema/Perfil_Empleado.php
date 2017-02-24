@@ -276,7 +276,7 @@
 																		<div class="form-group">
 																			<label>Fecha de Nacimiento<star>*</star></label>
 																			<?php
-																					if($empleado->getFecharetiro()){
+																					if($empleado->getFechanacimiento()){
 																						echo "<input  type='text' class='form-control' value=".$empleado->getFechanacimiento()." name='date' id='Fnacimiento' data-select='datepicker'/>";
 																					}else{
 																						echo "<input  type='text' class='form-control' placeholder=".date("d")."/".date("m")."/".date("Y")." name='date' id='Fnacimiento' data-select='datepicker'/>";
@@ -553,7 +553,7 @@
 																			<label>Fecha de Ingreso<star>*</star></label>
 																			<div class='input-group date' id='datetimepicker1'>
 																				<?php
-																						if($empleado->getFecharetiro()){
+																						if($empleado->getFechaingreso()){
 																							echo "<input  type='text' class='form-control' value=".$empleado->getFechaingreso()." name='date' id='FechaIngreso' data-select='datepicker'/>";
 																						}else{
 																							echo "<input  type='text' class='form-control' placeholder=".date("d")."/".date("m")."/".date("Y")." name='date' id='FechaIngreso' data-select='datepicker'/>";

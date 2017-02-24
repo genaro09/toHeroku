@@ -3,7 +3,7 @@ include_once '../php/cn.php';
 
 $opc = $_POST['opc'];
   if($opc==1){
-    //vacacion
+    //vacacion mas de 200 dias laborados
     $error=0;
     $flag=0;
     $salario_mensual = $_POST['salario_mensual'];
@@ -113,7 +113,7 @@ $opc = $_POST['opc'];
     echo json_encode($array)  ;
 
   }else if($opc==3){
-    //Liquidacion
+    //Liquidacion 30 dias para ser efectiva
     $salario_mensual = $_POST['salario_mensual'];
     $dias_a_cobrar= calcular_dias_anio($_POST['d1'],$_POST['d2']);
     $Tot_a_pagar=0.00;
@@ -140,7 +140,7 @@ $opc = $_POST['opc'];
     echo json_encode($array)  ;
 
   }else if($opc==4){
-    //Aguinaldo
+    //Aguinaldo 30 dias minimo (si se va por dos meses en el año no se le dara Aguinaldo)
     $salario_mensual = $_POST['salario_mensual'];
     $d2=formatDate((string)$_POST['d2']);
     $d1=formatDate((string)$_POST['d1']);
@@ -179,7 +179,7 @@ $opc = $_POST['opc'];
     echo json_encode($array)  ;
 
   }else if($opc==5){
-    //Retiro Voluntario
+    //Retiro Voluntario tiene que tener mas de 2 años o igual
     $salario_mensual = $_POST['salario_mensual'];
     $dias_a_cobrar= calcular_dias_anio($_POST['d1'],$_POST['d2']);
     $Tot_a_pagar=0.00;
@@ -195,8 +195,8 @@ $opc = $_POST['opc'];
     }
     $por_dias_restantes=(($Meses*30)+$Dias)/(30*12);
     $Tot_a_pagar=(($salario_mensual)*$por_dias_restantes)+$Tot_a_pagar;
-    if($Tot_a_pagar>($salario_minimo_mensual*4)){
-      $Tot_a_pagar=$salario_minimo_mensual*4;
+    if($Tot_a_pagar>($salario_minimo_mensual*2)){
+      $Tot_a_pagar=$salario_minimo_mensual*2;
     }
     $Tot_a_pagar=$Tot_a_pagar/2;
     $Tot_a_pagar=number_format((float)$Tot_a_pagar, 2, '.', '');

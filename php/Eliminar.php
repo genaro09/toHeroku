@@ -24,6 +24,16 @@
         echo "0";
 			}
 		break;
+		case "3":
+      $result=eliminarCargos($_POST["idCargos"],$_POST["NitEmpresa"]);
+			if($result==1){
+				echo "1";
+			}elseif($result==2){
+				echo "2";
+			}else{
+        echo "0";
+			}
+		break;
 		default:
 			# code...
 			echo "nada";

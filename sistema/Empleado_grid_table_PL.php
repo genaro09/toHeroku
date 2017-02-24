@@ -19,12 +19,24 @@
 						<td>".$row3["Activo"]."</td>
 						<td>".$row["NombreDepartamento"]."</td>
 						<td class='text-right'>
-							<form method='post' action='Prestacion_Laboral_Empleado.php'>
-							<input type='hidden' name='numDoc' value='".$row3["NumeroDocumento"]."'>
-							<input type='hidden' name='idcargo' value='".$row2["idCargos"]."'>
-							<input type='hidden' name='iddepartamento' value='".$row["idDepartamento"]."'>
-							<input type='submit' style='background: url(../img/icons/setting.png);border: 0;margin-right:15px;' value='   '>
-							</form>
+              <div class='row'>
+                <div class='col-md-4'>
+    							<form method='post' action='Prestacion_Laboral_Empleado.php'>
+      							<input type='hidden' name='numDoc' value='".$row3["NumeroDocumento"]."'>
+      							<input type='hidden' name='idcargo' value='".$row2["idCargos"]."'>
+      							<input type='hidden' name='iddepartamento' value='".$row["idDepartamento"]."'>
+      							<input type='submit' style='background: url(../img/icons/note.png);border: 0;' value='   '>
+      					  </form>
+                  </div>
+                  <div class='col-md-4'>
+                  <form method='post' action='Historial_Prestacion_Laboral_Empleado.php'>
+      							<input type='hidden' name='numDoc' value='".$row3["NumeroDocumento"]."'>
+      							<input type='hidden' name='idcargo' value='".$row2["idCargos"]."'>
+      							<input type='hidden' name='iddepartamento' value='".$row["idDepartamento"]."'>
+      							<input type='submit' style='background: url(../img/icons/assignment.png);border: 0;' value='   '>
+      					  </form>
+                  </div>
+                </div>
 						</td>
 					</tr>";
 			}
