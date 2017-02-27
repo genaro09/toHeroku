@@ -112,7 +112,18 @@
 		}
 		mysqli_close($cnx);
 		return $flag;
-
+	}
+	function checkNombreEmpresa($NombreEmpresa){
+		$cnx=cnx();
+		$flag=FALSE;
+		$query=sprintf("SELECT * FROM empresa WHERE NombreEmpresa!= '%s'",mysqli_real_escape_string($cnx,$NombreEmpresa));
+		$resul=mysqli_query($cnx,$query);
+		while($row=mysqli_fetch_array($resul)){
+			if(strcmp($row["NombreEmpresa"], $NombreEmpresa) == 0)
+				$flag=TRUE;
+		}
+		mysqli_close($cnx);
+		return $flag;
 	}
 	function checkNombreDepartamentoToModf($NombreDepartamento,$NitEmpresa,$idDepartamento){
 		$cnx=cnx();
@@ -193,6 +204,28 @@
 		}
 		mysqli_close($cnx);
 		return $htrabajo;
+	}
+	function getInfoEmpresa($NitEmpresa){
+		$cnx=cnx();
+		$query=sprintf("SELECT * FROM empresa where NitEmpresa='%s'",mysqli_real_escape_string($cnx,$NitEmpresa));
+		$result=mysqli_query($cnx,$query);
+		while ($row=mysqli_fetch_array($result)) {
+			$empresa = new empresa_class();
+			$empresa->setNombreempresa($row["NombreEmpresa"]);
+			$empresa->setDireccion($row["Direccion"]);
+			$empresa->setTelefono($row["Telefono"]);
+			$empresa->setTelefono2($row["Telefono2"]);
+			$empresa->setNregistro($row["NRegistro"]);
+			$empresa->setGiro($row["Giro"]);
+			$empresa->setNpatronalss($row["NPatronalSS"]);
+			$empresa->setNpatronalafp($row["NPatronalAFP"]);
+			$empresa->setRepresentantelegal($row["RepresentanteLegal"]);
+			$empresa->setTipoempresa($row["TipoEmpresa"]);
+
+		}
+		mysqli_close($cnx);
+		return $empresa;
+
 	}
 	function getInfoTurnor($idTurno){
 		$cnx=cnx();
@@ -403,6 +436,42 @@
 		mysqli_real_escape_string($cnx,$CuentaContable),
 		mysqli_real_escape_string($cnx,$idDepartamento)
 		);
+		$estado = mysqli_query($cnx,$query);
+		mysqli_close($cnx);
+		return $estado;
+	}
+	function UpdateEmpresa($NombreEmpresa,$Direccion,$Telefono,$Telefono2,$NRegistro,$Giro,$NPatronalSS,$NPatronalAFP,$RepresentanteLegal,$NitEmpresa,$TipeRequest,$TipoEmpresa){
+		$cnx=cnx();
+		//Si TipeRequest==0 not update TipoEmpresa
+		if($TipeRequest==1){
+			$query = sprintf("UPDATE empresa SET  NombreEmpresa	 = '%s',Direccion = '%s',Telefono = '%s',Telefono2 = '%s',NRegistro = '%s',Giro = '%s',NPatronalSS = '%s',NPatronalAFP = '%s',RepresentanteLegal = '%s',TipoEmpresa = '%s' WHERE NitEmpresa = '%s'",
+			mysqli_real_escape_string($cnx,$NombreEmpresa),
+			mysqli_real_escape_string($cnx,$Direccion),
+			mysqli_real_escape_string($cnx,$Telefono),
+			mysqli_real_escape_string($cnx,$Telefono2),
+			mysqli_real_escape_string($cnx,$NRegistro),
+			mysqli_real_escape_string($cnx,$Giro),
+			mysqli_real_escape_string($cnx,$NPatronalSS),
+			mysqli_real_escape_string($cnx,$NPatronalAFP),
+			mysqli_real_escape_string($cnx,$RepresentanteLegal),
+			mysqli_real_escape_string($cnx,$TipoEmpresa),
+			mysqli_real_escape_string($cnx,$NitEmpresa)
+			);
+		}else{
+			$query = sprintf("UPDATE empresa SET  NombreEmpresa	 = '%s',Direccion = '%s',Telefono = '%s',Telefono2 = '%s',NRegistro = '%s',Giro = '%s',NPatronalSS = '%s',NPatronalAFP = '%s',RepresentanteLegal = '%s' WHERE NitEmpresa = '%s'",
+			mysqli_real_escape_string($cnx,$NombreEmpresa),
+			mysqli_real_escape_string($cnx,$Direccion),
+			mysqli_real_escape_string($cnx,$Telefono),
+			mysqli_real_escape_string($cnx,$Telefono2),
+			mysqli_real_escape_string($cnx,$NRegistro),
+			mysqli_real_escape_string($cnx,$Giro),
+			mysqli_real_escape_string($cnx,$NPatronalSS),
+			mysqli_real_escape_string($cnx,$NPatronalAFP),
+			mysqli_real_escape_string($cnx,$RepresentanteLegal),
+			mysqli_real_escape_string($cnx,$NitEmpresa)
+			);
+		}
+
 		$estado = mysqli_query($cnx,$query);
 		mysqli_close($cnx);
 		return $estado;

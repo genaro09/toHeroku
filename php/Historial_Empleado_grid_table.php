@@ -8,14 +8,22 @@ function disp_historial_grid_table($NumeroDocumento){
     $query2=sprintf("SELECT * FROM empleado where NumeroDocumento='%s'",mysqli_real_escape_string($cnx,$row["NumeroDocumento_Por"]));
     $result2=mysqli_query($cnx,$query2);
     $row2=mysqli_fetch_array($result2);
-    $datos="".$row["Vacacion"].",".$row["Indemnizacion"].",".$row["Aguinaldo"].",".$row["Salario"].",".$row["Retiro_Voluntario"];
+    //Fechas de los pagos
+    $queryPE=sprintf("SELECT * FROM pagos_empleados INNER JOIN recibo WHERE pagos_empleados.idRecibo=recibo.idRecibo and recibo.idRecibo='%s'",mysqli_real_escape_string($cnx,$row["idRecibo"]));
+    $resultPE=mysqli_query($cnx,$queryPE);
+    $datos=array();
+      while ($rowPE=mysqli_fetch_array($resultPE)) {
+        $datosAux=array($rowPE["Tipo_Pago"],$rowPE["Desde"],$rowPE["Hasta"]);
+        $datos=array_merge($datos,$datosAux);
+      }
+    //Fin
     echo "<tr>
        <td>".$row["Fecha_Generado"]."</td>
        <td>".$row2["PrimerNombre"]." ".$row2["PrimerApellido"]."</td>
        <td class='text-right'>
          <div class='row'>
            <div class='col-md-4'>
-           <input type='submit'onclick='myFunction(".$datos.")' style='background: url(../img/icons/info.png);border: 0;' value='   '>
+           <input type='submit'onclick='myFunction(".json_encode($datos).")' style='background: url(../img/icons/info.png);border: 0;' value='   '>
            </div>
            <div class='col-md-4'>
              <form method='post' action='PDF_Prestacion_Laboral_Empleado.php'>
@@ -33,23 +41,29 @@ function disp_historial_grid_table($NumeroDocumento){
 
  ?>
  <script>
-function myFunction(Vacacion,Indemnizacion,Aguinaldo,Salario,Retiro_Voluntario) {
-    var str="";
-    if(Vacacion==1){
-      str=str+" Vacacion desde";
-    }
-    if(Indemnizacion==1){
-      str=str+" Indemnizacion desde";
-    }
-    if(Aguinaldo==1){
-      str=str+" Aguinaldo desde";
-    }
-    if(Salario==1){
-      str=str+" Salario desde";
-    }
-    if(Retiro_Voluntario==1){
-      str=str+" Retiro Voluntario desde";
-    }
+function myFunction(datos) {
+  var index = 0
+  str="";
+    while (index < datos.length) {
+    // Iterate over numeric indexes from 0 to 5, as everyone expects.
+      var TipoDAto=datos[index];
+      if(TipoDAto==1){
+        str=str+" Vacacion desde: "+datos[index+1]+" - "+datos[index+2];
+      }
+      if(TipoDAto==2){
+        str=str+" Indemnizacion desde: "+datos[index+1]+" - "+datos[index+2];
+      }
+      if(TipoDAto==3){
+        str=str+" Aguinaldo desde: "+datos[index+1]+" - "+datos[index+2];
+      }
+      if(TipoDAto==4){
+        str=str+" Salario desde: "+datos[index+1]+" - "+datos[index+2];
+      }
+      if(TipoDAto==5){
+        str=str+" Retiro Voluntario desde: "+datos[index+1]+" - "+datos[index+2];
+      }
+      index=index+3;
+  }
     alert(str);
 }
 </script>

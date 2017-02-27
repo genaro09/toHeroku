@@ -1,16 +1,12 @@
 <?php
 
-namespace AppBundle\Entity;
-
-use Doctrine\ORM\Mapping as ORM;
-
 /**
  * Empresa
  *
  * @ORM\Table(name="empresa")
  * @ORM\Entity
  */
-class Empresa
+class empresa_class
 {
     /**
      * @var string
@@ -74,6 +70,13 @@ class Empresa
      * @ORM\Column(name="RepresentanteLegal", type="string", length=255, nullable=false)
      */
     private $representantelegal;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="TipoEmpresa", type="int", length=11, nullable=false)
+     */
+    private $tipoempresa;
 
     /**
      * @var string
@@ -300,6 +303,30 @@ class Empresa
     public function getRepresentantelegal()
     {
         return $this->representantelegal;
+    }
+
+    /**
+     * Set tipoempresa
+     *
+     * @param int $tipoempresa
+     *
+     * @return Empresa
+     */
+    public function setTipoempresa($tipoempresa)
+    {
+        $this->tipoempresa = $tipoempresa;
+
+        return $this;
+    }
+
+    /**
+     * Get nregistro
+     *
+     * @return string
+     */
+    public function getTipoempresa()
+    {
+        return $this->tipoempresa;
     }
 
     /**

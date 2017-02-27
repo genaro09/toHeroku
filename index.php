@@ -20,17 +20,17 @@
 
             <div class="col-md-4 col-md-offset-4">
                 <div style="background-color:#FFF;padding-right:10px;padding-left:10px;padding-top:0.1px; background: rgba(228, 224, 245, 0.73  );">
-                        <form role="form">  
+                        <form role="form">
                         <!--   if you want to have the card without animation please remove the ".card-hidden" class   -->
                                 <div class="header text-center"><h3>Iniciar Sesion
-                                    <?php 
+                                    <?php
                             include 'php/funciones.php';
                             $flag=estadoCnx();
                             if($flag)
                                     echo '<span class="label label-success">*</span>';
                                 else
                                     echo '<span class="label label-danger">*</span>';
-                            ?>          
+                            ?>
 
 
                                 </h3></div>
@@ -42,17 +42,18 @@
                                     <div class="form-group">
                                         <h6><strong>Contraseña</strong></h6>
                                         <input type="password" id="password" placeholder="Contraseña" class="form-control">
-                                    </div>                                    
+                                    </div>
                                 </div>
                                 <div class="text-center">
                                     <a href="#" id="btnLogin" class="btn btn-fill btn-primary btn-wd">Login</a>
-       
-                                </div> 
-                                <div class="text-center" id="respuestaAlert"></div>        
+
+                                </div>
+                                <div class="text-center" id="respuestaAlert"></div>
+																<br>      
                         </form>
-                            
+
                     </div>
-                </div>           
+                </div>
 
 </body>
     <!--   Core JS Files   -->

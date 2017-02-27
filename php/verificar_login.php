@@ -1,4 +1,4 @@
-<?php 
+<?php
 	include 'funciones.php';
 	$user=$_POST["user"];
 	$pass=$_POST["password"];
@@ -8,6 +8,11 @@
 			$usuario=new empleado_class();
 			$usuario=getInfoUser($user);
 			//var_dump($usuario);
+			$empresa=new empresa_class();
+			$empresa=getInfoEmpresa(getNitEmpresa($usuario));
+			if($empresa->getTipoempresa()==2){
+				echo "3";
+			}
 			session_start();
 			$_SESSION["usuario_sesion"]=$usuario;
 

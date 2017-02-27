@@ -69,9 +69,9 @@ if($cod["V"]==1){
   $Vacacion_proporcional=number_format((float)$rowV["Monto"]-(float)($rowV["Monto"]/1.3), 2, '.', '');
   $disp_tabla_resultados=$disp_tabla_resultados.'
                         <tr>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FEV).'</span></td>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FSV).'</span></td>
-                          <td style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$result_F_P_PDF["4"].'</span></td>
+                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FEV.'</span></td>
+                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FSV.'</span></td>
+                          <td style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$Tot_dias_P_A.'</span></td>
                           <td style="width:45%;font-size:9pt;padding:0mm;margin:0;">
                             <table cellspacing="0" cellpadding="0" style="padding:0mm;margin:0;border:0;">
                               <tr>
@@ -127,76 +127,85 @@ if($cod["S"]==1){
   //FIN
 }
 if($cod["A"]==1){
-  $FContra=$_POST["FCONT"];
-  $FEA=$_POST["FEA"];
-  $FSA=$_POST["FSA"];
+  $queryV=sprintf("SELECT * FROM pagos_empleados where idRecibo='%s' and Tipo_Pago=3",mysqli_real_escape_string($cnx,$idRecibo));
+  $resultV=mysqli_query($cnx,$queryV);
+  $rowV=mysqli_fetch_array($resultV);
+  $FEA=$rowV["Desde"];
+  $FSA=$rowV["Hasta"];
+  //Calcular dias
+  $datetime1 = new DateTime($FEA);
+  $datetime2 = new DateTime($FSA);
+  $interval = $datetime1->diff($datetime2);
+  $diasTotal=$interval->format('%a');
+  $diasTotal=$diasTotal+1;
+  $Tot_dias_P_A=$diasTotal;
+  //FIN
   $str=$str."-Aguinaldo";
   //Calcular valores Aguinaldo
-  $Array_valores=array("opc"=>4,
-                   "salario_mensual"=>$salario_mensual,
-                   "d1"=>$FEA,
-                   "d2"=>$FSA,
-                   "fecha_contratacion"=>$FContra
-                 );
-  $result_F_P_PDF=funcion_validar_PDF($Array_valores);
-  $Tot_SinD=$Tot_SinD+$result_F_P_PDF["0"];//Tot sin Descuentos
+  $Tot_SinD=$Tot_SinD+$rowV["Monto"];//Tot sin Descuentos
   $disp_tabla_resultados=$disp_tabla_resultados.'
                         <tr>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FEA).'</span></td>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FSA).'</span></td>
-                          <td style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$result_F_P_PDF["1"].'</span></td>
+                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FEA.'</span></td>
+                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FSA.'</span></td>
+                          <td style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$Tot_dias_P_A.'</span></td>
                           <td align="left" style="width:45%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;"> AGUINALDO</span></td>
-                          <td align="right" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">$'.$result_F_P_PDF["0"].'</span></td>
+                          <td align="right" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">$'.$Tot_SinD.'</span></td>
                         </tr>
                           ';
   //FIN
 }
 if($cod["RV"]==1){
-  $SMin=$_POST["SMin"];
-  $FERV=$_POST["FERV"];
-  $FSRV=$_POST["FSRV"];
+  $queryV=sprintf("SELECT * FROM pagos_empleados where idRecibo='%s' and Tipo_Pago=5",mysqli_real_escape_string($cnx,$idRecibo));
+  $resultV=mysqli_query($cnx,$queryV);
+  $rowV=mysqli_fetch_array($resultV);
+  $FERV=$rowV["Desde"];
+  $FSRV=$rowV["Hasta"];
+  //Calcular dias
+  $datetime1 = new DateTime($FERV);
+  $datetime2 = new DateTime($FSRV);
+  $interval = $datetime1->diff($datetime2);
+  $diasTotal=$interval->format('%a');
+  $diasTotal=$diasTotal+1;
+  $Tot_dias_P_A=$diasTotal;
+  //FIN
   $str=$str."-RetiroVoluntario";
   //Calcular valores Liquidacion
-  $Array_valores=array("opc"=>5,
-                   "salario_mensual"=>$salario_mensual,
-                   "d1"=>$FERV,
-                   "d2"=>$FSRV,
-                   "salario_minimo_mensual"=>$SMin
-                 );
-  $result_F_P_PDF=funcion_validar_PDF($Array_valores);
-  $Tot_SinD=$Tot_SinD+$result_F_P_PDF["0"];//Tot sin Descuentos
+  $Tot_SinD=$Tot_SinD+$rowV["Monto"];//Tot sin Descuentos
   $disp_tabla_resultados=$disp_tabla_resultados.'
                         <tr>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FERV).'</span></td>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FSRV).'</span></td>
-                          <td style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$result_F_P_PDF["1"].'</span></td>
+                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FERV.'</span></td>
+                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FSRV.'</span></td>
+                          <td style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$Tot_dias_P_A.'</span></td>
                           <td align="left" style="width:45%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;"> RETIRO VOLUNTARIO</span></td>
-                          <td align="right" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">$'.$result_F_P_PDF["0"].'</span></td>
+                          <td align="right" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">$'.$rowV["Monto"].'</span></td>
                         </tr>
                           ';
   //FIN
 }
 if($cod["L"]==1){
-  $SMin=$_POST["SMin"];
-  $FEL=$_POST["FEL"];
-  $FSL=$_POST["FSL"];
+  $queryV=sprintf("SELECT * FROM pagos_empleados where idRecibo='%s' and Tipo_Pago=2",mysqli_real_escape_string($cnx,$idRecibo));
+  $resultV=mysqli_query($cnx,$queryV);
+  $rowV=mysqli_fetch_array($resultV);
+  $FEL=$rowV["Desde"];
+  $FSL=$rowV["Hasta"];
+  //Calcular dias
+  $datetime1 = new DateTime($FEL);
+  $datetime2 = new DateTime($FSL);
+  $interval = $datetime1->diff($datetime2);
+  $diasTotal=$interval->format('%a');
+  $diasTotal=$diasTotal+1;
+  $Tot_dias_P_A=$diasTotal;
+  //FIN
   $str=$str."-Indemnizacion";
   //Calcular valores Liquidacion
-  $Array_valores=array("opc"=>3,
-                   "salario_mensual"=>$salario_mensual,
-                   "d1"=>$FEL,
-                   "d2"=>$FSL,
-                   "salario_minimo_mensual"=>$SMin
-                 );
-  $result_F_P_PDF=funcion_validar_PDF($Array_valores);
-  $Tot_SinD=$Tot_SinD+$result_F_P_PDF["0"];//Tot sin Descuentos
+  $Tot_SinD=$Tot_SinD+$rowV["Monto"];//Tot sin Descuentos
   $disp_tabla_resultados=$disp_tabla_resultados.'
                         <tr>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FEL).'</span></td>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.formatDatePD((string)$FSL).'</span></td>
-                          <td style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$result_F_P_PDF["1"].'</span></td>
+                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FEL.'</span></td>
+                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FSL.'</span></td>
+                          <td style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$Tot_dias_P_A.'</span></td>
                           <td align="left" style="width:45%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;"> INDEMNIZACION</span></td>
-                          <td align="right" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">$'.$result_F_P_PDF["0"].'</span></td>
+                          <td align="right" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">$'.$rowV["Monto"].'</span></td>
                         </tr>
                           ';
   //FIN

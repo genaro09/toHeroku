@@ -56,6 +56,74 @@ $(document).ready(function(){
 			}
 		});
 	});
+	//Modificar Empresa btnMEmpresa
+	$("#btnMEmpresa").click(function(){
+		var NombreEmpresa=document.getElementById("NombreEmpresa").value;
+		var Direccion=document.getElementById("Direccion").value;
+		var Telefono=document.getElementById("Telefono").value;
+		var Telefono2=document.getElementById("Telefono2").value;
+		var NRegistro=document.getElementById("NRegistro").value;
+		var Giro=document.getElementById("Giro").value;
+		var NPatronalSS=document.getElementById("NPatronalSS").value;
+		var NPatronalAFP=document.getElementById("NPatronalAFP").value;
+		var RepresentanteLegal=document.getElementById("RepresentanteLegal").value;
+		var NitEmpresa=document.getElementById("NitEmpresa").value;
+		var TipeRequest=document.getElementById("TipeRequest").value;
+		if(TipeRequest==1){
+			var TipoEmpresa=$("#TipoEmpresa").val();
+		}else 			var TipoEmpresa=1;
+		//alert("user: "+user+" - pass: "+contra);
+		$.ajax({
+			url:'../php/Modificar.php',
+			type:'POST',
+			data:{
+				opc:3,
+				NombreEmpresa:NombreEmpresa,
+				Direccion:Direccion,
+				Telefono:Telefono,
+				Telefono2:Telefono2,
+				NRegistro:NRegistro,
+				Giro:Giro,
+				NPatronalSS:NPatronalSS,
+				NPatronalAFP:NPatronalAFP,
+				RepresentanteLegal:RepresentanteLegal,
+				NitEmpresa:NitEmpresa,
+				TipeRequest:TipeRequest,
+				TipoEmpresa:TipoEmpresa
+			},
+			beforeSend: function(){
+				respAlert("info","Verificando datos...");
+			},
+			success:function(data){
+				console.log(data);
+				switch(data[0]){
+					case "0":
+						respAlert("warning","Llene todo los campos");
+					break;
+					case "1":
+						respAlert("warning","Ya Existe una Empresa con el mismo nombre");
+					break;
+					case "2":
+						setTimeout(function(){
+							respAlert("success","Correcto...");
+							redireccionar("menu.php");
+						},1000);
+					break;
+					case "3":
+						respAlert("warning","Error en base ");
+					break;
+				}
+				//respAlert("success",data[0]);
+				/*setTimeout(function(){
+					redireccionar("sistema/home.php");
+				},1000);*/
+			},
+			error:function(data){
+				console.log(data);
+				respAlert("danger","Error...");
+			}
+		});
+	});
 	//Modificar Departamento btnMDepartamento
 	$("#btnMDepartamento").click(function(){
 		var NombreDepartamento=document.getElementById("NombreDepartamento").value;
@@ -489,6 +557,9 @@ $("#btnEliminarTruno").click(function(){
 							respAlert("success","Correcto...");
 							redireccionar("sistema/menu.php");
 						},1000);
+					break;
+					case "3":
+						respAlert("warning","La empresa ha sido bloqueada, contacte su servicio");
 					break;
 				}
 				//respAlert("success",data[0]);

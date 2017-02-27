@@ -20,6 +20,13 @@
                             <a data-toggle="collapse" href="#collapseExample" class="collapsed">
                                 <?php echo $_SESSION['usuario_sesion']->getPrimernombre()." ".$_SESSION['usuario_sesion']->getPrimerapellido(); ?>
                                <?php
+                                      $NitEmpresa=getNitEmpresa($_SESSION['usuario_sesion']);
+                                      $cnx=cnx();
+                                  		$query=sprintf("SELECT * FROM empresa where NitEmpresa='%s'",mysqli_real_escape_string($cnx,$NitEmpresa));
+                                  		$result=mysqli_query($cnx,$query);
+                                      $row=mysqli_fetch_array($result);
+                                      $TipoEmpresa=$row["TipoEmpresa"];
+                                      mysqli_close($cnx);
                                       $cargo=new cargos_class();
                                       $cargo=getInfoCargos($_SESSION['usuario_sesion']->getIdcargos());
                                ?>
@@ -35,9 +42,33 @@
                         </div>
                     </div>
                 <ul class="nav">
+                  <!--enclosure-->
+                  <?php
+                    if($TipoEmpresa==1){
+                      echo "
+                      <li>
+                      <a data-toggle='collapse' href='#componentsExamples'>
+                      <p>EMPRESA <b class='caret'></b> </p>
+                      </a>
+                      <div class='collapse' id='componentsExamples'>
+                        <ul class='nav'>
+                          <li><a href='ENCLOSURE-EMPRESAS.php'>EMPRESAS</a></li>
+                        </ul>
+                      </div>
+                    </li>
+                    ";
+
+                    }
+
+                   ?>
+
+                  <!--/enclosure-->
+
+
+
                     <!--Planilla-->
                     <?php
-                    if($cargo->getPPlanilla()){
+                    if($cargo->getPPlanilla()&& $TipoEmpresa!=1){
                       echo "
                       <li>
                       <a data-toggle='collapse' href='#componentsExamples'>
@@ -90,6 +121,7 @@
                     ?>
                     <!--Agregar Empleados-->
                     <?php
+                    if($TipoEmpresa!=1){
                       if($cargo->getPempleado()){
                         echo "<li>
                               <a data-toggle='collapse' href='#componentsExamples3'>
@@ -117,12 +149,8 @@
                              </ul>
                            </div>
                          </li>
-
-
-
-
                       ";
-
+                    }
                     ?>
 
 

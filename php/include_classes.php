@@ -1,4 +1,4 @@
-<?php 
+<?php
 	include_once 'clases/empleado_class.php';
 	include_once 'clases/cargos_class.php';
 	include_once 'clases/departamento_class.php';
