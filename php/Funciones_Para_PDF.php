@@ -1,15 +1,25 @@
 <?php
 include_once '../php/cn.php';
-function Realizar_Recibo($user,$NumeroDocumento,$V,$S,$A,$L,$RV,$Salario_Mensual,$Cargo_Empleado){
+function Realizar_Recibo($user,$NumeroDocumento,$V,$S,$A,$L,$RV,$Salario_Mensual,$Cargo_Empleado,$Nitempresa){
   $cnx=cnx();
   $NameDataBase=NameDataBase();
+  //Obtener el RefNumero
+  $query=sprintf("SELECT MAX(recibo.RefNumero) FROM recibo where RefNitEmpresa='%s' and RefYear='%s'",mysqli_real_escape_string($cnx,$Nitempresa),mysqli_real_escape_string($cnx,date('Y')));
+  $result=mysqli_query($cnx,$query);
+  $row=mysqli_fetch_array($result);
+  if($row[0]==NULL){
+    $RefNumero=0;
+  }else $RefNumero=$row[0]+1;
   //El proximo ID
   $query=sprintf("SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' AND   TABLE_NAME   = 'recibo'",mysqli_real_escape_string($cnx,$NameDataBase));
   $result=mysqli_query($cnx,$query);
   $row=mysqli_fetch_array($result);
   $NumeroDeRecibo=$row["AUTO_INCREMENT"];
-  $query = sprintf("INSERT INTO recibo(idRecibo,Fecha_Generado,NumeroDocumento_Para,NumeroDocumento_Por,Vacacion,Indemnizacion,Aguinaldo,Salario,Retiro_Voluntario,Salario_Mensual,Cargo_Empleado) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+  $query = sprintf("INSERT INTO recibo(idRecibo,RefYear,RefNitEmpresa,RefNumero,Fecha_Generado,NumeroDocumento_Para,NumeroDocumento_Por,Vacacion,Indemnizacion,Aguinaldo,Salario,Retiro_Voluntario,Salario_Mensual,Cargo_Empleado) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
     mysqli_real_escape_string($cnx,$NumeroDeRecibo),
+    mysqli_real_escape_string($cnx,(string)date('Y')),
+    mysqli_real_escape_string($cnx,(string)$Nitempresa),
+    mysqli_real_escape_string($cnx,$RefNumero),
     mysqli_real_escape_string($cnx,date('Y/m/d h:i:s', time())),
     mysqli_real_escape_string($cnx,$NumeroDocumento),
     mysqli_real_escape_string($cnx,$user->getNumerodocumento()),
@@ -25,7 +35,9 @@ function Realizar_Recibo($user,$NumeroDocumento,$V,$S,$A,$L,$RV,$Salario_Mensual
   if(!($estado)){
     $NumeroDeRecibo=0;
   }
-  return $NumeroDeRecibo;
+  $valoresAReturn[0]=$NumeroDeRecibo;
+  $valoresAReturn[1]=$RefNumero;
+  return $valoresAReturn;
 }
 
 

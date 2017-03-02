@@ -21,7 +21,7 @@
 						<td class='text-right'>
               <div class='row'>
                 <div class='col-md-4'>
-    							<form method='post' action='Prestacion_Laboral_Empleado.php'>
+    							<form target='_blank' method='post' action='Prestacion_Laboral_Empleado.php'>
       							<input type='hidden' name='numDoc' value='".$row3["NumeroDocumento"]."'>
       							<input type='hidden' name='idcargo' value='".$row2["idCargos"]."'>
       							<input type='hidden' name='iddepartamento' value='".$row["idDepartamento"]."'>

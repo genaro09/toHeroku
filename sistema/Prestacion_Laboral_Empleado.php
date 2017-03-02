@@ -1,7 +1,8 @@
+
 <?php
 	include '../php/funciones.php';
 	include '../php/verificar_sesion.php';
-	 ?>
+	 	?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -40,6 +41,7 @@
 	            <div class="container-fluid">
 	              <?php
                   $NumeroDocumento=$_POST["numDoc"];
+									echo "Holaaaaaaaaaaaaaaaaaaaaaaa".$NumeroDocumento;
                   $empleado=new empleado_class();
                   $empleado=getInfoEmpleado($NumeroDocumento);
 									$cargoNE=getInfoCargos($empleado->getIdcargos());
@@ -414,7 +416,7 @@
 	        </div>
 	    </div>
 	</div>
-</body>
+
         <!--   Core JS Files   -->
     <script src="../js/jquery-3.1.1.min.js" type="text/javascript"></script>
     <script src="../js/jquery-ui.min.js" type="text/javascript"></script>
@@ -441,7 +443,7 @@
 		};
 
 		//funcion para llenar el recibo resumido
-		function	imprimir(){
+		function imprimir(){
 
 			swal({
 			  title: "¿Desea confirmar esta acción?",
@@ -642,7 +644,7 @@
 						//AJAX
 						var d1A = stringToDate($("#dateLI").val());
 						var d2A = stringToDate($("#dateLF").val());
-						var NumeroDocumento = <?php echo $NumeroDocumento; ?>;
+						var NumeroDocumento = <?php echo json_encode($NumeroDocumento); ?>;
 						$.ajax({
 							url:'../php/verificar_fechas.php',
 							type:'POST',
@@ -754,7 +756,7 @@
 									//AJAX
 									var d1A = stringToDate($("#dateVI").val());
 									var d2A = stringToDate($("#dateVF").val());
-									var NumeroDocumento = <?php echo $NumeroDocumento; ?>;
+									var NumeroDocumento = <?php echo json_encode($NumeroDocumento); ?>;
 									$.ajax({
 										url:'../php/verificar_fechas.php',
 										type:'POST',
@@ -863,7 +865,7 @@
 										//AJAX
 										var d1A = stringToDate($("#dateAI").val());
 										var d2A = stringToDate($("#dateAF").val());
-										var NumeroDocumento = <?php echo $NumeroDocumento; ?>;
+										var NumeroDocumento = <?php echo json_encode($NumeroDocumento); ?>;
 										$.ajax({
 											url:'../php/verificar_fechas.php',
 											type:'POST',
@@ -962,7 +964,7 @@
 												//AJAX
 												var d1A = stringToDate($("#dateSI").val());
 												var d2A = stringToDate($("#dateSF").val());
-												var NumeroDocumento = <?php echo $NumeroDocumento; ?>;
+												var NumeroDocumento = <?php echo json_encode($NumeroDocumento); ?>;
 												$.ajax({
 													url:'../php/verificar_fechas.php',
 													type:'POST',
@@ -1076,7 +1078,7 @@
 														//AJAX
 														var d1A = stringToDate($("#dateRVI").val());
 														var d2A = stringToDate($("#dateRVF").val());
-														var NumeroDocumento = <?php echo $NumeroDocumento; ?>;
+														var NumeroDocumento = <?php echo json_encode($NumeroDocumento); ?>;
 														$.ajax({
 															url:'../php/verificar_fechas.php',
 															type:'POST',
@@ -1139,4 +1141,5 @@
 													};
 										}
 		</script>
+		</body>
 </html>

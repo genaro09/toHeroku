@@ -76,10 +76,10 @@
                       </a>
                       <div class='collapse' id='componentsExamples'>
                         <ul class='nav'>
-                          <li><a href=''>Salarios</a></li>
-                          <li><a href=''>Horas Extras</a></li>
-                          <li><a href=''>Aguinaldo</a></li>
-                          <li><a href=''>Comisiones</a></li>
+                          <li><a href='#'>Salarios</a></li>
+                          <li><a href='Horas_Extras.php'>Horas Extras</a></li>
+                          <li><a href='#'>Aguinaldo</a></li>
+                          <li><a href='#'>Comisiones</a></li>
                           <li><a href='Prestaciones_Laborales.php'>Prestaciones Laborales</a></li>
                         </ul>
                       </div>

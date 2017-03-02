@@ -26,7 +26,7 @@ function disp_historial_grid_table($NumeroDocumento){
            <input type='submit'onclick='myFunction(".json_encode($datos).")' style='background: url(../img/icons/info.png);border: 0;' value='   '>
            </div>
            <div class='col-md-4'>
-             <form method='post' action='PDF_Prestacion_Laboral_Empleado.php'>
+             <form target='_blank' method='post' action='PDF_Prestacion_Laboral_Empleado.php'>
                <input type='hidden' name='idRecibo' value='".$row["idRecibo"]."'>
                <input type='submit' style='background: url(../img/icons/pdf.png);border: 0;' value='   '>
              </form>

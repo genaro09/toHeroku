@@ -1,22 +1,22 @@
 <?php
 function NameDataBase(){
-  $myDB="heroku_0b7f6b2323f124a"; 
+  $myDB="ascas";
   return $myDB;
 }
 function cnx(){
-    $host="us-cdbr-iron-east-04.cleardb.net"; 
-    $dbUser="b1a4c3ac6480b2"; 
-    $dbPass="60465445"; 
-    $myDB="heroku_0b7f6b2323f124a"; 
+    $host="localhost";
+    $dbUser="root";
+    $dbPass="";
+    $myDB="ascas";
     $cnx=mysqli_connect($host,$dbUser,$dbPass,$myDB);
     return $cnx;
 }
 
 function pruebaCnx(){
-    $host="us-cdbr-iron-east-04.cleardb.net"; 
-    $dbUser="b1a4c3ac6480b2"; 
-    $dbPass="60465445"; 
-    $myDB="heroku_0b7f6b2323f124a";
+    $host="localhost";
+    $dbUser="root";
+    $dbPass="";
+    $myDB="ascas";
     $cnx=mysqli_connect($host,$dbUser,$dbPass,$myDB);
     $flag=0;
     if (mysqli_connect_errno()) {

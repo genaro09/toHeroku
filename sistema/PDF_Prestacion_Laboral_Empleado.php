@@ -11,6 +11,7 @@ $cnx=cnx();
 $query=sprintf("SELECT * FROM recibo where idRecibo='%s'",mysqli_real_escape_string($cnx,$idRecibo));
 $result=mysqli_query($cnx,$query);
 $row=mysqli_fetch_array($result);
+$REFCod="REF.".$row["RefNumero"]."-".$row["RefYear"];
 //Crear clase
 $empleado =new empleado_class();
 $empleado =new empleado_class();
@@ -68,24 +69,24 @@ if($cod["V"]==1){
   $Salario_quincenal_vaca=number_format((float)($rowV["Monto"]/1.3), 2, '.', '');//SALARIO quincenal
   $Vacacion_proporcional=number_format((float)$rowV["Monto"]-(float)($rowV["Monto"]/1.3), 2, '.', '');
   $disp_tabla_resultados=$disp_tabla_resultados.'
-                        <tr>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FEV.'</span></td>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FSV.'</span></td>
-                          <td style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$Tot_dias_P_A.'</span></td>
+                        <tr style="border:1px solid black;">
+                          <td id="tdC" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.fixDate($FEV).'</span></td>
+                          <td id="tdC" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.fixDate($FSV).'</span></td>
+                          <td id="tdC" style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$Tot_dias_P_A.'</span></td>
                           <td style="width:45%;font-size:9pt;padding:0mm;margin:0;">
-                            <table cellspacing="0" cellpadding="0" style="padding:0mm;margin:0;border:0;">
-                              <tr>
+                            <table id="TDentro">
+                              <tr id="T1R" >
                               <td align="left"><span style="float:left;font-size: 12px;"> SALARIO QUINCENAL</span></td>
-                              </tr><tr>
+                              </tr><tr id="T2R" >
                               <td align="left"><span style="float:left;font-size: 12px;"> VACACION PROPORCIONAL</span></td>
                               </tr>
                             </table>
                           </td>
                           <td style="width:15%;font-size:9pt;padding:0mm;margin:0;">
-                            <table cellspacing="0" cellpadding="0" style="padding:0mm;margin:0;">
-                              <tr>
+                            <table id="TDentro">
+                              <tr id="T1R">
                                 <td align="right"><span style="font-size: 12px;">$'.$Salario_quincenal_vaca.'</span></td>
-                                </tr><tr>
+                                </tr><tr id="T2R" >
                                 <td align="right"><span style="font-size: 12px;">$'.$Vacacion_proporcional.'</span></td>
                               </tr>
                             </table>
@@ -116,10 +117,10 @@ if($cod["S"]==1){
   $Tot_AFP=$Tot_AFP+number_format((float)($rowS["AFP"]), 2, '.', '');//AFP
   $Tot_ISS=$Tot_ISS+number_format((float)($rowS["ISS"]), 2, '.', '');//ISS
   $disp_tabla_resultados=$disp_tabla_resultados.'
-                        <tr>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FES.'</span></td>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FSS.'</span></td>
-                          <td style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$Tot_dias_P_A.'</span></td>
+                        <tr style="border:1px solid black;">
+                          <td id="tdC" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.fixDate($FES).'</span></td>
+                          <td id="tdC" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.fixDate($FSS).'</span></td>
+                          <td id="tdC" style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$Tot_dias_P_A.'</span></td>
                           <td align="left" style="width:45%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;"> SALARIO</span></td>
                           <td align="right" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">$'.$rowS["Monto"].'</span></td>
                         </tr>
@@ -144,10 +145,10 @@ if($cod["A"]==1){
   //Calcular valores Aguinaldo
   $Tot_SinD=$Tot_SinD+$rowV["Monto"];//Tot sin Descuentos
   $disp_tabla_resultados=$disp_tabla_resultados.'
-                        <tr>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FEA.'</span></td>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FSA.'</span></td>
-                          <td style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$Tot_dias_P_A.'</span></td>
+                        <tr style="border:1px solid black;">
+                          <td id="tdC" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.fixDate($FEA).'</span></td>
+                          <td id="tdC" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.fixDate($FSA).'</span></td>
+                          <td id="tdC" style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$Tot_dias_P_A.'</span></td>
                           <td align="left" style="width:45%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;"> AGUINALDO</span></td>
                           <td align="right" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">$'.$Tot_SinD.'</span></td>
                         </tr>
@@ -172,10 +173,10 @@ if($cod["RV"]==1){
   //Calcular valores Liquidacion
   $Tot_SinD=$Tot_SinD+$rowV["Monto"];//Tot sin Descuentos
   $disp_tabla_resultados=$disp_tabla_resultados.'
-                        <tr>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FERV.'</span></td>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FSRV.'</span></td>
-                          <td style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$Tot_dias_P_A.'</span></td>
+                        <tr style="border:1px solid black;">
+                          <td id="tdC" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.fixDate($FERV).'</span></td>
+                          <td id="tdC" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.fixDate($FSRV).'</span></td>
+                          <td id="tdC" style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$Tot_dias_P_A.'</span></td>
                           <td align="left" style="width:45%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;"> RETIRO VOLUNTARIO</span></td>
                           <td align="right" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">$'.$rowV["Monto"].'</span></td>
                         </tr>
@@ -200,10 +201,10 @@ if($cod["L"]==1){
   //Calcular valores Liquidacion
   $Tot_SinD=$Tot_SinD+$rowV["Monto"];//Tot sin Descuentos
   $disp_tabla_resultados=$disp_tabla_resultados.'
-                        <tr>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FEL.'</span></td>
-                          <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$FSL.'</span></td>
-                          <td style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$Tot_dias_P_A.'</span></td>
+                        <tr style="border:1px solid black;">
+                          <td id="tdC" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.fixDate($FEL).'</span></td>
+                          <td id="tdC" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.fixDate($FSL).'</span></td>
+                          <td id="tdC" style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">'.$Tot_dias_P_A.'</span></td>
                           <td align="left" style="width:45%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;"> INDEMNIZACION</span></td>
                           <td align="right" style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;">$'.$rowV["Monto"].'</span></td>
                         </tr>
@@ -249,19 +250,19 @@ $str_ALDP="<tr>";
 while($count<count($str)-1){
   if($count2!=2){
     if($str[$count+1]=="Vacacion"){
-      $str_ALDP= $str_ALDP."<td style='width:50%;font-size:9pt;padding:0.5mm;font-weight: bold;'><span style='font-size: 11px;'>VACACION</span></td>";
+      $str_ALDP= $str_ALDP."<td  id='tdC' style='width:50%;font-size:9pt;padding:0.5mm;font-weight: bold;'><span style='font-size: 11px;'>VACACION</span></td>";
       $count2++;
     }else if($str[$count+1]=="Salario"){
-      $str_ALDP= $str_ALDP."<td style='width:50%;font-size:9pt;padding:0.5mm;font-weight: bold;'><span style='font-size: 11px;'>SALARIO</span></td>";
+      $str_ALDP= $str_ALDP."<td  id='tdC' style='width:50%;font-size:9pt;padding:0.5mm;font-weight: bold;'><span style='font-size: 11px;'>SALARIO</span></td>";
       $count2++;
     }else if($str[$count+1]=="Aguinaldo"){
-      $str_ALDP= $str_ALDP."<td style='width:50%;font-size:9pt;padding:0.5mm;font-weight: bold;'><span style='font-size: 11px;'>AGUINALDO</span></td>";
+      $str_ALDP= $str_ALDP."<td  id='tdC' style='width:50%;font-size:9pt;padding:0.5mm;font-weight: bold;'><span style='font-size: 11px;'>AGUINALDO</span></td>";
       $count2++;
     }else if($str[$count+1]=="Indemnizacion"){
-      $str_ALDP= $str_ALDP."<td style='width:50%;font-size:9pt;padding:0.5mm;font-weight: bold;'><span style='font-size: 11px;'>INDEMNIZACION</span></td>";
+      $str_ALDP= $str_ALDP."<td  id='tdC' style='width:50%;font-size:9pt;padding:0.5mm;font-weight: bold;'><span style='font-size: 11px;'>INDEMNIZACION</span></td>";
       $count2++;
     }else if($str[$count+1]=="RetiroVoluntario"){
-      $str_ALDP= $str_ALDP."<td style='width:50%;font-size:9pt;padding:0.5mm;font-weight: bold;'><span style='font-size: 11px;'>RETIRO VOLUNTARIO</span></td>";
+      $str_ALDP= $str_ALDP."<td  id='tdC' style='width:50%;font-size:9pt;padding:0.5mm;font-weight: bold;'><span style='font-size: 11px;'>RETIRO VOLUNTARIO</span></td>";
       $count2++;
     }
   }
@@ -415,39 +416,6 @@ $html = '
             height: 100mm;
         }
 
-        #invoice_body , #invoice_total
-        {
-            width:100%;
-        }
-        #invoice_body table , #invoice_total table
-        {
-            width:100%;
-            border-left: 1px solid #000;
-            border-right: 1px solid #000;
-            border-top: 1px solid #000;
-
-            border-spacing:0;
-            border-collapse: collapse;
-
-            margin-top:5mm;
-        }
-
-        #invoice_body table td , #invoice_total table td
-        {
-            text-align:center;
-            font-size:9pt;
-            border-right: 1px solid #000;
-            border-bottom: 1px solid #000;
-            padding:2mm 0;
-        }
-
-        #invoice_body table td.mono  , #invoice_total table td.mono
-        {
-            font-family:monospace;
-            text-align:right;
-            padding-right:3mm;
-            font-size:10pt;
-        }
 
         #footer
         {
@@ -474,6 +442,69 @@ $html = '
             border-right: 1px solid #000;
             border-bottom: 1px solid #000;
         }
+        table#t01 {
+            margin-top:15px;
+            width: 100%;
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        table#t02 {
+            width: 100%;
+            border: 1px solid black;
+            border-top:0px;
+            border-bottom:0px;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        table#t03 {
+            width: 100%;
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        table#t04 {
+            width: 100%;
+            border: 1px solid black;
+            border-top:0px;
+            border-bottom:0px;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        table#t05 {
+            width: 100%;
+            border: 1px solid black;
+            border-bottom:0px;
+            border-collapse: collapse;
+        }
+        table#t06 {
+            width: 100%;
+            border: 1px solid black;
+            border-top:0px;
+            border-collapse: collapse;
+        }
+        table#t07 {
+            border: 1px solid black;
+            border-top:0px;
+            border-collapse: collapse;
+        }
+        #tdC {
+          text-align: center;
+        }
+        #TDentro{
+          width: 100%;
+          border: 0px;
+          border-collapse: collapse;
+        }
+        #T1R{
+          width: 100%;
+          border: 0px;
+          border-collapse: collapse;
+        }
+        #T2R{
+          width: 100%;
+          border: 0px;
+          border-top: 1px solid black;
+          border-collapse: collapse;
+        }
     </style>
 </head>
 <body>
@@ -496,7 +527,7 @@ $html = '
       <tr style=" border:0;">
         <td style="width:140mm;border:none;"><h3>RECIBO</h3></td>
         <td rowspan="2" valign="top" align="right" style="border:none;padding:3mm;">
-            <h3>REF.U91-2015</h3>
+            <h3>'.$REFCod.'</h3>
         </td>
       </tr>
     </table>
@@ -521,52 +552,52 @@ $html = '
         </div>
         <div id="invoice_body">
 
-            <table>
+            <table id="t01">
               <tr>
                 <th>APLICACION LEGAL DEL PAGO</th>
               </tr>
             </table>
-            <table style="margin-top:0mm;width=400px;">
+            <table id="t02">
               '.$str_ALDP.'
             </table>
 
 
-            <table>
+            <table id="t03">
               <tr>
                 <th>APLICACION DEL CALCULO</th>
               </tr>
             </table>
-            <table style="margin-top:0mm;">
+            <table id="t04">
             <tr>
-                <td style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px">SALARIO MENSUAL</span></td>
-                <td style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px">SALARIO DIARIO</span></td>
-                <td style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px">HORAS LABORALES</span></td>
-                <td style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px">FECHA DE INGRESO</span></td>
+                <td id="tdC" style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px">SALARIO MENSUAL</span></td>
+                <td id="tdC" style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px">SALARIO DIARIO</span></td>
+                <td id="tdC" style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px">HORAS LABORALES</span></td>
+                <td id="tdC" style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px">FECHA DE INGRESO</span></td>
             </tr>
             <tr>
-                <td style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px">$'.$salario_mensual.'</span></td>
-                <td style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px">$'.$salario_diario.'</span></td>
-                <td style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px">'.$tiempo_laboral.' horas</span></td>
-                <td style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px">'.$empleado->getFechaingreso().'</span></td>
+                <td id="tdC" style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px">$'.$salario_mensual.'</span></td>
+                <td id="tdC" style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px">$'.$salario_diario.'</span></td>
+                <td id="tdC" style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px">'.$tiempo_laboral.' horas</span></td>
+                <td id="tdC" style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 10px">'.$empleado->getFechaingreso().'</span></td>
             </tr>
             </table>
 
-            <table>
-              <tr>
-                <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;font-weight:bold;">DESDE</span></td>
-                <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;font-weight:bold;">HASTA</span></td>
-                <td style="width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 9px;font-weight:bold;">DIAS LABORALES</span></td>
-                <td style="width:45%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;font-weight:bold;">CONCEPTO</span></td>
-                <td style="width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;font-weight:bold;">VALOR</span></td>
+            <table id="t05" syle="border-bottom:0px;">
+              <tr syle="border-bottom:0px;">
+                <td id="tdC" style="border-bottom:0px;width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;font-weight:bold;">DESDE</span></td>
+                <td id="tdC" style="border-bottom:0px;width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;font-weight:bold;">HASTA</span></td>
+                <td id="tdC" style="border-bottom:0px;width:10%;font-size:9pt;padding:0.5mm;"><span style="font-size: 9px;font-weight:bold;">DIAS LABORALES</span></td>
+                <td id="tdC" style="border-bottom:0px;width:45%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;font-weight:bold;">CONCEPTO</span></td>
+                <td id="tdC" style="border-bottom:0px;width:15%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;font-weight:bold;">VALOR</span></td>
               </tr>
             </table>
-            <table style="margin-top:0mm;">
+            <table id="t06">
               '.$disp_tabla_resultados.'
             </table>
-            <table align="right" style="width:60%;margin-top:0mm;">
-              <tr>
-                <td align="left" style="width:75%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;font-weight:bold;"> Sub Total.......</span></td>
-                <td align="right" style="width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;font-weight:bold;">$'.$Tot_SinD.'</span></td>
+            <table id="t07" align="right" style="width:60%;margin-top:0px;">
+              <tr style="margin-top:0px;">
+                <td align="left" style="margin-top:0px;width:75%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;font-weight:bold;"> Sub Total.......</span></td>
+                <td align="right" style="margin-top:0px;width:25%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;font-weight:bold;">$'.$Tot_SinD.'</span></td>
               </tr>
               <tr>
                 <td align="left" style="width:75%;font-size:9pt;padding:0.5mm;"><span style="font-size: 12px;"> Menos<br> ISS... 3%<br> AFPS... 6.25%</span></td>
@@ -630,9 +661,9 @@ $html = '
 mysqli_close($cnx);
 include("../MPDF/mpdf.php");
 $mpdf=new mPDF('c');
-
 $mpdf->WriteHTML($html);
-$mpdf->Output();
+$NombreArchivo="REF-".$row["RefNumero"]."-".$row["RefYear"].".pdf";
+$mpdf->Output($NombreArchivo, 'I');
 exit;
 
 //==============================================================
@@ -641,15 +672,15 @@ exit;
 //FUNCiONES
 function Revisar_ALDP($str,$n,$str_ALDP,$arreglo_de_ART){
   if($str[$n]=="Vacacion"){
-    $str_ALDP= $str_ALDP."<td style='width:50%;font-size:9pt;padding:0.5mm;'><span style='font-size: 11px;'>".$arreglo_de_ART["V"]."</span></td>";
+    $str_ALDP= $str_ALDP."<td id='tdC' style='width:50%;font-size:9pt;padding:0.5mm;'><span style='font-size: 11px;'>".$arreglo_de_ART["V"]."</span></td>";
   }else if($str[$n]=="Salario"){
-    $str_ALDP= $str_ALDP."<td style='width:50%;font-size:9pt;padding:0.5mm;'><span style='font-size: 11px;'>".$arreglo_de_ART["S"]."</span></td>";
+    $str_ALDP= $str_ALDP."<td id='tdC' style='width:50%;font-size:9pt;padding:0.5mm;'><span style='font-size: 11px;'>".$arreglo_de_ART["S"]."</span></td>";
   }else if($str[$n]=="Aguinaldo"){
-    $str_ALDP= $str_ALDP."<td style='width:50%;font-size:9pt;padding:0.5mm;'><span style='font-size: 11px;'>".$arreglo_de_ART["A"]."</span></td>";
+    $str_ALDP= $str_ALDP."<td id='tdC' style='width:50%;font-size:9pt;padding:0.5mm;'><span style='font-size: 11px;'>".$arreglo_de_ART["A"]."</span></td>";
   }else if($str[$n]=="Liquidacion"){
-    $str_ALDP= $str_ALDP."<td style='width:50%;font-size:9pt;padding:0.5mm;'><span style='font-size: 11px;'>".$arreglo_de_ART["L"]."</span></td>";
-  }else if($str[$n]=="Indemnizacion"){
-    $str_ALDP= $str_ALDP."<td style='width:50%;font-size:9pt;padding:0.5mm;'><span style='font-size: 11px;'>".$arreglo_de_ART["RV"]."</span></td>";
+    $str_ALDP= $str_ALDP."<td id='tdC' style='width:50%;font-size:9pt;padding:0.5mm;'><span style='font-size: 11px;'>".$arreglo_de_ART["L"]."</span></td>";
+  }else if($str[$n]=="RetiroVoluntario"){
+    $str_ALDP= $str_ALDP."<td id='tdC' style='width:50%;font-size:9pt;padding:0.5mm;'><span style='font-size: 11px;'>".$arreglo_de_ART["RV"]."</span></td>";
   }
   return $str_ALDP;
 }
@@ -683,6 +714,12 @@ function RevisarTiempo($valor,$HIni,$HFin,$Des){
 
 return $valorN;
 
+}
+
+function fixDate($date){
+  $date=explode("-",(string)$date);
+  $date=$date[2]."/".$date[1]."/".$date[0];
+  return (string)$date;
 }
 
 
