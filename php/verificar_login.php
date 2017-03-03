@@ -15,7 +15,7 @@
 			}
 			session_start();
 			$_SESSION["usuario_sesion"]=$usuario;
-
+			$_SESSION["empresa"]=getNitEmpresa($usuario);
 			echo "2";
 		}else{
 			echo "1";

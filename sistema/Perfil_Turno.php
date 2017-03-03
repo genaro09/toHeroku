@@ -1,12 +1,16 @@
 <?php
 	include '../php/funciones.php';
 	include '../php/verificar_sesion.php';
+	if(trim($_POST['idTurno']) == ""){
+		header('Location: turno.php');
+		exit();
+	}
 	 ?>
 <!doctype html>
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	
+
 	<link rel="icon" type="image/png" href="../img/favicon.png" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<title>ASCAS, S.A. DE C.V.</title>
@@ -55,91 +59,132 @@
 	            	<div class="row">
 	            		<div class="col-md-12">
 	            			<div class="card" style="padding:10px;">
-								<div class="header">
-									<h4 class="title">ModificarTurno</h4>
-								</div>
-								<div class="content">
-									<form id="form_actualizarUser" role="form">
-										<div class="row">
-											<div class="col-md-4">
-												<div class="form-group">
-													<label for="exampleInputEmail1">Nombre Turno<star>*</star></label>
-														<input id="Njornada" type="text" class="form-control" placeholder="Nombre Turno" value="<?php echo $turno->getNombreturno(); ?>" required>
-													</div>
+											<div class="header">
+												<h4 class="title">ModificarTurno</h4>
 											</div>
-											<div class="col-md-4">
-												<div class="form-group">
-													<label for="exampleInputEmail1">Desde<star>*</star></label>
-														<input id="desde" type="text" class="form-control timepicker" placeholder="04:00" value="<?php echo $turno->getDesde(); ?>"  required/>
-													</div>
-											</div>
-											<div class="col-md-4">
-												<div class="form-group">
-													<label for="exampleInputEmail1">Hasta<star>*</star></label>
-														<input id="hasta" type="text" class="form-control timepicker" placeholder="14:00" value="<?php echo $turno->getHasta(); ?>"  required/>
-													</div>
-											</div>
-											<div class="col-md-4">
-												<div class="form-group">
-													<label for="exampleInputEmail1">Descanso<star>*</star></label>
-													<br>
-														<select id="descanso" class="selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
-															<?php
-																if($turno->getDescanso()==1){
-																	echo "
-																	<option value='1' selected>SI</option>
-																	<option value='0' >NO</option>
-																	";
-																}else{
-																	echo "
-																	<option value='1'>SI</option>
-																	<option value='0' selected>NO</option>
-																	";
-																}
-
-															?>
-
-														</select>
-													</div>
-											</div>
-
-										    <?php
-												if($turno->getDescanso()==1){
-													echo "
-													<div class='col-md-4 opcion' id='1'>
-														<div class='form-group'>
-															<label for='exampleInputEmail1'>Tiempo de Descanso<star>'</star></label>
-															<input id='H_Descanso' type='text' class='form-control timepicker' placeholder='14:00' value=".$turno->getHDescanso()." required/>
+											<div class="content">
+												<form id="form_actualizarUser" role="form">
+													<div class="row">
+														<div class="col-md-4">
+															<div class="form-group">
+																<label for="exampleInputEmail1">Nombre Turno<star>*</star></label>
+																	<input id="Njornada" type="text" class="form-control" placeholder="Nombre Turno" value="<?php echo $turno->getNombreturno(); ?>" required>
+																</div>
 														</div>
+														<div class="col-md-4">
+															<div class="form-group">
+																<label for="exampleInputEmail1">Desde<star>*</star></label>
+																	<input id="desde" type="text" class="form-control timepicker" placeholder="04:00" value="<?php echo $turno->getDesde(); ?>"  required/>
+																</div>
+														</div>
+														<div class="col-md-4">
+															<div class="form-group">
+																<label for="exampleInputEmail1">Hasta<star>*</star></label>
+																	<input id="hasta" type="text" class="form-control timepicker" placeholder="14:00" value="<?php echo $turno->getHasta(); ?>"  required/>
+																</div>
+														</div>
+														<div class="col-md-4">
+															<div class="form-group">
+																<label for="exampleInputEmail1">Descanso<star>*</star></label>
+																<br>
+																	<select id="descanso" class="selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
+																		<?php
+																			if($turno->getDescanso()==1){
+																				echo "
+																				<option value='1' selected>SI</option>
+																				<option value='0' >NO</option>
+																				";
+																			}else{
+																				echo "
+																				<option value='1'>SI</option>
+																				<option value='0' selected>NO</option>
+																				";
+																			}
+
+																		?>
+
+																	</select>
+																</div>
+														</div>
+
+													    <?php
+															if($turno->getDescanso()==1){
+																echo "
+																<div class='col-md-4 opcion' id='1'>
+																	<div class='form-group'>
+																		<label for='exampleInputEmail1'>Tiempo de Descanso<star>'</star></label>
+																		<input id='H_Descanso' type='text' class='form-control timepicker' placeholder='14:00' value=".$turno->getHDescanso()." required/>
+																	</div>
+																</div>
+
+																";
+
+															}
+														?>
+														<div class="col-md-4 opcion" id="1" style="display:none">
+															<div class="form-group">
+																<label for="exampleInputEmail1">Tiempo de Descanso<star>*</star></label>
+																<input id="H_Descanso" type="text" class="form-control timepicker" placeholder="01:00" value="<?php echo $turno->getHDescanso(); ?>" required/>
+															</div>
+														</div>
+														<div class="col-md-4">
+															<div class="text-center">
+																<br>
+				                        <a href="#" id="btnMTruno" class="btn btn-fill btn-primary btn-wd">Modificar</a>
+																<a href="#" id="btnEliminarTruno" class="btn btn-danger">Eliminar</a>
+				                      </div>
+														</div>
+														<input type='hidden' id='idTurno' value="<?php echo $idTurno; ?>">
+														<div class="col-md-12">
+				                    	<div class="text-center" id="respuestaAlert"></div>
+				                    </div>
 													</div>
-
-													";
-
-												}
-											?>
-											<div class="col-md-4 opcion" id="1" style="display:none">
-												<div class="form-group">
-													<label for="exampleInputEmail1">Tiempo de Descanso<star>*</star></label>
-													<input id="H_Descanso" type="text" class="form-control timepicker" placeholder="01:00" value="<?php echo $turno->getHDescanso(); ?>" required/>
-												</div>
-											</div>
-											<div class="col-md-4">
-												<div class="text-center">
-													<br>
-	                        <a href="#" id="btnMTruno" class="btn btn-fill btn-primary btn-wd">Modificar</a>
-													<a href="#" id="btnEliminarTruno" class="btn btn-danger">Eliminar</a>
-	                      </div>
-											</div>
-											<input type='hidden' id='idTurno' value="<?php echo $idTurno; ?>">
-											<div class="col-md-12">
-	                    	<div class="text-center" id="respuestaAlert"></div>
-	                    </div>
-										</div>
-	       						</form>
-	            				</div>
+				       					</form>
+				            	</div>
 	            			</div>
 	            		</div>
 	            	</div>
+								<!-- New Row -->
+								<div class="row">
+	            		<div class="col-md-12">
+										<div class="card">
+												<div class="card-header card-header-icon" data-background-color="purple">
+														<i class="material-icons">card_travel</i>
+												</div>
+												<div class="card-content">
+														<h4 class="card-title">Empleados en el turno</h4>
+														<div class="toolbar">
+																<!--        Here you can write extra buttons/actions for the toolbar              -->
+														</div>
+														<div class="material-datatables">
+																<table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+																		<thead>
+																				<tr>
+																						<th>DUI</th>
+																						<th>Nombre</th>
+																				</tr>
+																		</thead>
+																		<tfoot>
+																				<tr>
+																					<th>DUI</th>
+																					<th>Nombre</th>
+																				</tr>
+																		</tfoot>
+
+																		<tbody>
+																		<!-- Desde aqui include Empleados_grid_table.php-->
+																				<?php
+																				include '../php/get_Rows.php';
+																				get_Row_Perfil_Turno($idTurno);
+																				?>
+																		</tbody>
+																</table>
+														</div>
+												</div><!-- end content-->
+										</div><!--  end card  -->
+	            		</div>
+	            	</div>
+								<!-- End New Row -->
 	            </div>
 	        </div>
 	    </div>
@@ -200,6 +245,47 @@
 
     <!-- Main js -->
     <script src="../js/main.js"></script>
+		<script type="text/javascript">
 
+
+		$(document).ready(function() {
+			$('#datatables').DataTable({
+				"pagingType": "full_numbers",
+				"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+				responsive: true,
+				language: {
+				search: "_INPUT_",
+				searchPlaceholder: "Search records",
+				}
+
+			});
+
+
+			var table = $('#datatables').DataTable();
+
+			// Edit record
+			table.on( 'click', '.edit', function () {
+				$tr = $(this).closest('tr');
+
+				var data = table.row($tr).data();
+				//alert( 'You press on Row: ' + data[0] + ' ' + data[1] + ' ' + data[2] + '\'s row.' );
+			} );
+
+			// Delete a record
+			table.on( 'click', '.remove', function (e) {
+				$tr = $(this).closest('tr');
+				table.row($tr).remove().draw();
+				e.preventDefault();
+			} );
+
+			//Like record
+			table.on( 'click', '.like', function () {
+				alert('You clicked on Like button');
+			});
+
+			$('.card .material-datatables label').addClass('form-group');
+		  });
+
+	</script>
 
 </html>

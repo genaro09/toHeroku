@@ -34,6 +34,14 @@
         echo "0";
 			}
 		break;
+		case "4":
+      $result=eliminarHoras_extras($_POST["id"]);
+			if($result==1){
+				echo "1";
+			}else{
+        echo "0";
+			}
+		break;
 		default:
 			# code...
 			echo "nada";

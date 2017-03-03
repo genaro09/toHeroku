@@ -524,6 +524,16 @@ function eliminarDepartamento($idDepartamento,$NitEmpresa){
 	mysqli_close($cnx);
 	return $estado;
 }
+//eliminarHoraExtra
+function eliminarHoras_extras($IdHorasExtras){
+		$cnx=cnx();
+		$estado=1;
+		$query=sprintf("DELETE FROM horas_extras WHERE IdHorasExtras='%s'",mysqli_real_escape_string($cnx,$IdHorasExtras));
+		$estado = mysqli_query($cnx, $query);
+
+	mysqli_close($cnx);
+	return $estado;
+}
 //eliminarCargos
 function eliminarCargos($idCargos,$NitEmpresa){
 	$cnx=cnx();

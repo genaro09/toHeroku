@@ -1,10 +1,13 @@
 <?php
 	include '../php/funciones.php';
 	include '../php/verificar_sesion.php';
-	if(trim($_POST['numDoc']) == ""){
-		header('Location: verEmpleados.php');
-		exit();
-	}
+  if(trim($_POST['numDoc']) == ""){
+    header('Location: Reporte_Horas_Extras.php');
+    exit();
+  }
+  $NumeroDocumento=$_POST['numDoc'];
+  $user= new empleado_class();
+  $user = getInfoEmpleado($NumeroDocumento);
 	 ?>
 <!doctype html>
 <html lang="en">
@@ -21,11 +24,12 @@
     <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 	<!--  Material Dashboard CSS  -->
     <link href="../css/material-dashboard.css" rel="stylesheet"/>
+    <!-- Date -->
+		<link rel="stylesheet" href="../css/jquery.datepicker.css">
     <!--custom css-->
     <link rel="stylesheet"  href="../css/customMainCSS.css">
     <link rel="stylesheet" type="text/css" href="../css/icons.css" />
     <link href="../css/font-awesome.min.css" rel="stylesheet">
-
 
 </head>
 
@@ -40,21 +44,14 @@
 			<?php include 'header.php'; ?>
 	        <div class="content">
 	            <div class="container-fluid">
-                <?php
-                  $NumeroDocumento=$_POST["numDoc"];
-                  $empleado=new empleado_class();
-                  $empleado=getInfoEmpleado($NumeroDocumento);
-                  $NombreEmpleado=$empleado->getPrimernombre()." ".$empleado->getPrimerapellido()." ".$empleado->getSegundoapellido();
-                 ?>
 	            	<div class="row">
 					        <div class="col-md-12">
 					            <div class="card">
 					                <div class="card-header card-header-icon" data-background-color="purple">
-					                    <i class="material-icons">library_books</i>
+					                    <i class="material-icons">contacts</i>
 					                </div>
-
 					                <div class="card-content">
-					                    <h4 class="card-title">Historial Prestaciones Laborales <?php echo $NombreEmpleado; ?></h4>
+					                    <h4 class="card-title">Reporte de <?php echo $user->getPrimernombre()." ".$user->getPrimerapellido()." ".$user->getSegundoapellido(); ?></h4>
 					                    <div class="toolbar">
 					                        <!--        Here you can write extra buttons/actions for the toolbar              -->
 					                    </div>
@@ -62,35 +59,44 @@
 					                        <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
 					                            <thead>
 					                                <tr>
-					                                    <th>Fecha de Creacion</th>
-					                                    <th>Creado Por</th>
-					                                    <th class="disabled-sorting text-right">Acciones</th>
+					                                    <th>Por</th>
+					                                    <th>H Diurnas</th>
+                                              <th>H Nocturnas</th>
+                                              <th>Desde</th>
+                                              <th>Hasta</th>
+                                              <th>Fecha</th>
+					                                    <th class="disabled-sorting text-right">Ir</th>
 					                                </tr>
 					                            </thead>
 					                            <tfoot>
 					                                <tr>
-                                            <th>Fecha de Creacion</th>
-                                            <th>Creado Por</th>
-					                                    <th class="text-right">Acciones</th>
+                                            <th>Por</th>
+                                            <th>H Diurnas</th>
+                                            <th>H Nocturnas</th>
+                                            <th>Desde</th>
+                                            <th>Hasta</th>
+                                            <th>Fecha</th>
+					                                  <th class="text-right">Ir</th>
 					                                </tr>
 					                            </tfoot>
 
 					                            <tbody>
 					                            <!-- Desde aqui include Empleados_grid_table.php-->
-					                                <?php include '../php/Historial_Empleado_grid_table.php';
-                                              disp_historial_grid_table($NumeroDocumento);
-                                          ?>
+                                      <?php include '../php/get_Rows.php';
+                                       get_Row_Empleado_Reporte_Semana($NumeroDocumento);
+                                      ?>
 					                            </tbody>
 					                        </table>
 					                    </div>
+                              <div class="row">
+        												<div class="col-md-12">
+        													<div class="text-center" id="respuestaAlert"></div>
+        												</div>
+        											</div>
 					                </div><!-- end content-->
 					            </div><!--  end card  -->
 					        </div> <!-- end col-md-12 -->
-    				</div> <!-- end row -->
-
-
-
-
+    				    </div> <!-- end row -->
 	            </div>
 	        </div>
 	    </div>
@@ -144,10 +150,10 @@
 
 	<!-- TagsInput Plugin -->
 	<script src="../js/jquery.tagsinput.js"></script>
-
-
-
-
+  <!-- Material Dashboard DEMO methods, don't include it in your project! -->
+  <script src="../js/demo.js"></script>
+  <!--  DateTime -->
+  <script type="text/javascript" src="../js/jquery.datepicker.js"></script>
 
     <!-- Main js -->
     <script src="../js/main.js"></script>
@@ -157,6 +163,7 @@
 
 
     <script type="text/javascript">
+
 
 		$(document).ready(function() {
 			$('#datatables').DataTable({
@@ -194,7 +201,44 @@
 			});
 
 			$('.card .material-datatables label').addClass('form-group');
-		});
+		  });
 
 	</script>
+  <script>
+    function imprimirHE(id){
+      $.ajax({
+        url: '../php/Eliminar.php',
+        type: 'POST',
+        data: {
+            opc:4,
+            id:id
+        },
+        beforeSend: function() {
+            respAlert("info", "Eliminando datos...");
+        },
+        success: function(data) {
+            console.log(data);
+            switch (data[0]) {
+                case "0":
+                    respAlert("warning", "Error en BD");
+                    break;
+                case "1":
+                    respAlert("success", "Eliminado...");
+                    setTimeout(function() {
+                        redireccionar("Reporte_Horas_Extras.php");
+                    }, 2000);
+                break;
+            }
+            //respAlert("success",data[0]);
+            /*setTimeout(function(){
+              redireccionar("sistema/home.php");
+            },1000);*/
+        },
+        error: function(data) {
+            console.log(data);
+            respAlert("danger", "Error...");
+        }
+       });
+    };
+  </script>
 </html>

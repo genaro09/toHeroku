@@ -119,6 +119,8 @@
 				    					                        </tbody>
 				  					                    </table>
 				                                <a href="#" id="btnHorasExtras" class="btn btn-fill btn-primary btn-wd">Guardar</a>
+																				</form>
+																				<button class="btn btn-danger" onClick="window.location.href=window.location.href">Cancelar</button>
 				  									</div>
   				                </div>
 													<div class="col-md-12">
@@ -128,7 +130,6 @@
   				        </div>
 
                   <!-- FIN -->
-						</form>
     				</div> <!-- end row -->
 	            </div>
 	        </div>

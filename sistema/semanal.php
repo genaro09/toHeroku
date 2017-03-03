@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	
+
 	<link rel="icon" type="image/png" href="../img/favicon.png" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<title>ASCAS, S.A. DE C.V.</title>
@@ -22,6 +22,12 @@
     <link rel="stylesheet" type="text/css" href="../css/icons.css" />
     <link href="../css/font-awesome.min.css" rel="stylesheet">
         <script src="../js/jquery-3.1.1.min.js" type="text/javascript"></script>
+				<style>
+				.w3-yellow, .w3-hover-yellow:hover {
+					color: #000!important;
+					background-color: #ffeb3b!important;
+				}
+				</style>
 	<script>
 	$(document).ready(function(){
 	    $("#annio").change(function(){
@@ -56,7 +62,10 @@
 				dataString:dataString
 				},
 			   cache: false,
-			   success: function(html)
+				 beforeSend: function() {
+					 $("#fechas").html("<div class='w3-panel w3-yellow' style='paddin:1px;'><h3>Cargando!</h3><p>Se esta obteniendo la informacion</p></div>");
+				 },
+				 success: function(html)
 			   {
 			      $("#fechas").html(html);
 			   }

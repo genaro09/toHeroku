@@ -794,13 +794,19 @@ $(document).ready(function() {
                 HoraEntradaArray: JSON.stringify(HoraEntradaArray),
                 HoraSalidaArray: JSON.stringify(HoraSalidaArray)
             },
+            beforeSend: function() {
+                respAlert("info", "Verificando datos...");
+            },
             success: function(response) {
                 var response = "" + response;
                 var response = response.split(",");
                 if (response[0] == 1) {
                     respAlert("warning", response[1]);
                 } else {
-                    respAlert("success", response[1]);
+                  setTimeout(function() {
+                      respAlert("success", response[1]);
+                      redireccionar("Horas_Extras.php");
+                  }, 3000);
                 }
             }
         });
@@ -902,7 +908,7 @@ $(document).ready(function() {
                         }, 1000);
                         break;
                     case "3":
-                        respAlert("warning", "El horario de Entrada tiene que ser menor al de salida");
+                        respAlert("warning", "El horario de Entrada tiene que ser menor al de salida o el de Entrada mayor o igual a las 16:00:00");
                         break;
                     case "4":
                         respAlert("warning", "El Tiempo tien que ser en formato de 24hrs ej:13:00:00 o 07:00:00");

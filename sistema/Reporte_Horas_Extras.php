@@ -1,10 +1,6 @@
 <?php
 	include '../php/funciones.php';
 	include '../php/verificar_sesion.php';
-	if(trim($_POST['numDoc']) == ""){
-		header('Location: verEmpleados.php');
-		exit();
-	}
 	 ?>
 <!doctype html>
 <html lang="en">
@@ -21,6 +17,8 @@
     <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 	<!--  Material Dashboard CSS  -->
     <link href="../css/material-dashboard.css" rel="stylesheet"/>
+    <!-- Date -->
+		<link rel="stylesheet" href="../css/jquery.datepicker.css">
     <!--custom css-->
     <link rel="stylesheet"  href="../css/customMainCSS.css">
     <link rel="stylesheet" type="text/css" href="../css/icons.css" />
@@ -41,20 +39,16 @@
 	        <div class="content">
 	            <div class="container-fluid">
                 <?php
-                  $NumeroDocumento=$_POST["numDoc"];
-                  $empleado=new empleado_class();
-                  $empleado=getInfoEmpleado($NumeroDocumento);
-                  $NombreEmpleado=$empleado->getPrimernombre()." ".$empleado->getPrimerapellido()." ".$empleado->getSegundoapellido();
+                  $Nombre= $_SESSION['usuario_sesion']->getPrimernombre()." ".$_SESSION['usuario_sesion']->getPrimerapellido();
                  ?>
 	            	<div class="row">
-					        <div class="col-md-12">
+					        <div class="col-md-6">
 					            <div class="card">
 					                <div class="card-header card-header-icon" data-background-color="purple">
-					                    <i class="material-icons">library_books</i>
+					                    <i class="material-icons">contacts</i>
 					                </div>
-
 					                <div class="card-content">
-					                    <h4 class="card-title">Historial Prestaciones Laborales <?php echo $NombreEmpleado; ?></h4>
+					                    <h4 class="card-title">Reporte por Empleados</h4>
 					                    <div class="toolbar">
 					                        <!--        Here you can write extra buttons/actions for the toolbar              -->
 					                    </div>
@@ -62,35 +56,69 @@
 					                        <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
 					                            <thead>
 					                                <tr>
-					                                    <th>Fecha de Creacion</th>
-					                                    <th>Creado Por</th>
-					                                    <th class="disabled-sorting text-right">Acciones</th>
+					                                    <th>DUI</th>
+					                                    <th>Nombre</th>
+					                                    <th class="disabled-sorting text-right">Ir</th>
 					                                </tr>
 					                            </thead>
 					                            <tfoot>
 					                                <tr>
-                                            <th>Fecha de Creacion</th>
-                                            <th>Creado Por</th>
-					                                    <th class="text-right">Acciones</th>
+                                            <th>DUI</th>
+                                            <th>Nombre</th>
+					                                    <th class="text-right">Ir</th>
 					                                </tr>
 					                            </tfoot>
 
 					                            <tbody>
 					                            <!-- Desde aqui include Empleados_grid_table.php-->
-					                                <?php include '../php/Historial_Empleado_grid_table.php';
-                                              disp_historial_grid_table($NumeroDocumento);
-                                          ?>
+					                                <?php include '../php/get_Empleado_grid_table_RHExtas.php'; ?>
 					                            </tbody>
 					                        </table>
 					                    </div>
 					                </div><!-- end content-->
 					            </div><!--  end card  -->
 					        </div> <!-- end col-md-12 -->
+
+                  <!--  Otra tabla  -->
+                    <div class="col-md-6">
+											<div class="card">
+					                <div class="card-header card-header-icon" data-background-color="purple">
+					                    <i class="material-icons">card_travel</i>
+					                </div>
+					                <div class="card-content">
+					                    <h4 class="card-title">Reporte por Semana</h4>
+					                    <div class="toolbar">
+					                        <!--        Here you can write extra buttons/actions for the toolbar              -->
+					                    </div>
+					                    <div class="material-datatables">
+					                        <table id="datatables2" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+					                            <thead>
+					                                <tr>
+					                                    <th>FECHA</th>
+					                                    <th class="disabled-sorting text-right">PDF</th>
+					                                </tr>
+					                            </thead>
+					                            <tfoot>
+					                                <tr>
+                                            <th>FECHA</th>
+					                                    <th class="text-right">PDF</th>
+					                                </tr>
+					                            </tfoot>
+
+					                            <tbody>
+					                            <!-- Desde aqui include Empleados_grid_table.php-->
+					                                <?php include '../php/get_Rows.php';
+																					 get_Row_Fecha_Reporte_Semana($_SESSION['empresa']);
+																					?>
+					                            </tbody>
+					                        </table>
+					                    </div>
+					                </div><!-- end content-->
+					            </div><!--  end card  -->
+  				        </div>
+
+                  <!-- FIN -->
     				</div> <!-- end row -->
-
-
-
-
 	            </div>
 	        </div>
 	    </div>
@@ -144,10 +172,10 @@
 
 	<!-- TagsInput Plugin -->
 	<script src="../js/jquery.tagsinput.js"></script>
-
-
-
-
+  <!-- Material Dashboard DEMO methods, don't include it in your project! -->
+  <script src="../js/demo.js"></script>
+  <!--  DateTime -->
+  <script type="text/javascript" src="../js/jquery.datepicker.js"></script>
 
     <!-- Main js -->
     <script src="../js/main.js"></script>
@@ -157,6 +185,7 @@
 
 
     <script type="text/javascript">
+
 
 		$(document).ready(function() {
 			$('#datatables').DataTable({
@@ -194,7 +223,45 @@
 			});
 
 			$('.card .material-datatables label').addClass('form-group');
-		});
+		  });
+			//otra table
+			$(document).ready(function() {
+				$('#datatables2').DataTable({
+					"pagingType": "full_numbers",
+					"lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+					responsive: true,
+					language: {
+					search: "_INPUT_",
+					searchPlaceholder: "Search records",
+					}
+
+				});
+
+
+				var table = $('#datatables2').DataTable();
+
+				// Edit record
+				table.on( 'click', '.edit', function () {
+					$tr = $(this).closest('tr');
+
+					var data = table.row($tr).data();
+					//alert( 'You press on Row: ' + data[0] + ' ' + data[1] + ' ' + data[2] + '\'s row.' );
+				} );
+
+				// Delete a record
+				table.on( 'click', '.remove', function (e) {
+					$tr = $(this).closest('tr');
+					table.row($tr).remove().draw();
+					e.preventDefault();
+				} );
+
+				//Like record
+				table.on( 'click', '.like', function () {
+					alert('You clicked on Like button');
+				});
+
+				$('.card .material-datatables label').addClass('form-group');
+				});
 
 	</script>
 </html>

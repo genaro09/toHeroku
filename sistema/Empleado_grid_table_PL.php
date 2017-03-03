@@ -9,7 +9,7 @@
  		$result2=mysqli_query($cnx,$query2);
 		while ($row2=mysqli_fetch_array($result2)) {
 			$idCargos=$row2["idCargos"];
-			$query3=sprintf("SELECT * FROM empleado where idCargos='%s'",mysqli_real_escape_string($cnx,$idCargos));
+			$query3=sprintf("SELECT * FROM empleado where Activo=1 and idCargos='%s'",mysqli_real_escape_string($cnx,$idCargos));
 			$result3=mysqli_query($cnx,$query3);
 			while ($row3=mysqli_fetch_array($result3)) {
 				 echo "<tr>
