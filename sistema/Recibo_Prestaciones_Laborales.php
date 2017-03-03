@@ -740,7 +740,7 @@ function Revisar_ALDP($str,$n,$str_ALDP,$arreglo_de_ART){
     $str_ALDP= $str_ALDP."<td id='tdC' style='width:50%;font-size:9pt;padding:0.5mm;'><span style='font-size: 11px;'>".$arreglo_de_ART["S"]."</span></td>";
   }else if($str[$n]=="Aguinaldo"){
     $str_ALDP= $str_ALDP."<td id='tdC' style='width:50%;font-size:9pt;padding:0.5mm;'><span style='font-size: 11px;'>".$arreglo_de_ART["A"]."</span></td>";
-  }else if($str[$n]=="Liquidacion"){
+  }else if($str[$n]=="Indemnizacion"){
     $str_ALDP= $str_ALDP."<td id='tdC' style='width:50%;font-size:9pt;padding:0.5mm;'><span style='font-size: 11px;'>".$arreglo_de_ART["L"]."</span></td>";
   }else if($str[$n]=="RetiroVoluntario"){
     $str_ALDP= $str_ALDP."<td id='tdC' style='width:50%;font-size:9pt;padding:0.5mm;'><span style='font-size: 11px;'>".$arreglo_de_ART["RV"]."</span></td>";

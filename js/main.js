@@ -780,7 +780,7 @@ $(document).ready(function() {
                 HoraSalida = $tds.eq(2).find('input').val();
             // do something with productId, product, Quantity
             IdArray[i] = Id;
-            NombresArray[i]= Nombre;
+            NombresArray[i] = Nombre;
             HoraEntradaArray[i] = HoraEntrada;
             HoraSalidaArray[i] = HoraSalida;
         });
@@ -795,12 +795,12 @@ $(document).ready(function() {
                 HoraSalidaArray: JSON.stringify(HoraSalidaArray)
             },
             success: function(response) {
-                var response = ""+response;
+                var response = "" + response;
                 var response = response.split(",");
-                if(response[0]==1){
-                  respAlert("warning", response[1]);
-                }else{
-                  respAlert("success", response[1]);
+                if (response[0] == 1) {
+                    respAlert("warning", response[1]);
+                } else {
+                    respAlert("success", response[1]);
                 }
             }
         });

@@ -1,3 +1,4 @@
+<link rel="icon" type="image/png" href="../img/favicon.png" />
 <nav class="navbar navbar-transparent navbar-absolute">
 			    <div class="container-fluid">
 

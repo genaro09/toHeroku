@@ -9,8 +9,8 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	<link rel="apple-touch-icon" sizes="76x76" href="assets//img/apple-icon.png" />
-	<link rel="icon" type="image/png" href="assets//img/favicon.png" />
+	
+	<link rel="icon" type="image/png" href="../img/favicon.png" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<title>ASCAS, S.A. DE C.V.</title>
 	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
@@ -23,7 +23,7 @@
     <!--custom css-->
     <link rel="stylesheet"  href="../css/customMainCSS.css">
     <link rel="stylesheet" type="text/css" href="../css/icons.css" />
-    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
     <script src="../js/jquery-3.1.1.min.js" type="text/javascript"></script>
 
 </head>
