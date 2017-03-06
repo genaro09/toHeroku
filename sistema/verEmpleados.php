@@ -1,4 +1,4 @@
-<?php 
+<?php
 	include '../php/funciones.php';
 	include '../php/verificar_sesion.php';
 	 ?>
@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	
+
 	<link rel="icon" type="image/png" href="../img/favicon.png" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<title>ASCAS, S.A. DE C.V.</title>
@@ -41,7 +41,7 @@
 				        <div class="col-md-12">
 				            <div class="card">
 				                <div class="card-header card-header-icon" data-background-color="purple">
-				                    <i class="material-icons">assignment</i>
+				                    <i class="material-icons">contacts</i>
 				                </div>
 
 				                <div class="card-content">
@@ -82,7 +82,36 @@
 				            </div><!--  end card  -->
 				        </div> <!-- end col-md-12 -->
     				</div> <!-- end row -->
-
+						<div class="row">
+							<div class="col-md-12">
+								<div class="card" style="padding:10px;">
+									<div class="card-header card-header-icon" data-background-color="purple">
+											<i class="material-icons">assignment</i>
+									</div>
+									<div class="card-content">
+										<h4 class="card-title">Reporte Empleados Excel</h4>
+										<div class="toolbar">
+												<!--        Here you can write extra buttons/actions for the toolbar              -->
+										</div>
+										<div class="row">
+											<div class="col-md-4">
+												<form  method='post' action='PDF_Empleados.php'>
+													<input type='hidden' name='NitEmpresa' value="<?php echo json_decode($_SESSION['empresa'])?>">
+													<input type='hidden' name='aBuscar' value="1">
+					                <input type='submit' class="btn btn-success" value='Ver Empleados Activos'>
+												</form>
+											</div>
+											<div class="col-md-4">
+												<form  method='post' action='PDF_Empleados.php'>
+													<input type='hidden' name='NitEmpresa' value="<?php echo json_decode($_SESSION['empresa'])?>">
+													<input type='hidden' name='aBuscar' value="2">
+					                <input type='submit' class="btn btn-info" value='Ver Todos los Empleados'>
+											</div>
+										</div>
+									</div><!--  end card-content  -->
+								</div> <!--  end card  -->
+							</div> <!-- end col-md-12 -->
+						</div><!-- end row -->
 
 
 
@@ -152,7 +181,7 @@
 
 
     <script type="text/javascript">
-	
+
 		$(document).ready(function() {
 			$('#datatables').DataTable({
 				"pagingType": "full_numbers",

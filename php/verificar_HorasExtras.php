@@ -228,10 +228,10 @@ if($flag==0){
         $Tot=subsTwoTimes($HNocturnoMN,$HoraSalidaArray[$i]);
         $NHorasNocturnas=gmdate("H:i:s", (int)$Tot);
       }else{
-        $Tot=subsTwoTimes($HNocturnoMX,$HoraEntradaArray[$i]);
-        $NHorasDiurnas=gmdate("H:i:s", (int)$Tot);
-        $Tot=subsTwoTimes($HoraSalidaArray[$i],$HDiurnoMN);
+        $Tot=subsTwoTimes($HoraEntradaArray[$i],$HNocturnoMX);
         $NHorasNocturnas=gmdate("H:i:s", (int)$Tot);
+        $Tot=subsTwoTimes($HDiurnoMN,$HoraSalidaArray[$i]);
+        $NHorasDiurnas=gmdate("H:i:s", (int)$Tot);
       }
     }
     $query = sprintf("INSERT INTO horas_extras(NumeroDocumentoPor,NumeroDocumentoPara,NHorasDiurnas,NHorasNocturnas,Desde,Hasta,Fecha,NitEmpresa) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
