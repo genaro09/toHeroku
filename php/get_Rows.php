@@ -16,15 +16,16 @@ function get_Row_Perfil_Turno($idTurno){
 }
 function get_Row_Fecha_Reporte_Semana($NitEmpresa){
  	$cnx=cnx();
- 	$query=sprintf("select horas_extras.Fecha from horas_extras WHERE NitEmpresa='%s' GROUP BY Fecha ORDER BY Fecha DESC",mysqli_real_escape_string($cnx,$NitEmpresa));
+ 	$query=sprintf("select horas_extras.Fecha,horas_extras.NitEmpresa from horas_extras WHERE NitEmpresa='%s' GROUP BY Fecha ORDER BY Fecha DESC",mysqli_real_escape_string($cnx,$NitEmpresa));
  	$result=mysqli_query($cnx,$query);
 	while ($row=mysqli_fetch_array($result)) {
       echo "<tr>
          <td>".$row["Fecha"]."</td>
          <td class='text-right'>
            <div class='col-md-12'>
-             <form method='post' action='#'>
-               <input type='hidden' name='Fecha' value='".$row["Fecha"]."'>
+             <form method='post' action='PDF_Horas_Extras.php'>
+               <input type='hidden' name='FechaHorasExtras' value='".$row["Fecha"]."'>
+               <input type='hidden' name='NitEmpresa' value='".$row["NitEmpresa"]."'>
                <input type='submit' style='background: url(../img/icons/pdf.png);border: 0;' value='   '>
              </form>
            </div>

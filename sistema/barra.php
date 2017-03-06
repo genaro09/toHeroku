@@ -79,7 +79,7 @@
                           <li><a href='#'>Salarios</a></li>
                           <li>
                             <a data-toggle='collapse' href='#componentsExamples5'>
-                            <p>HorasExtras <b class='caret'></b> </p>
+                            <p>Horas Extras<b class='caret'></b> </p>
                             </a>
                             <div class='collapse' id='componentsExamples5'>
                             <ul class='nav'>

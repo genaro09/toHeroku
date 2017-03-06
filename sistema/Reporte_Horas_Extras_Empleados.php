@@ -65,7 +65,7 @@
                                               <th>Desde</th>
                                               <th>Hasta</th>
                                               <th>Fecha</th>
-					                                    <th class="disabled-sorting text-right">Ir</th>
+					                                    <th class="disabled-sorting text-right">Eliminar</th>
 					                                </tr>
 					                            </thead>
 					                            <tfoot>
@@ -76,7 +76,7 @@
                                             <th>Desde</th>
                                             <th>Hasta</th>
                                             <th>Fecha</th>
-					                                  <th class="text-right">Ir</th>
+					                                  <th class="text-right">Eliminar</th>
 					                                </tr>
 					                            </tfoot>
 
