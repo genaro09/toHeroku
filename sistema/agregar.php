@@ -167,6 +167,19 @@
 				}else echo "3";
 			}
 		break;
+		case '8':
+			//Cargos
+			if(empty($_POST["NitEmpresa"])||empty($_POST["NombreEmpresa"])){
+				echo "0";
+			}elseif(checkNombreEmpresa($_POST["NombreEmpresa"])){
+				echo "1";
+			}else{
+				$estado=AgregarCargos($_POST["NombreCargo"],$_POST["Descripcion"],$_POST["idDepartamento"],$_POST["PEmpleado"],$_POST["PPlanilla"]);
+				if($estado){
+					echo "2";
+				}else echo "3";
+			}
+		break;
 		default:
 			# code...
 			echo "nada";

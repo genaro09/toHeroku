@@ -219,6 +219,55 @@ $(document).ready(function() {
             }
         });
     });
+    //Agregar Empresa btnAEmpresa
+    $("#btnAEmpresa").click(function() {
+        var NitEmpresa = document.getElementById("NitEmpresa").value;
+        var NombreEmpresa = document.getElementById("NombreEmpresa").value;
+        var ActivaBloqueada = $("#ActivaBloqueada").val();
+        //alert("user: "+user+" - pass: "+contra);
+        $.ajax({
+            url: '../sistema/agregar.php',
+            type: 'POST',
+            data: {
+                opc: 8,
+                NitEmpresa: NitEmpresa,
+                NombreEmpresa: NombreEmpresa,
+                ActivaBloqueada: ActivaBloqueada
+            },
+            beforeSend: function() {
+                respAlert("info", "Verificando datos...");
+            },
+            success: function(data) {
+                console.log(data);
+                switch (data[0]) {
+                    case "0":
+                        respAlert("warning", "Llene todo los campos");
+                        break;
+                    case "1":
+                        respAlert("warning", "Ya Existe un Departamento con el mismo nombre");
+                        break;
+                    case "2":
+                        setTimeout(function() {
+                            respAlert("success", "Correcto...");
+                            redireccionar("departamento.php");
+                        }, 1000);
+                        break;
+                    case "3":
+                        respAlert("warning", "Error en base ");
+                        break;
+                }
+                //respAlert("success",data[0]);
+                /*setTimeout(function(){
+                  redireccionar("sistema/home.php");
+                },1000);*/
+            },
+            error: function(data) {
+                console.log(data);
+                respAlert("danger", "Error...");
+            }
+        });
+    });
+
     //Agregar Departamento btnADepartamento
     $("#btnADepartamento").click(function() {
         var NombreDepartamento = document.getElementById("NDepartamento").value;

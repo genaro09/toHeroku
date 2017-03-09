@@ -86,7 +86,7 @@
 					                    <i class="material-icons">card_travel</i>
 					                </div>
 					                <div class="card-content">
-					                    <h4 class="card-title">Reporte por Semana</h4>
+					                    <h4 class="card-title">Reporte Diario</h4>
 					                    <div class="toolbar">
 					                        <!--        Here you can write extra buttons/actions for the toolbar              -->
 					                    </div>
@@ -95,13 +95,15 @@
 					                            <thead>
 					                                <tr>
 					                                    <th>FECHA</th>
+																							<th>ESTADO</th>
 					                                    <th class="disabled-sorting text-right">PDF</th>
 					                                </tr>
 					                            </thead>
 					                            <tfoot>
 					                                <tr>
                                             <th>FECHA</th>
-					                                    <th class="text-right">PDF</th>
+																						<th>ESTADO</th>
+					                                  <th class="text-right">PDF</th>
 					                                </tr>
 					                            </tfoot>
 

@@ -1,8 +1,13 @@
 <?php
 include_once '../php/cn.php';
-$FechaHotasExtras=$_POST['FechaHorasExtras'];
-$NitEmpresa=$_POST['NitEmpresa'];
 $cnx=cnx();
+//Datos de las horas extras
+$idHorasExtras=$_POST["idHorasExtras"];
+$query=sprintf("SELECT * FROM horas_extras  where idHorasExtras='%s'",mysqli_real_escape_string($cnx,$idHorasExtras));
+$result=mysqli_query($cnx,$query);
+$row=mysqli_fetch_array($result);
+$FechaHotasExtras=$row["Fecha"];
+$NitEmpresa=$row["NitEmpresa"];
 //Nombre Empresa
 $query=sprintf("SELECT * FROM empresa where NitEmpresa='%s'",mysqli_real_escape_string($cnx,$NitEmpresa));
 $result=mysqli_query($cnx,$query);
@@ -10,7 +15,7 @@ $row=mysqli_fetch_array($result);
 $NombreEmpresa=$row["NombreEmpresa"];
 //FIN N EMpresa
 
-$query=sprintf("SELECT horas_extras.*,emp1.PrimerNombre AS PrimerNombre1,emp1.PrimerApellido AS PrimerApellido1,emp1.SegundoApellido AS SegundoApellido1,emp2.PrimerNombre AS PrimerNombre2,emp2.PrimerApellido AS PrimerApellido2,emp2.SegundoApellido AS SegundoApellido2 FROM horas_extras INNER JOIN empleado emp1 INNER JOIN empleado emp2 WHERE horas_extras.NumeroDocumentoPor=emp2.NumeroDocumento AND horas_extras.NumeroDocumentoPara=emp1.NumeroDocumento AND horas_extras.Fecha='%s' AND horas_extras.NitEmpresa='%s' ORDER BY horas_extras.NumeroDocumentoPor ASC",mysqli_real_escape_string($cnx,$FechaHotasExtras),mysqli_real_escape_string($cnx,$NitEmpresa));
+$query=sprintf("SELECT col_horas_extras.*,emp1.PrimerNombre AS PrimerNombre1,emp1.PrimerApellido AS PrimerApellido1,emp1.SegundoApellido AS SegundoApellido1,emp2.PrimerNombre AS PrimerNombre2,emp2.PrimerApellido AS PrimerApellido2,emp2.SegundoApellido AS SegundoApellido2 FROM col_horas_extras INNER JOIN horas_extras INNER JOIN empleado emp1 INNER JOIN empleado emp2 WHERE col_horas_extras.idHorasExtras=horas_extras.idHorasExtras AND col_horas_extras.NumeroDocumentoPor=emp2.NumeroDocumento AND col_horas_extras.NumeroDocumentoPara=emp1.NumeroDocumento AND horas_extras.idHorasExtras='%s' ORDER BY col_horas_extras.Desde ASC",mysqli_real_escape_string($cnx,$idHorasExtras));
 $result=mysqli_query($cnx,$query);
 $NumeroDeS=0;//Cambio de Supervisor??
 $NumeroColAux=0;
@@ -170,7 +175,7 @@ $html = '
 include("../MPDF/mpdf.php");
 $mpdf=new mPDF('c');
 $mpdf->WriteHTML($html);
-$NombreArchivo="REF.pdf";
+$NombreArchivo=$FechaHotasExtras.".pdf";
 $mpdf->Output($NombreArchivo, 'I');
 exit;
 

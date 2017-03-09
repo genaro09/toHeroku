@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	
+
 	<link rel="icon" type="image/png" href="../img/favicon.png" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<title>ASCAS, S.A. DE C.V.</title>
@@ -53,7 +53,7 @@
 									<h4 class="title">Agregar Empresas</h4>
 								</div>
 								<div class="content">
-									<form id="form_actualizarUser" role="form">
+									<form role="form">
 										<div class="row">
 											<div class="col-md-4">
 												<div class="form-group">
@@ -69,9 +69,9 @@
 											</div>
 											<div class="col-md-4">
 												<div class="form-group">
-													<label for="exampleInputEmail1">Tipo Empresa<star>*</star></label>
+													<label>Tipo Empresa<star>*</star></label>
 													<br>
-														<select id="descanso" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
+														<select id="ActivaBloqueada" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
 															<option value="0" selected>ACTIVA</option>
 															<option value="2" >BLOQUEADA</option>
 														</select>
@@ -88,10 +88,6 @@
 													<h5 class="">No se podra modificar el Nit o eliminar Empresa</h5>
 												</div>
 											</div>
-											<?php
-												$NitEmpresa=getNitEmpresa($_SESSION['usuario_sesion']);
-											?>
-											<input type='hidden' id='NitEmpresa' value='<?php echo $NitEmpresa  ?>'>
 											<div class="col-md-12">
 	                       <div class="text-center" id="respuestaAlert"></div>
 	                    </div>

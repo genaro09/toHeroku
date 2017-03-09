@@ -60,7 +60,7 @@ if(empty($Fecha)){
           $Desde=HourToNum($row["Desde"]);//Hora a que entra a trabajar
           $Hasta=HourToNum($row["Hasta"]);//Hora que sale de trabajar
           //Revisar si ya esta Guardado
-          $query2=sprintf("SELECT Desde, Hasta FROM `horas_extras` WHERE Fecha='%s' AND NumeroDocumentoPara='%s'",mysqli_real_escape_string($cnx,$Fecha),mysqli_real_escape_string($cnx,$value));
+          $query2=sprintf("SELECT col_horas_extras.Desde, col_horas_extras.Hasta FROM horas_extras INNER JOIN col_horas_extras WHERE horas_extras.idHorasExtras=col_horas_extras.idHorasExtras AND horas_extras.Fecha='%s' AND col_horas_extras.NumeroDocumentoPara='%s'",mysqli_real_escape_string($cnx,$Fecha),mysqli_real_escape_string($cnx,$value));
           $resul2=mysqli_query($cnx,$query2);
           $row2=mysqli_fetch_array($resul2);
           if($row2[0]!=""){//Encontro algo
@@ -185,8 +185,71 @@ if(empty($Fecha)){
   $i++;
   }
 }
+//Revisar si no existen horas similares de la misma pspell_add_to_personal
+//$HoraEntradaArray[$i]>$HoraSalidaArray[$i]
+$k=0;
+foreach ($IdArray as &$value) {
+    $countAuxR=0;//Contador de recurrencia
+    $j=0;
+    $contadorParaArraysRepetidos=0;
+    //Revisar que las horas vengan en el formato
+    foreach ($IdArray as &$valueAux) {
+      if($value==$valueAux){
+        //($Desde<=$HoraEntrada)&&($HoraEntrada<$Hasta)
+        if(($HoraEntradaArray[$j]<=$HoraEntradaArray[$k])&&($HoraEntradaArray[$k]<$HoraSalidaArray[$j])){
+          $countAuxR++;
+        }
+        //($Desde<$HoraSalida)&&($HoraSalida<=$Hasta)
+        if(($HoraEntradaArray[$j]<$HoraSalidaArray[$k])&&($HoraSalidaArray[$k]<=$HoraSalidaArray[$j])){
+          $countAuxR++;
+        }
+
+      }
+      if($countAuxR>2){
+        echo "1, Error: las horas extras de ".$NombresArray[$k]." desde ".$HoraEntradaArray[$k]."-".$HoraSalidaArray[$k]." se encuentran 2 veces revisar las horas colocadas,";
+        $flag=1;
+        break;
+      }
+      $j++;
+    }
+    $k++;
+  }
+
+
+//FIN Revisar si una hora esta dentro de otra
+
 //Si $flag==0 guardar Horas Extras
 //echo "1, El ND es".$user->getNumerodocumento()." Empresa:".$Nitempresa;
+if($flag==0){
+  $query=sprintf("SELECT * FROM horas_extras where NitEmpresa='%s' AND Fecha='%s'",mysqli_real_escape_string($cnx,$Nitempresa),mysqli_real_escape_string($cnx,$Fecha));
+  $resul=mysqli_query($cnx,$query);
+  $row=mysqli_fetch_array($resul);
+  if($row[0]!=""){
+    $IsHEExist=TRUE;
+    $idHorasExtras=$row["idHorasExtras"];
+  }else
+    $IsHEExist=FALSE;
+  if(!$IsHEExist){
+    $query = sprintf("INSERT INTO horas_extras(NitEmpresa,Fecha,EstadoHorasExternas) VALUES ('%s','%s','%s')",
+      mysqli_real_escape_string($cnx,$Nitempresa),
+      mysqli_real_escape_string($cnx,$Fecha),
+      mysqli_real_escape_string($cnx,"0")
+      );
+    $estado = mysqli_query($cnx,$query);
+    if(!$estado){
+      $flag=1;
+      echo "1, ERROR no se pudo insertar en la base desde La Hora Extra ";
+      break;
+    }
+    if($flag==0){
+      $query=sprintf("SELECT * FROM horas_extras where NitEmpresa='%s' AND Fecha='%s'",mysqli_real_escape_string($cnx,$Nitempresa),mysqli_real_escape_string($cnx,$Fecha));
+      $resul=mysqli_query($cnx,$query);
+      $row=mysqli_fetch_array($resul);
+      $idHorasExtras=$row["idHorasExtras"];
+    }
+  }
+
+}
 if($flag==0){
   $i=0;
   //Definimos las variables de MAX y Min para no abrir a cada rato la base
@@ -234,15 +297,18 @@ if($flag==0){
         $NHorasDiurnas=gmdate("H:i:s", (int)$Tot);
       }
     }
-    $query = sprintf("INSERT INTO horas_extras(NumeroDocumentoPor,NumeroDocumentoPara,NHorasDiurnas,NHorasNocturnas,Desde,Hasta,Fecha,NitEmpresa) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
-			mysqli_real_escape_string($cnx,$NumeroDocumentoPor),
+    //$idHorasExtras
+    date_default_timezone_set('America/El_Salvador');
+    $dateTime = date("Y-m-d H:i:s");
+    $query = sprintf("INSERT INTO col_horas_extras(idHorasExtras,NumeroDocumentoPor,NumeroDocumentoPara,NHorasDiurnas,NHorasNocturnas,Desde,Hasta,FechaCreada) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
+      mysqli_real_escape_string($cnx,$idHorasExtras),
+      mysqli_real_escape_string($cnx,$NumeroDocumentoPor),
 			mysqli_real_escape_string($cnx,$NumeroDocumentoPara),
 			mysqli_real_escape_string($cnx,$NHorasDiurnas),
 			mysqli_real_escape_string($cnx,$NHorasNocturnas),
       mysqli_real_escape_string($cnx,$Desde),
 			mysqli_real_escape_string($cnx,$Hasta),
-			mysqli_real_escape_string($cnx,$Fecha),
-			mysqli_real_escape_string($cnx,$Nitempresa)
+			mysqli_real_escape_string($cnx,$dateTime)
 			);
 		$estado = mysqli_query($cnx,$query);
     if(!$estado){

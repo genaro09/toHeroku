@@ -30,6 +30,52 @@
 		return $flag;
 
 	}
+	function GuardarArchivoHorasExtrasPDF($idHorasExtras,$rutaDocumento){
+		$cnx=cnx();
+		$query=sprintf("INSERT INTO horas_extras_documentos( idHorasExtras, tipoDocumento, rutaDocumento) VALUES ('%s','%s','%s')",
+		mysqli_real_escape_string($cnx,$idHorasExtras),
+		mysqli_real_escape_string($cnx,"PDF"),
+		mysqli_real_escape_string($cnx,$rutaDocumento)
+		);
+		$estado = mysqli_query($cnx,$query);
+
+		if($estado==1){
+			$query = sprintf("UPDATE horas_extras SET  EstadoHorasExternas = '%s' WHERE idHorasExtras = '%s'",
+			mysqli_real_escape_string($cnx,"1"),
+			mysqli_real_escape_string($cnx,$idHorasExtras)
+			);
+			$estado = mysqli_query($cnx,$query);
+		}
+		mysqli_close($cnx);
+		return $estado;
+	}
+	function getFileHorasExtras($idHorasExtras){
+		$cnx=cnx();
+		$query=sprintf("SELECT rutaDocumento  FROM horas_extras_documentos where idHorasExtras='%s' ",mysqli_real_escape_string($cnx,$idHorasExtras));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		mysqli_close($cnx);
+		return $row["rutaDocumento"];
+	}
+
+
+	function DatosHorasExtras($idHorasExtras){
+		$cnx=cnx();
+		$data['exist']="0";
+		$query=sprintf("SELECT * FROM horas_extras where idHorasExtras='%s'",mysqli_real_escape_string($cnx,$idHorasExtras));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!=""){
+			$flag=TRUE;
+			$data['exist']="1";
+			$data['EstadoHorasExternas']=$row["EstadoHorasExternas"];
+			$data['Fecha']=$row["Fecha"];
+		}
+
+		mysqli_close($cnx);
+		return $data;
+
+	}
 	function isEmpresaExist($NitEmpresa){
 		$cnx=cnx();
 		$flag=FALSE;
@@ -525,10 +571,10 @@ function eliminarDepartamento($idDepartamento,$NitEmpresa){
 	return $estado;
 }
 //eliminarHoraExtra
-function eliminarHoras_extras($IdHorasExtras){
+function eliminarHoras_extras($IdColHorasExtras){
 		$cnx=cnx();
 		$estado=1;
-		$query=sprintf("DELETE FROM horas_extras WHERE IdHorasExtras='%s'",mysqli_real_escape_string($cnx,$IdHorasExtras));
+		$query=sprintf("DELETE FROM col_horas_extras WHERE IdColHorasExtras='%s'",mysqli_real_escape_string($cnx,$IdColHorasExtras));
 		$estado = mysqli_query($cnx, $query);
 
 	mysqli_close($cnx);
@@ -613,6 +659,7 @@ function eliminarCargos($idCargos,$NitEmpresa){
 		return $estado;
 
 	}
+
 	function AgregarDepartamento($NombreDepartamento,$CuentaContable,$idSalario_Minimo,$NitEmpresa){
 		$cnx = cnx();
 		$query = sprintf("INSERT INTO departamento(NitEmpresa,NombreDepartamento,idSalario_Minimo,CuentaContable) VALUES ('%s','%s','%s','%s')",
