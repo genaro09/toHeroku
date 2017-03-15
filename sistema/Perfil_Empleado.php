@@ -529,7 +529,7 @@
 																	</div>
 																	<div class="col-sm-4">
 																		<div class="form-group">
-																			<label>Area de Trabajo<star>*</star></label>
+																			<label>Departamento<star>*</star></label>
 																			<br>
 																			<select id='AreaTrabajo' name="AreaTrabajo" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
 																					 <?php

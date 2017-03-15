@@ -41,6 +41,105 @@
                 <?php
                   $Nombre= $_SESSION['usuario_sesion']->getPrimernombre()." ".$_SESSION['usuario_sesion']->getPrimerapellido();
                  ?>
+								 <!--  cabe   -->
+								 <div class="row">
+									 <div class="col-md-12">
+										 <div class="card">
+												 <div class="row">
+													 <div class="card-header card-header-icon" data-background-color="purple">
+ 					                    <i class="material-icons">equalizer</i>
+ 					                </div>
+ 					                <div class="card-content">
+ 					                    <h4 class="card-title">Reporte Horas Extras</h4>
+ 					                    <div class="material-datatables">
+																<form>
+																	 <div class="col-md-3">
+
+																		 <label>Fecha de Inicio:</label>
+																		 <br>
+																		 <select id='FInicio' name="FInicio" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+																		 <?php
+																		 $now = new \DateTime('now');
+																		 $month = $now->format('m');
+																		 $year = $now->format('Y');
+																		 $Meses=array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+																		 for($j=2000;$j<$year;$j++){
+																			 for($i=1;$i<13;$i++){
+																				 	if($i<10){
+																						$k="0".$i;
+																					}else $k=$i;
+																				  echo "<option value='".$i."/".$j."'>".$Meses[$i-1]."/".$j."</option>";
+																			 }
+																		 }
+																		 //current year
+																		 	$j=$year;
+																			 for($i=1;$i<$month;$i++){
+																				 	if($i<10){
+																						$k="0".$i;
+																					}else $k=$i;
+																				  echo "<option value='".$i."/".$j."'>".$Meses[$i-1]."/".$j."</option>";
+																			 }
+																		 echo "<option selected value='".$month."/".$year."'>".$Meses[$month-1]."/".$year."</option>";
+																		 $j=$year;
+																			for($i=$month+1;$i<13;$i++){
+																				 if($i<10){
+																					 $k="0".$i;
+																				 }else $k=$i;
+																				 echo "<option value='".$i."/".$j."'>".$Meses[$i-1]."/".$j."</option>";
+																			}
+																		  ?>
+																		</select>
+																	</div>
+																	<div class="col-md-3">
+																		<label>Departamento:</label>
+																		<br>
+																		<select id='AreaTrabajo' name="AreaTrabajo" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+																				 <option value='0'>TODOS LOS DEPARTAMENTOS</option>
+																				 <?php
+																					include 'get_Departamentos.php';
+																					get_TALLDepartamentos();
+																				 ?>
+																		</select>
+															 		</div>
+																 <div class="col-md-3">
+																	 <label>Tipo Pago:</label>
+																	 <br>
+																	 <select id='TipoReporte' name="TipoReporte" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+																				<?php
+																					printTipoReporte($year,$month)
+																				?>
+																	 </select>
+																</div>
+																<div class="col-md-3">
+																	<div style="height:23px;"></div>
+																	<input  type='hidden' class='form-control' id='Fechas'>
+																	<a href="#" id="btnReporteHorasExtrasGeneral" class="btn btn-primary btn-fill pull-right">Generar Reporte</a>
+																</div>
+																	<div class="row">
+																		<div class="col-md-12">
+																			<div class="text-center" id="respuestaAlert"></div>
+																		</div>
+																	</div>
+																	<div class="clearfix"></div>
+															</form>
+															<form method="POST" target="_blank" action="PDF_Reporte_Horas_Extras.php" id="PDFUserForm">
+																<input type="hidden" id="FechaInicio" name="FechaInicio" />
+																<input type="hidden" id="FechaFin" name="FechaFin" />
+																<input type="hidden" id="Departamento" name="Departamento" />
+																<input type="hidden" id="TPago" name="TPago" />
+																<input type="hidden" id="opc" name="opc" />
+															</form>
+														</div>
+													</div>
+												</div>
+
+										 </div>
+									 </div>
+								 </div>
+
+
+
+								 <!--  Cuadros   -->
 	            	<div class="row">
 					        <div class="col-md-6">
 					            <div class="card">
@@ -188,6 +287,25 @@
 
     <script type="text/javascript">
 
+
+
+		$(document).ready(function(){
+		    $("#FInicio").change(function(){
+				  var id=$("#FInicio").val();
+				  var dataString = 'id='+ id;
+				  $.ajax({
+				   type: "POST",
+				   url: "../php/get_TipoReporte.php",
+				   data: dataString,
+				   cache: false,
+				   success: function(html)
+				   {
+				      $("#TipoReporte").html(html);
+				   }
+				   });
+
+		    });
+		});
 
 		$(document).ready(function() {
 			$('#datatables').DataTable({

@@ -101,7 +101,7 @@
 												<div class="form-group">
 													<label for="exampleInputEmail1">Año</label>
 													<br>
-														<select id="annio" name="annio" class="selectpicker">
+														<select id="annio" name="annio" class='form-control selectpicker' data-style='btn-default btn-block' data-menu-style='dropdown-blue'>
 															<?php
 																$year=date("Y");
 																for($i = 30; $i >= 1; $i--) {
@@ -121,7 +121,7 @@
 												<div class="form-group">
 													<label for="exampleInputEmail1">Semana</label>
 													<br>
-														<select id="semana" name="semana" class="selectpicker">
+														<select id="semana" name="semana" class="form-control selectpicker" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
 															<?php
 																imprimirSemana($year);
 															?>
@@ -142,7 +142,7 @@
 													<div class="form-group">
 														<label for="exampleInputEmail1">Turno</label>
 														<br>
-														<select id="idTurno" name="idTurno">
+														<select id="idTurno" name="idTurno" class="form-control selectpicker" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
 															<option>Ninguna</option>
 														<?php
 															$NitEmpresa=getNitEmpresa($_SESSION['usuario_sesion']);

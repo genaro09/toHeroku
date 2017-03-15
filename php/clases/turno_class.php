@@ -40,6 +40,12 @@ class turno_class
      */
     private $nitempresa;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="$Periodo_Pago", type="integer")
+     */
+    private $Periodo_Pago;
 
     /**
      * Set nombreturno
@@ -64,6 +70,33 @@ class turno_class
     {
         return $this->nombreturno;
     }
+
+
+
+        /**
+         * Set Periodo_Pago
+         *
+         * @param integer $Periodo_Pago
+         *
+         * @return Turno
+         */
+        public function setperiodo_Pago($Periodo_Pago)
+        {
+            $this->Periodo_Pago = $Periodo_Pago;
+
+            return $this;
+        }
+
+        /**
+         * Get Periodo_Pago
+         *
+         * @return integer
+         */
+        public function getperiodo_Pago()
+        {
+            return $this->Periodo_Pago;
+        }
+
 
     /**
      * Set desde
@@ -195,4 +228,3 @@ class turno_class
         return $this->nitempresa;
     }
 }
-

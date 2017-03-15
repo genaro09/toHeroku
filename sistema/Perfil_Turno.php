@@ -87,7 +87,7 @@
 															<div class="form-group">
 																<label for="exampleInputEmail1">Descanso<star>*</star></label>
 																<br>
-																	<select id="descanso" class="selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
+																	<select id="descanso" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
 																		<?php
 																			if($turno->getDescanso()==1){
 																				echo "
@@ -125,6 +125,31 @@
 															<div class="form-group">
 																<label for="exampleInputEmail1">Tiempo de Descanso<star>*</star></label>
 																<input id="H_Descanso" type="text" class="form-control timepicker" placeholder="01:00" value="<?php echo $turno->getHDescanso(); ?>" required/>
+															</div>
+														</div>
+														<div class="col-md-4">
+															<div class="form-group">
+																<label>Periodo de Pago<star>*</star></label>
+																<br>
+																	<select id="PPago" name="PPago" class="form-control selectpicker" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+																		<?php
+																		$PPago=$turno->getperiodo_Pago();
+																		$areglo = array('10'=>"Mensual",'30'=>"Quincenal",'20'=>"Catorcenal",'40'=>"Semanal" );
+																		$arrayAux = array('10','30','20','40');
+																		$flag=0;
+																		for($i=0;$i<sizeof($arrayAux);$i++){
+																			if(strcmp($arrayAux[$i], (string)$PPago)==0){
+																				$flag=1;
+																				echo "<option selected value='".$arrayAux[$i]."'>".$areglo[$arrayAux[$i]]."</option>";
+																			}else{
+																				echo "<option value='".$arrayAux[$i]."'>".$areglo[$arrayAux[$i]]."</option>";
+																			}
+																		}
+																		if($flag==0){
+																			echo "<option selected value='0'>Ninguno</option>";
+																		}
+																		 ?>
+																	</select>
 															</div>
 														</div>
 														<div class="col-md-4">

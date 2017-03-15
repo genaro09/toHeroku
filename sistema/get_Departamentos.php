@@ -17,6 +17,17 @@
 		mysqli_close($cnx);
 	}
 
+	function get_TALLDepartamentos(){
+		$NitEmpresa=getNitEmpresa($_SESSION['usuario_sesion']);
+		$cnx=cnx();
+		$query=sprintf("SELECT * FROM departamento where NitEmpresa='%s'",mysqli_real_escape_string($cnx,$NitEmpresa));
+		$result=mysqli_query($cnx,$query);
+		while ($row=mysqli_fetch_array($result)) {
+			echo "<option value='".$row["idDepartamento"]."'>".$row["NombreDepartamento"]."</option>";
+		}
+		mysqli_close($cnx);
+	}
+
 	function get_ALLDepartamentos($NitEmpresa){
 		$cnx=cnx();
 		$query=sprintf("SELECT * FROM departamento where NitEmpresa='%s'",mysqli_real_escape_string($cnx,$NitEmpresa));

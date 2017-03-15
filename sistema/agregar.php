@@ -147,8 +147,10 @@
 				echo "0";
 			}elseif(checkNombreDepartamento($_POST["NombreDepartamento"],$_POST["NitEmpresa"])){
 				echo "1";
-			}else{
-				$estado=AgregarDepartamento($_POST["NombreDepartamento"],$_POST["CuentaContable"],$_POST["idSalario_Minimo"],$_POST["NitEmpresa"]);
+			}elseif(strcmp($_POST["idCod_Municipio"],"0")==0){
+        echo "4";
+      }else{
+				$estado=AgregarDepartamento($_POST["NombreDepartamento"],$_POST["CuentaContable"],$_POST["idSalario_Minimo"],$_POST["NitEmpresa"],$_POST["idCod_Municipio"]);
 				if($estado){
 					echo "2";
 				}else echo "3";

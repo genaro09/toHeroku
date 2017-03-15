@@ -98,6 +98,13 @@
 		mysqli_close($cnx);
 		return $flag;
 	}
+	function obtFromEmployDepart($NumeroDocumento){
+		$cnx=cnx();
+		$query=sprintf("SELECT departamento.idCod_Municipio FROM empleado INNER JOIN cargos INNER JOIN departamento where empleado.NumeroDocumento='%s' AND empleado.idCargos=cargos.idCargos AND cargos.idDepartamento=departamento.idDepartamento",mysqli_real_escape_string($cnx,$NumeroDocumento));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		return $row["idCod_Municipio"];
+	}
 	function displayDepartamentos($NitEmpresa,$flag){
 		if($flag==0){
 			$cnx=cnx();
@@ -197,6 +204,14 @@
 		mysqli_close($cnx);
 		return $flag;
 	}
+	function obtFechadHorasExtras($idHorasExtras){
+		$cnx=cnx();
+		$query=sprintf("SELECT * FROM horas_extras where idHorasExtras='%s'",mysqli_real_escape_string($cnx,$idHorasExtras));
+		$result=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($result);
+		mysqli_close($cnx);
+		return $row["Fecha"];
+	}
 	function getInfoUser($user){
 		$cnx=cnx();
 		$query=sprintf("SELECT * FROM empleado where NumeroDocumento='%s'",mysqli_real_escape_string($cnx,$user));
@@ -284,6 +299,7 @@
 			$turno->setHasta($row["Hasta"]);
 			$turno->setDescanso($row["Descanso"]);
 			$turno->setHDescanso($row["H_Descanso"]);
+			$turno->setperiodo_Pago($row["Periodo_Pago"]);
 		}
 		mysqli_close($cnx);
 		return $turno;
@@ -333,7 +349,7 @@
 
 	function getSalarioMinimo($Idcargos){
 		$cnx=cnx();
-		$query=sprintf("SELECT Salario_Mes from salarios_minimos INNER JOIN departamento ON salarios_minimos.idSalario_Minimo=departamento.idSalario_Minimo INNER JOIN cargos ON departamento.idDepartamento=cargos.idDepartamento WHERE departamento.idDepartamento='%s'",mysqli_real_escape_string($cnx,$Idcargos));
+		$query=sprintf("SELECT Salario_Mes from salarios_minimos INNER JOIN departamento ON salarios_minimos.idSalario_Minimo=departamento.idSalario_Minimo INNER JOIN cargos ON departamento.idDepartamento=cargos.idDepartamento WHERE cargos.idCargos='%s'",mysqli_real_escape_string($cnx,$Idcargos));
 		$result=mysqli_query($cnx,$query);
 		$Salario_Mes=mysqli_fetch_array($result);
 		mysqli_close($cnx);
@@ -382,7 +398,9 @@
 			$departamento = new departamento_class();
 			$departamento->setNitempresa($row["NitEmpresa"]);
 			$departamento->setNombredepartamento($row["NombreDepartamento"]);
+			$departamento->setIdCod_Municipio($row["idCod_Municipio"]);
 			$departamento->setCuentacontable($row["CuentaContable"]);
+			$departamento->setidSalario_Minimo($row["idSalario_Minimo"]);
 		}
 		mysqli_close($cnx);
 		return $departamento;
@@ -474,12 +492,13 @@
 		mysqli_close($cnx);
 		return $estado;
 	}
-	function UpdateDepartamento($NombreDepartamento,$CuentaContable,$idSalario_Minimo,$idDepartamento){
+	function UpdateDepartamento($NombreDepartamento,$CuentaContable,$idSalario_Minimo,$idDepartamento,$idCod_Municipio){
 		$cnx=cnx();
-		$query = sprintf("UPDATE departamento SET  NombreDepartamento = '%s',idSalario_Minimo = '%s',CuentaContable = '%s' WHERE idDepartamento = '%s'",
+		$query = sprintf("UPDATE departamento SET  NombreDepartamento = '%s',idSalario_Minimo = '%s',CuentaContable = '%s',idCod_Municipio = '%s' WHERE idDepartamento = '%s'",
 		mysqli_real_escape_string($cnx,$NombreDepartamento),
 		mysqli_real_escape_string($cnx,$idSalario_Minimo),
 		mysqli_real_escape_string($cnx,$CuentaContable),
+		mysqli_real_escape_string($cnx,$idCod_Municipio),
 		mysqli_real_escape_string($cnx,$idDepartamento)
 		);
 		$estado = mysqli_query($cnx,$query);
@@ -644,15 +663,16 @@ function eliminarCargos($idCargos,$NitEmpresa){
 		return $estadoT;
 
 	}
-	function agregarTurno($NitEmpresa,$nombreTurno,$Desde,$Hasta,$Descanso,$H_Descanso){
+	function agregarTurno($NitEmpresa,$nombreTurno,$Desde,$Hasta,$Descanso,$H_Descanso,$Periodo_Pago){
 		$cnx = cnx();
-		$query = sprintf("INSERT INTO turno(NitEmpresa,nombreTurno,Desde,Hasta,Descanso,H_Descanso) VALUES ('%s','%s','%s','%s','%s','%s')",
+		$query = sprintf("INSERT INTO turno(NitEmpresa,nombreTurno,Desde,Hasta,Descanso,H_Descanso,Periodo_Pago) VALUES ('%s','%s','%s','%s','%s','%s','%s')",
 			mysqli_real_escape_string($cnx,$NitEmpresa),
 			mysqli_real_escape_string($cnx,$nombreTurno),
 			mysqli_real_escape_string($cnx,$Desde),
 			mysqli_real_escape_string($cnx,$Hasta),
 			mysqli_real_escape_string($cnx,$Descanso),
-			mysqli_real_escape_string($cnx,$H_Descanso)
+			mysqli_real_escape_string($cnx,$H_Descanso),
+			mysqli_real_escape_string($cnx,$Periodo_Pago)
 		);
 		$estado = mysqli_query($cnx, $query);
 		mysqli_close($cnx);
@@ -660,13 +680,14 @@ function eliminarCargos($idCargos,$NitEmpresa){
 
 	}
 
-	function AgregarDepartamento($NombreDepartamento,$CuentaContable,$idSalario_Minimo,$NitEmpresa){
+	function AgregarDepartamento($NombreDepartamento,$CuentaContable,$idSalario_Minimo,$NitEmpresa,$idCod_Municipio){
 		$cnx = cnx();
-		$query = sprintf("INSERT INTO departamento(NitEmpresa,NombreDepartamento,idSalario_Minimo,CuentaContable) VALUES ('%s','%s','%s','%s')",
+		$query = sprintf("INSERT INTO departamento(NitEmpresa,NombreDepartamento,idSalario_Minimo,CuentaContable,idCod_Municipio) VALUES ('%s','%s','%s','%s','%s')",
 			mysqli_real_escape_string($cnx,$NitEmpresa),
 			mysqli_real_escape_string($cnx,$NombreDepartamento),
 			mysqli_real_escape_string($cnx,$idSalario_Minimo),
-			mysqli_real_escape_string($cnx,$CuentaContable)
+			mysqli_real_escape_string($cnx,$CuentaContable),
+			mysqli_real_escape_string($cnx,$idCod_Municipio)
 		);
 		$estado = mysqli_query($cnx, $query);
 		mysqli_close($cnx);
@@ -715,14 +736,15 @@ function eliminarCargos($idCargos,$NitEmpresa){
 		return $estado;
 	}
 
-	function actualizarTurno($idTurno,$nombreTurno,$Desde,$Hasta,$Descanso,$H_Descanso){
+	function actualizarTurno($idTurno,$nombreTurno,$Desde,$Hasta,$Descanso,$H_Descanso,$Periodo_Pago){
 		$cnx = cnx();
-		$query = sprintf("UPDATE turno SET nombreTurno = '%s', Desde ='%s', Hasta = '%s', Descanso = '%s', H_Descanso = '%s' WHERE idTurno = '%s'",
+		$query = sprintf("UPDATE turno SET nombreTurno = '%s', Desde ='%s', Hasta = '%s', Descanso = '%s', H_Descanso = '%s', Periodo_Pago = '%s' WHERE idTurno = '%s'",
 			mysqli_real_escape_string($cnx, $nombreTurno),
 			mysqli_real_escape_string($cnx, $Desde),
 			mysqli_real_escape_string($cnx, $Hasta),
 			mysqli_real_escape_string($cnx, $Descanso),
 			mysqli_real_escape_string($cnx, $H_Descanso),
+		 	mysqli_real_escape_string($cnx,$Periodo_Pago),
 			mysqli_real_escape_string($cnx, $idTurno)
 			);
 		$estado = mysqli_query($cnx, $query);
@@ -745,6 +767,27 @@ function eliminarCargos($idCargos,$NitEmpresa){
 	        echo $valor."</option>";
     	}
 	}
+//ReporteHorasExtras TipoReporte
+	function printTipoReporte($year,$month){
+
+	  $days=cal_days_in_month(CAL_GREGORIAN,$month,$year);
+		echo "<option value='10'>Mensual</option>";
+			//Los value 20 catorcenal
+		for($i=0;$i<ceil($days/14);$i++){
+			$j=$i+1;
+			echo "<option value='2".$j."'>".$j." Catorcena</option>";
+		}
+			//Los value 30 quincenal
+		echo "<option value='31'>1 Quincena</option>";
+		echo "<option value='32'>2 Quincena</option>";
+
+		//Los value 40 semanal
+		for($i=0;$i<ceil($days/7);$i++){
+			$j=$i+1;
+			echo "<option value='4".$j."'>".$j." Semana</option>";
+		}
+	}
+
 	function obtToUpdateSemanal($NitEmpresa,$semana,$annio,$idTurno){
 		$cnx = cnx();
 		$query=sprintf("SELECT * FROM semanal where NitEmpresa='%s' and nSemana='%s' and anno='%s' and idTurno='%s' ",
@@ -756,6 +799,23 @@ function eliminarCargos($idCargos,$NitEmpresa){
 		$row2=mysqli_fetch_array($result2);
 		mysqli_close($cnx);
 		return $row2;
+	}
+	function obtPaisDepa($idMunicipio){
+		$cnx = cnx();
+		$query=sprintf("SELECT cod_pais.idCod_Pais FROM cod_municipio INNER JOIN cod_departamento INNER JOIN cod_pais WHERE cod_municipio.idCod_Municipio='%s' AND cod_municipio.idCod_Departamento=cod_departamento.idCod_Departamento AND cod_departamento.idCod_Pais=cod_pais.idCod_Pais",mysqli_real_escape_string($cnx,$idMunicipio));
+		$result=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($result);
+		mysqli_close($cnx);
+		return $row["idCod_Pais"];
+	}
+
+	function obtDepaDepa($idMunicipio){
+		$cnx = cnx();
+		$query=sprintf("SELECT cod_departamento.idCod_Departamento FROM cod_municipio INNER JOIN cod_departamento WHERE cod_municipio.idCod_Municipio='%s' AND cod_municipio.idCod_Departamento=cod_departamento.idCod_Departamento",mysqli_real_escape_string($cnx,$idMunicipio));
+		$result=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($result);
+		mysqli_close($cnx);
+		return $row["idCod_Departamento"];
 	}
 
 	function obtCodPaises(){

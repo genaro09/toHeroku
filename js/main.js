@@ -7,6 +7,7 @@ $(document).ready(function() {
         var Desde = document.getElementById("desde").value;
         var Hasta = document.getElementById("hasta").value;
         var Descanso = $("#descanso").val();
+        var Periodo_Pago = $("#PPago").val();
         var H_Descanso = document.getElementById("H_Descanso").value;
         //alert("user: "+user+" - pass: "+contra);
         $.ajax({
@@ -18,6 +19,7 @@ $(document).ready(function() {
                 Desde: Desde,
                 Hasta: Hasta,
                 Descanso: Descanso,
+                Periodo_Pago: Periodo_Pago,
                 H_Descanso: H_Descanso
             },
             beforeSend: function() {
@@ -43,6 +45,9 @@ $(document).ready(function() {
                         break;
                     case "3":
                         respAlert("warning", "Error en base ");
+                        break;
+                    case "5":
+                        respAlert("warning", "Coloque un Periodo de Pago valido");
                         break;
                 }
                 //respAlert("success",data[0]);
@@ -131,6 +136,7 @@ $(document).ready(function() {
         var idSalario_Minimo = $("#idSalario_Minimo").val();
         var NitEmpresa = document.getElementById("nitEmpresa").value;
         var idDepartamento = document.getElementById("idDepartamento").value;
+        var idCod_Municipio = document.getElementById("C_municipio").value;
         //alert("user: "+user+" - pass: "+contra);
         $.ajax({
             url: '../php/Modificar.php',
@@ -141,6 +147,7 @@ $(document).ready(function() {
                 CuentaContable: CuentaContable,
                 idSalario_Minimo: idSalario_Minimo,
                 NitEmpresa: NitEmpresa,
+                idCod_Municipio: idCod_Municipio,
                 idDepartamento: idDepartamento
             },
             beforeSend: function() {
@@ -158,12 +165,16 @@ $(document).ready(function() {
                     case "2":
                         setTimeout(function() {
                             respAlert("success", "Correcto...");
-                            redireccionar("turno.php");
+                            redireccionar("departamento.php");
                         }, 1000);
                         break;
                     case "3":
                         respAlert("warning", "Error en base ");
                         break;
+                    case "4":
+                        respAlert("warning", "Coloque un Municipio");
+                        break;
+
                 }
                 //respAlert("success",data[0]);
                 /*setTimeout(function(){
@@ -273,6 +284,7 @@ $(document).ready(function() {
         var NombreDepartamento = document.getElementById("NDepartamento").value;
         var CuentaContable = document.getElementById("CContable").value;
         var idSalario_Minimo = $("#idSalario_Minimo").val();
+        var idCod_Municipio	 = $("#C_municipio").val();
         var NitEmpresa = document.getElementById("nitEmpresa").value;
         //alert("user: "+user+" - pass: "+contra);
         $.ajax({
@@ -283,6 +295,7 @@ $(document).ready(function() {
                 NombreDepartamento: NombreDepartamento,
                 CuentaContable: CuentaContable,
                 idSalario_Minimo: idSalario_Minimo,
+                idCod_Municipio: idCod_Municipio,
                 NitEmpresa: NitEmpresa
             },
             beforeSend: function() {
@@ -306,6 +319,10 @@ $(document).ready(function() {
                     case "3":
                         respAlert("warning", "Error en base ");
                         break;
+                    case "4":
+                        respAlert("warning", "Seleccione un Municipio valido");
+                        break;
+
                 }
                 //respAlert("success",data[0]);
                 /*setTimeout(function(){
@@ -489,6 +506,7 @@ $(document).ready(function() {
         var Hasta = document.getElementById("hasta").value;
         var Descanso = $("#descanso").val();
         var H_Descanso = document.getElementById("H_Descanso").value;
+        var Periodo_Pago = $("#PPago").val();
         //alert("user: "+user+" - pass: "+contra);
         $.ajax({
             url: '../php/verificar_Turno.php',
@@ -499,6 +517,7 @@ $(document).ready(function() {
                 Desde: Desde,
                 Hasta: Hasta,
                 Descanso: Descanso,
+                Periodo_Pago: Periodo_Pago,
                 H_Descanso: H_Descanso
             },
             beforeSend: function() {
@@ -521,6 +540,9 @@ $(document).ready(function() {
                         break;
                     case "3":
                         respAlert("warning", "Error en base ");
+                        break;
+                    case "5":
+                        respAlert("warning", "El Periodo de Pago es Incorrecto");
                         break;
                 }
                 //respAlert("success",data[0]);
@@ -677,6 +699,93 @@ $(document).ready(function() {
         });
     });
 
+    //Generar Reporte Horas Extras
+    $("#btnReporteHorasExtrasGeneral").click(function() {
+        var FechaInicio = $("#FInicio").val();
+        var Departamento = $("#AreaTrabajo").val();
+        var TipoReporte = $("#TipoReporte").val();
+        var opc=0;
+        //alert("Aqui voy");
+        $.ajax({
+            url: 'PDF_Reporte_Horas_Extras.php',
+            type: 'POST',
+            data: {
+                opc: 0,
+                FechaInicio: FechaInicio,
+                Departamento: Departamento,
+                TipoReporte: TipoReporte
+            },
+            beforeSend: function() {
+                respAlert("info", "Verificando datos...");
+            },
+            success: function(data) {
+                console.log(data);
+                var stringL = data.split(",");
+                data=stringL[0];
+                str=stringL[1];
+                FechaInicio=stringL[2];
+                FechaFin=stringL[3];
+                switch (data[0]) {
+                    case "0":
+                        respAlert("warning", "Ingrese Fechas");
+                        break;
+                    case "1":
+                        respAlert("warning", "Las fechas tienen que estar en formato Dia/Mes/Años");
+                        break;
+                    case "2":
+                        respAlert("warning", "El horario de Entrada tiene que ser menor al de salida");
+                        break;
+                    case "3":
+                      document.getElementById('Fechas').value = str;
+                      document.getElementById('opc').value = 1;
+                      document.getElementById('FechaInicio').value = FechaInicio;
+                      document.getElementById('FechaFin').value = FechaFin;
+                      document.getElementById('Departamento').value = Departamento;
+                      document.getElementById('TPago').value = TipoReporte;
+                      swal({
+                        title: "Desea Continuar",
+                        text: "Solo se generara de las fechas confirmadas:",
+                        html: "Solo se generara del tipo de pago seleccionado y de las fechas confirmadas:<div class='row'>"+$('#Fechas').val()+"</div><div class='row'><br></div>",
+                        type: "success",
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonClass: "btn-success",
+                        confirmButtonText: "OK",
+                        allowOutsideClick: false,
+                        showLoaderOnConfirm: true,
+                        }).then(function() {
+                          document.getElementById("PDFUserForm").submit();
+                          setTimeout(function () {
+                            respAlert("success", "Generado Exitosamente");
+                          }, 2000);
+                        }, function (dismiss) {
+                          if (dismiss === 'cancel') {
+                            respAlert("success", "Cancelado");
+                          }
+                        }).catch(swal.noop);
+
+
+                      //).catch(swal.noop);
+                    break;
+                  }
+                //respAlert("success",data[0]);
+                /*
+                confirmButtonText: 'Si, guardar!'
+              }).then(function () {
+
+                setTimeout(function(){
+                  redireccionar("sistema/home.php");
+                },1000);*/
+            },
+            error: function(data) {
+                console.log(data);
+                respAlert("danger", "Error...");
+            }
+        });//Fin Ajax
+    });
+
+    //FIN
 
 
     //guardarSemana
@@ -851,6 +960,46 @@ $(document).ready(function() {
                 var response = response.split(",");
                 if (response[0] == 1) {
                     respAlert("warning", response[1]);
+                }else if (response[0] == 2) {
+                  var response = response[1].split("-");
+                  swal({
+                    title: 'Desea Continuar?',
+                    text: response[0]+" tiene el mismo horario "+response[1]+"-"+response[1]+" el dia anterior",
+                    type: 'warning',
+                    showCancelButton: true,
+                    allowOutsideClick: false,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si, guardar!'
+                  }).then(function () {
+                      $.ajax({
+                        type: 'POST',
+                        url: '../php/almacenar_HorasExtras.php',
+                        data: {
+                            Fecha: Fecha,
+                            IdArray: JSON.stringify(IdArray),
+                            NombresArray: JSON.stringify(NombresArray),
+                            HoraEntradaArray: JSON.stringify(HoraEntradaArray),
+                            HoraSalidaArray: JSON.stringify(HoraSalidaArray)
+                        },
+                        beforeSend: function() {
+                          respAlert("info", "Verificando datos...");
+                        },
+                        success: function(response) {
+                            var response = "" + response;
+                            var response = response.split(",");
+                            if (response[0] == 1) {
+                                respAlert("warning", response[1]);
+                            } else {
+                              setTimeout(function() {
+                                  respAlert("success", response[1]);
+                                  redireccionar("Horas_Extras.php");
+                              }, 3000);
+                            }
+                        }
+                      });//Fin Ajax
+                  }).catch(swal.noop);
+                  respAlert("info", "Cancelado");
                 } else {
                   setTimeout(function() {
                       respAlert("success", response[1]);
@@ -858,7 +1007,7 @@ $(document).ready(function() {
                   }, 3000);
                 }
             }
-        });
+        });//Fin Ajax
     });
     //Fin
 

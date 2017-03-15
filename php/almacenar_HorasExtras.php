@@ -283,33 +283,7 @@ if($flag==0){
   }
 
 }
-//revisar si tiene mismas horas un empleado en dia anterior
-if($flag==0){
-  $i=0;
-  $prev_date = date('Y-m-d', strtotime($Fecha .' -1 day'));
-  $query=sprintf("SELECT * FROM horas_extras where NitEmpresa='%s' AND Fecha='%s'",mysqli_real_escape_string($cnx,$Nitempresa),mysqli_real_escape_string($cnx,$prev_date));
-  $resul=mysqli_query($cnx,$query);
-  $row=mysqli_fetch_array($resul);
-  if($row[0]!=""){
-    foreach ($IdArray as &$value) {
-      $queryAux=sprintf("SELECT * FROM col_horas_extras WHERE idHorasExtras='%s' AND NumeroDocumentoPara='%s'",mysqli_real_escape_string($cnx,$row["idHorasExtras"]),mysqli_real_escape_string($cnx,$value));
-      $resulAux=mysqli_query($cnx,$queryAux);
-      $rowAux=mysqli_fetch_array($resulAux);
-      if($rowAux[0]!=""){
-        $DesdeAux=$HoraEntradaArray[$i].":00";
-        $HastaAux=$HoraSalidaArray[$i].":00";
-        if(($rowAux["Desde"]==$DesdeAux)&&($rowAux["Hasta"]==$HastaAux)){
-          $flag=1;
-          echo "2,".$NombresArray[$i]."-".$HoraEntradaArray[$i]."-".$HoraSalidaArray[$i];
-          break;
-        }
 
-      }
-      $i++;
-    }
-  }
-}
-//FIN
 
 if($flag==0){
   $i=0;

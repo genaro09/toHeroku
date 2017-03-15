@@ -33,7 +33,7 @@ function get_Row_Fecha_Reporte_Semana($NitEmpresa){
          <td><input type='hidden' value'".$actSN."'>
            <div class='col-md-12'>
              <form target='_blank' method='post' action='Comprobacion_Horas_Extras.php'>
-               <input type='hidden' id='idHorasExtras' name='idHorasExtras' value='".$row["idHorasExtras"]."'>
+               <span style='color:white;opacity: 0.2;' id='idHorasExtras' name='idHorasExtras'>".$row["EstadoHorasExternas"]."</span>
                ".$str."
              </form>
            </div>
@@ -79,11 +79,20 @@ function get_Row_Comprobacion_Horas_Extras($idHorasExtras){
 }
 function get_Row_Empleado_Reporte_Semana($NumeroDocumento){
   $cnx=cnx();
- 	$query=sprintf("SELECT col_horas_extras.*,horas_extras.Fecha,POR.PrimerNombre,POR.PrimerApellido,POR.SegundoApellido FROM col_horas_extras INNER JOIN horas_extras INNER JOIN empleado POR WHERE horas_extras.idHorasExtras=col_horas_extras.idHorasExtras AND col_horas_extras.NumeroDocumentoPor=POR.NumeroDocumento and col_horas_extras.NumeroDocumentoPara='%s' ORDER BY horas_extras.Fecha DESC",mysqli_real_escape_string($cnx,$NumeroDocumento));
+ 	$query=sprintf("SELECT col_horas_extras.*,horas_extras.EstadoHorasExternas,horas_extras.Fecha,POR.PrimerNombre,POR.PrimerApellido,POR.SegundoApellido FROM col_horas_extras INNER JOIN horas_extras INNER JOIN empleado POR WHERE horas_extras.idHorasExtras=col_horas_extras.idHorasExtras AND col_horas_extras.NumeroDocumentoPor=POR.NumeroDocumento and  col_horas_extras.NumeroDocumentoPara='%s' ORDER BY horas_extras.Fecha DESC",mysqli_real_escape_string($cnx,$NumeroDocumento));
  	$result=mysqli_query($cnx,$query);
 	while ($row=mysqli_fetch_array($result)) {
     //CUIDADO CON LA BASE DE HORAS EXTRAS
       $POR=$row["PrimerNombre"]." ".$row["PrimerApellido"]." ".$row["SegundoApellido"];
+      if($row["EstadoHorasExternas"]==0){
+        $strAux="
+          <div class='col-md-12'>
+             <button id='".$row['IdColHorasExtras']."' style='background: url(../img/icons/delete.png);border: 0;' onClick='imprimirHE(this.id)'>M</button>
+          </div>";
+      }else{
+        $strAux="";
+      }
+
       echo "<tr>
            <td>".$POR."</td>
            <td>".$row["NHorasDiurnas"]."</td>
@@ -92,9 +101,7 @@ function get_Row_Empleado_Reporte_Semana($NumeroDocumento){
            <td>".$row["Hasta"]."</td>
            <td>".$row["Fecha"]."</td>
            <td class='text-right'>
-             <div class='col-md-12'>
-                <button id='".$row["IdColHorasExtras"]."' style='background: url(../img/icons/delete.png);border: 0;' onClick='imprimirHE(this.id)'>M</button>
-             </div>
+             ".$strAux."
            </td>
        </tr>";
 

@@ -53,7 +53,7 @@
 	            		<div class="col-md-12">
 	            			<div class="card" style="padding:10px;">
 								<div class="header">
-									<h4 class="title">ModificarTurno</h4>
+									<h4 class="title">Modificar Departamento</h4>
 								</div>
 								<div class="content">
 									<form id="form_actualizarUser" role="form">
@@ -79,7 +79,54 @@
                           </select>
 												</div>
 											</div>
-
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Pais<star>*</star></label>
+													<br>
+													<select id="pais" name="pais" class="form-control selectpicker" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+														<option value='0'>NINGUNO</option>
+														<?php
+															$pilaPT=obtCodPaises();
+															$pilaP1=$pilaPT[0];
+															$pilaP2=$pilaPT[1];
+															$pais=obtPaisDepa($departamento->getIdCod_Municipio());
+															$year=date("Y");
+															for($i = 0; $i < sizeof($pilaP1);$i++){
+																	$codPais=$pilaP1[$i];
+																	$nombrePais=$pilaP2[$codPais];
+																	if($pais==$codPais){
+																		echo "<option selected value='".$codPais."'>".$nombrePais."</option>";
+																	}else echo "<option value='".$codPais."'>".$nombrePais."</option>";
+															}
+														?>
+													</select>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Departamento<star>*</star></label>
+													<br>
+														<select id="C_departamento" name="C_departamento" class="form-control selectpicker" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+															<?php
+																include_once "get_Cod_D_M.php";
+																$Col_Departamento=obtDepaDepa($departamento->getIdCod_Municipio());
+																get_Cod_D($Col_Departamento);
+															 ?>
+														</select>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Municipio<star>*</star></label>
+													<br>
+														<select id="C_municipio" name="C_municipio" class="form-control selectpicker" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+															<?php
+																include_once "get_cod_M.php";
+																get_Cod_M($departamento->getIdCod_Municipio());
+															 ?>
+														</select>
+												</div>
+											</div>
 											<div class="col-md-4">
 												<div class="text-center">
 													<br>
@@ -158,6 +205,53 @@
 
     <!-- Main js -->
     <script src="../js/main.js"></script>
+		<script>
+		$(document).ready(function(){
+				//Pais a Depa
+				$("#pais").change(function(){
+				 var id=$(this).val();
+				 var dataString = 'id='+ id;
+				 $.ajax({
+					type: "POST",
+					url: "get_Cod_D_M.php",
+					data: dataString,
+					cache: false,
+					success: function(html){
+						 $("#C_departamento").html(html);
+					}
+					});
+					revisarDepa();
+			 });
 
+			 //Dapa a Muni
+			 $("#C_departamento").change(function(){
+				var id=$(this).val();
+				var dataString = 'id='+ id;
+				$.ajax({
+				 type: "POST",
+				 url: "get_cod_M.php",
+				 data: dataString,
+				 cache: false,
+				 success: function(html){
+						$("#C_municipio").html(html);
+				 }
+				 });
+
+			});
+		});
+		function revisarDepa(){
+			var id = 0;
+			var dataString = 'id='+ id;
+			$.ajax({
+			 type: "POST",
+			 url: "get_cod_M.php",
+			 data: dataString,
+			 cache: false,
+			 success: function(html){
+					$("#C_municipio").html(html);
+			 }
+			 });
+		}
+		</script>
 
 </html>

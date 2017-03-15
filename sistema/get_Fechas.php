@@ -46,7 +46,7 @@ if($_POST['id']){
         ";
         echo "<div class='col-md-4'>";
         echo "<label for='exampleInputEmail1'>Lunes</label> <br>";
-        echo "<select id='SLunes' name='SLunes' class='selectpicker'>";
+        echo "<select id='SLunes' name='SLunes' class='form-control selectpicker' data-style='btn-default btn-block' data-menu-style='dropdown-blue'>";
         if($row2["Lunes"]==1){
             echo "<option selected value='1'>Jornada Completa</option>";
         }   else  echo "<option value='1'>Jornada Completa</option>";
@@ -61,7 +61,7 @@ if($_POST['id']){
 
         echo "<div class='col-md-4'>";
         echo "<label for='exampleInputEmail1'>Martes</label> <br>";
-        echo "<select id='SMartes' name='SMartes' class='selectpicker'>";
+        echo "<select id='SMartes' name='SMartes' class='form-control selectpicker' data-style='btn-default btn-block' data-menu-style='dropdown-blue'>";
             if($row2["Martes"]==1){
                 echo "<option selected value='1'>Jornada Completa</option>";
             }   else  echo "<option value='1'>Jornada Completa</option>";
@@ -76,7 +76,7 @@ if($_POST['id']){
 
         echo "<div class='col-md-4'>";
         echo "<label for='exampleInputEmail1'>Miercoles</label> <br>";
-        echo "<select id='SMiercoles' name='SMiercoles' class='selectpicker'>";
+        echo "<select id='SMiercoles' name='SMiercoles' class='form-control selectpicker' data-style='btn-default btn-block' data-menu-style='dropdown-blue'>";
             if($row2["Miercoles"]==1){
                 echo "<option selected value='1'>Jornada Completa</option>";
             }   else  echo "<option value='1'>Jornada Completa</option>";
@@ -91,7 +91,7 @@ if($_POST['id']){
 
         echo "<div class='col-md-4'>";
         echo "<label for='exampleInputEmail1'>Jueves</label> <br>";
-        echo "<select id='SJueves' name='SJueves' class='selectpicker'>";
+        echo "<select id='SJueves' name='SJueves' class='form-control selectpicker' data-style='btn-default btn-block' data-menu-style='dropdown-blue'>";
             if($row2["Jueves"]==1){
                 echo "<option selected value='1'>Jornada Completa</option>";
             }   else  echo "<option value='1'>Jornada Completa</option>";
@@ -106,7 +106,7 @@ if($_POST['id']){
 
         echo "<div class='col-md-4'>";
         echo "<label for='exampleInputEmail1'>Viernes</label> <br>";
-        echo "<select id='SViernes' name='SViernes' class='selectpicker'>";
+        echo "<select id='SViernes' name='SViernes' class='form-control selectpicker' data-style='btn-default btn-block' data-menu-style='dropdown-blue'>";
             if($row2["Viernes"]==1){
                 echo "<option selected value='1'>Jornada Completa</option>";
             }   else  echo "<option value='1'>Jornada Completa</option>";
@@ -121,7 +121,7 @@ if($_POST['id']){
 
         echo "<div class='col-md-4'>";
         echo "<label for='exampleInputEmail1'>Sabado</label> <br>";
-        echo "<select id='SSabado' name='SSabado' class='selectpicker'>";
+        echo "<select id='SSabado' name='SSabado' class='form-control selectpicker' data-style='btn-default btn-block' data-menu-style='dropdown-blue'>";
             if($row2["Sabado"]==1){
                 echo "<option selected value='1'>Jornada Completa</option>";
             }   else  echo "<option value='1'>Jornada Completa</option>";
@@ -136,7 +136,7 @@ if($_POST['id']){
 
         echo "<div class='col-md-4'>";
         echo "<label for='exampleInputEmail1'>Domingo</label> <br>";
-        echo "<select id='SDomingo' name='SDomingo' class='selectpicker'>";
+        echo "<select id='SDomingo' name='SDomingo' class='form-control selectpicker' data-style='btn-default btn-block' data-menu-style='dropdown-blue'>";
             if($row2["Domingo"]==1){
                 echo "<option selected value='1'>Jornada Completa</option>";
             }   else  echo "<option value='1'>Jornada Completa</option>";
@@ -157,11 +157,13 @@ if($_POST['id']){
                 <div class='col-md-4'>
                 <a href='#' id='btnAnteriorSemana' class='btn btn-fill btn-primary btn-wd'>Guardar con formato pasado</a>
                 </div>
+                <div class='col-md-1'>
+                </div>
             ";
         }
         echo "
-                <div class='col-md-4'>
-                <a href='#' id='btnGuardarSemana' class='btn btn-info btn-fill pull-right'>Guardar Modificacion</a>
+                <div class='col-md-7'>
+                <a href='#' id='btnGuardarSemana' class='btn btn-info btn-fill pull-left'>Guardar Modificacion</a>
                 </div>
         ";
 

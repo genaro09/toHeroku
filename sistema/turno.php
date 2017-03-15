@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	
+
 	<link rel="icon" type="image/png" href="../img/favicon.png" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<title>ASCAS, S.A. DE C.V.</title>
@@ -90,18 +90,30 @@
 												</div>
 											</div>
 											<div class="col-md-4">
+												<div class="form-group">
+													<label>Periodo de Pago<star>*</star></label>
+													<br>
+														<select id="PPago" name="PPago" class="form-control selectpicker" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+															<option value="10">Mensual</option>
+															<option value="30">Quincenal</option>
+															<option value="20">Catorcenal</option>
+															<option value="40">Semanal</option>
+														</select>
+												</div>
+											</div>
+											<div class="col-md-4">
 												<div class="text-center">
 													<br>
-	                                    			<a href="#" id="btnATruno" class="btn btn-fill btn-primary btn-wd">Agregar</a>
-	                                			</div>
+	                        <a href="#" id="btnATruno" class="btn btn-fill btn-primary btn-wd">Agregar</a>
+	                     </div>
 											</div>
 											<?php
 												$NitEmpresa=getNitEmpresa($_SESSION['usuario_sesion']);
 											?>
 											<input type='hidden' id='nitEmpresa' value='<?php echo $NitEmpresa  ?>'>
 											<div class="col-md-12">
-	                                			<div class="text-center" id="respuestaAlert"></div>
-	                                		</div>
+	                    	<div class="text-center" id="respuestaAlert"></div>
+	                    </div>
 										</div>
 	       						</form>
 	            				</div>

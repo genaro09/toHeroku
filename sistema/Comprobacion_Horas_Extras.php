@@ -1,11 +1,12 @@
 <?php
 	include '../php/funciones.php';
 	include '../php/verificar_sesion.php';
-	if(trim($_POST["idHorasExtras"]) == ""){
+	if(trim($_POST['idHorasExtras']) == ""){
 		header('Location: Reporte_Horas_Extras.php');
 		exit();
 	}
 	$idHorasExtras=$_POST["idHorasExtras"];
+	$FechaHorasExtras=obtFechadHorasExtras($idHorasExtras);
 ?>
 <!doctype html>
 <html lang="en">
@@ -136,7 +137,7 @@
 					                    <i class="material-icons">contacts</i>
 					                </div>
 					                <div class="card-content">
-					                    <h4 class="card-title">PDF</h4>
+					                    <h4 class="card-title">PDF: <?php echo $FechaHorasExtras; ?></h4>
 					                    <div class="toolbar">
 					                        <!--        Here you can write extra buttons/actions for the toolbar              -->
 					                    </div>
@@ -165,7 +166,18 @@
 																						window.onload = function() {
 																							flagInput=document.getElementById("flaginput").value;
 																							if(flagInput==1){
-																								swal("Archivo correctamente guardado");
+																								swal({
+																									title: "Documento Cargado",
+                                                  text: "Su documento ha sido cargado correctamente",
+                                                  type: "success",
+                                                  confirmButtonClass: "btn-success",
+                                                  confirmButtonText: "OK",
+																									allowOutsideClick: false,
+																								  showLoaderOnConfirm: true,
+																								  preConfirm: function() {
+																								    window.setTimeout(function(){ window.location = "Reporte_Horas_Extras.php"; },500);
+																								  }
+																								})
 																							}else if(flagInput==2) {
 																								swal("Se subio el PDF, pero no se establecio la ruta, contacte a su proveedor");
 																							}else{

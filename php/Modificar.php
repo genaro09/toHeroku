@@ -9,8 +9,10 @@
         echo "0";
       }elseif(checkNombreDepartamentoToModf($_POST["NombreDepartamento"],$_POST["NitEmpresa"],$_POST["idDepartamento"])){
         echo "1";
+      }elseif(strcmp($_POST["idCod_Municipio"],"0")==0){
+        echo "4";
       }else{
-        $estado=UpdateDepartamento($_POST["NombreDepartamento"],$_POST["CuentaContable"],$_POST["idSalario_Minimo"],$_POST["idDepartamento"]);
+        $estado=UpdateDepartamento($_POST["NombreDepartamento"],$_POST["CuentaContable"],$_POST["idSalario_Minimo"],$_POST["idDepartamento"],$_POST["idCod_Municipio"]);
         if($estado){
           echo "2";
         }else echo "3";

@@ -17,6 +17,22 @@ class departamento_class
     private $cuentacontable;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="idCod_Municipio", type="string", length=10, nullable=false)
+     */
+    private $idCod_Municipio;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="$idSalario_Minimo", type="integer")
+     */
+    private $idSalario_Minimo;
+
+
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="idDepartamento", type="integer")
@@ -60,6 +76,58 @@ class departamento_class
     {
         return $this->nombredepartamento;
     }
+
+    /**
+     * Set idCod_Municipio
+     *
+     * @param string $idCod_Municipio
+     *
+     * @return Departamento
+     */
+    public function setIdCod_Municipio($idCod_Municipio)
+    {
+        $this->idCod_Municipio = $idCod_Municipio;
+
+        return $this;
+    }
+
+    /**
+     * Get idCod_Municipio
+     *
+     * @return string
+     */
+    public function getIdCod_Municipio()
+    {
+        return $this->idCod_Municipio;
+    }
+
+    /**
+     * Set idSalario_Minimo
+     *
+     * @param integer $idSalario_Minimo
+     *
+     * @return Departamento
+     */
+    public function setidSalario_Minimo($idSalario_Minimo)
+    {
+        $this->idSalario_Minimo = $idSalario_Minimo;
+
+        return $this;
+    }
+
+    /**
+     * Get idSalario_Minimo
+     *
+     * @return integer
+     */
+    public function getidSalario_Minimo()
+    {
+        return $this->idSalario_Minimo;
+    }
+
+
+
+
 
     /**
      * Set cuentacontable

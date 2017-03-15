@@ -302,15 +302,16 @@ if(count($str)==2){
 }
 //fin de escribir bien
 //arrays para Aplicaciones legal del PAGO
-$arreglo_de_ART=array("S"=>"ART. Salario",
+$arreglo_de_ART=array("S"=>"ART. #119 AL ART. #143 <br> DEL CODIGO DE TRABAJO",
                  "V"=>"ART. #177 DEL CODIGO DE TRABAJO",
-                 "A"=>"ART. Vacacion",
-                 "L"=>"ART. Liquidacion",
-                 "RV"=>"ART. #58 DEL CODIGO DE TRABAJO <br> ART. #08 DE LEY DE RETIRO VOLUNTARIO"
+                 "A"=>"ART. #196 AL ART. #202 <br> DEL CODIGO DE TRABAJO",
+                 "L"=>"ART. #58 DEL CODIGO DE TRABAJO",
+                 "RV"=>"ART. #08 DE LEY DE RETIRO VOLUNTARIO"
 );
 $count=0;
 $count2=0;
 $str_ALDP="<tr>";
+//Imp Aplicaciones legal del pago
 while($count<count($str)-1){
   if($count2!=2){
     if($str[$count+1]=="Vacacion"){
@@ -350,6 +351,7 @@ while($count<count($str)-1){
     $str_ALDP=$str_ALDP."<tr>";
     $str_ALDP=Revisar_ALDP($str,$count,$str_ALDP,$arreglo_de_ART);
     $str_ALDP=$str_ALDP."</tr>";
+    $str_ALDP=$str_ALDP."<td  style='width:50%;font-size:9pt;padding:0.5mm;border:none;border-right: 1px solid #FFFFFF;'><span style='font-size: 11px;'>".""."</span></td>";
     $count2=0;
   }
 }
@@ -513,7 +515,8 @@ $html = '
     }
     table#t02 {
         width: 100%;
-        border: 1px solid black;
+        border: 1px solid #FFFFFF;
+        border-left: 1px solid black;
         border-top:0px;
         border-bottom:0px;
         border-collapse: collapse;
