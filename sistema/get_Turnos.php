@@ -10,13 +10,23 @@
 		}else{
 			$Hdescanso=$row["H_Descanso"];
 			$descansoV="SI";
-		} 
-				 echo "<tr>
+		}
+    if($row["Periodo_Pago"]=="10"){
+      $PPAGO="Mensual";
+    }elseif ($row["Periodo_Pago"]=="20") {
+      $PPAGO="Quincenal";
+    }elseif ($row["Periodo_Pago"]=="30") {
+      $PPAGO="Catorcenal";
+    }elseif ($row["Periodo_Pago"]=="40") {
+      $PPAGO="Semanal";
+    }
+		echo "<tr>
 						<td>".$row["nombreTurno"]."</td>
 						<td>".$row["Desde"]."</td>
 						<td>".$row["Hasta"]."</td>
 						<td>".$descansoV."</td>
 						<td>".$Hdescanso."</td>
+            <td>".$PPAGO."</td>
 						<td class='text-right'>
 							<form method='post' action='Perfil_Turno.php'>
 							<input type='hidden' name='idTurno' value='".$row["idTurno"]."'>

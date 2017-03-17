@@ -18,6 +18,12 @@ class turno_class
     /**
      * @var string
      */
+    private $h_MJornada;
+
+
+    /**
+     * @var string
+     */
     private $hasta;
 
     /**
@@ -71,6 +77,30 @@ class turno_class
         return $this->nombreturno;
     }
 
+
+    /**
+     * Set H_MJornada
+     *
+     * @param string $h_MJornada
+     *
+     * @return Turno
+     */
+    public function setH_MJornada($h_MJornada)
+    {
+        $this->h_MJornada = $h_MJornada;
+
+        return $this;
+    }
+
+    /**
+     * Get h_MJornada
+     *
+     * @return string
+     */
+    public function getH_MJornada()
+    {
+        return $this->h_MJornada;
+    }
 
 
         /**

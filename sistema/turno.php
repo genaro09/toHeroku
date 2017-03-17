@@ -64,20 +64,20 @@
 											<div class="col-md-4">
 												<div class="form-group">
 													<label for="exampleInputEmail1">Desde<star>*</star></label>
-														<input id="desde" type="text" class="form-control timepicker" value="14:00" required/>
+														<input id="desde" type="text" class="form-control timepicker" maxlength="5" value="07:00" required/>
 													</div>
 											</div>
 											<div class="col-md-4">
 												<div class="form-group">
 													<label for="exampleInputEmail1">Hasta<star>*</star></label>
-														<input id="hasta" type="text" class="form-control timepicker" value="14:00" required/>
+														<input id="hasta" type="text" class="form-control timepicker" maxlength="5" value="17:00" required/>
 													</div>
 											</div>
 											<div class="col-md-4">
 												<div class="form-group">
 													<label for="exampleInputEmail1">Descanso<star>*</star></label>
 													<br>
-														<select id="descanso" class="selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
+														<select id="descanso" class="form-control selectpicker" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
 															<option value="1" >SI</option>
 															<option value="0" selected>NO</option>
 														</select>
@@ -86,7 +86,7 @@
 											<div class="col-md-4 opcion" id="1" style="display:none">
 												<div class="form-group">
 													<label for="exampleInputEmail1">Tiempo de Descanso<star>*</star></label>
-													<input id="H_Descanso" type="text" class="form-control timepicker" value="14:00" required/>
+													<input id="H_Descanso" type="text" class="form-control timepicker" maxlength="5" value="01:00" required/>
 												</div>
 											</div>
 											<div class="col-md-4">
@@ -99,6 +99,13 @@
 															<option value="20">Catorcenal</option>
 															<option value="40">Semanal</option>
 														</select>
+												</div>
+											</div>
+											<div class="col-md-4">
+												<div class="form-group">
+													<label>Inicio de Media Jornada<star>*</star></label>
+													<br>
+													<input id="MJornada" type="text" class="form-control timepicker" maxlength="5" value="08:00" required/>
 												</div>
 											</div>
 											<div class="col-md-4">
@@ -142,6 +149,7 @@
 				                                    <th>Hasta</th>
 				                                    <th>Descanso(Si/No)</th>
 				                                    <th>Tiempo de Descanso</th>
+																						<th>Periodo de Pago</th>
 				                                    <th class="disabled-sorting text-right">Acciones</th>
 				                                </tr>
 				                            </thead>
@@ -152,6 +160,7 @@
 				                                    <th>Hasta</th>
 				                                    <th>Descanso(Si/No)</th>
 				                                    <th>Tiempo de Descanso</th>
+																						<th>Periodo de Pago</th>
 				                                    <th class="text-right">Acciones</th>
 				                                </tr>
 				                            </tfoot>

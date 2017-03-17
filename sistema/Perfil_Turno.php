@@ -153,6 +153,13 @@
 															</div>
 														</div>
 														<div class="col-md-4">
+															<div class="form-group">
+																<label>Inicio de Media Jornada<star>*</star></label>
+																<br>
+																<input id="MJornada" type="text" class="form-control timepicker" maxlength="5"  value="<?php echo $turno->getH_MJornada(); ?>" required/>
+															</div>
+														</div>
+														<div class="col-md-4">
 															<div class="text-center">
 																<br>
 				                        <a href="#" id="btnMTruno" class="btn btn-fill btn-primary btn-wd">Modificar</a>

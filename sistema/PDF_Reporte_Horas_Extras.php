@@ -82,6 +82,34 @@ if($opc==1){
   $Nombre= $_SESSION['usuario_sesion']->getPrimernombre()." ".$_SESSION['usuario_sesion']->getPrimerapellido()." ".$_SESSION['usuario_sesion']->getSegundoapellido();
   $TipoPago=$_POST['TPago'];
   $TipoPago=str_split($TipoPago);
+  //Tipo de Pago para tomar en consideracion para la RENTA
+  $tipoRenta=$TipoPago[0];
+  $TRAMO1= array();
+  $TRAMO2= array();
+  $TRAMO3= array();
+  $TRAMO4= array();
+  //array('' => , )
+  $query=sprintf("SELECT * FROM renta WHERE tipo_pago='%s' ",mysqli_real_escape_string($cnx,$tipoRenta));
+  $result=mysqli_query($cnx,$query);
+  $j=1;
+  while ($row=mysqli_fetch_array($result)) {
+    if(strcmp($row["nombre_tramo"],"I Tramo")==0){
+      $TRAMO1=array("Desde" => $row["Desde"],"Hasta" => $row["Hasta"],"porcentaje_aplicar" => $row["porcentaje_aplicar"],"sobre_exceso" => $row["sobre_exceso"],"Cuota_fija" => $row["Cuota_fija"]);
+    }
+    elseif(strcmp($row["nombre_tramo"],"II Tramo")==0){
+      $TRAMO2=array("Desde" => $row["Desde"],"Hasta" => $row["Hasta"],"porcentaje_aplicar" => $row["porcentaje_aplicar"],"sobre_exceso" => $row["sobre_exceso"],"Cuota_fija" => $row["Cuota_fija"]);
+    }
+    elseif(strcmp($row["nombre_tramo"],"III Tramo")==0){
+      $TRAMO3=array("Desde" => $row["Desde"],"Hasta" => $row["Hasta"],"porcentaje_aplicar" => $row["porcentaje_aplicar"],"sobre_exceso" => $row["sobre_exceso"],"Cuota_fija" => $row["Cuota_fija"]);
+    }
+    elseif(strcmp($row["nombre_tramo"],"IV Tramo")==0){
+      $TRAMO4=array("Desde" => $row["Desde"],"Hasta" => $row["Hasta"],"porcentaje_aplicar" => $row["porcentaje_aplicar"],"sobre_exceso" => $row["sobre_exceso"],"Cuota_fija" => $row["Cuota_fija"]);
+    }else{
+      $RENTA=99999999;
+    }
+  }
+  $j=0;
+  //FIN
   $TipoPago=$TipoPago[0]."0";
   $FechaInicio  = $_POST['FechaInicio'];
   $FechaFin  = $_POST['FechaFin'];
@@ -269,7 +297,7 @@ if($opc==1){
         $TG=$ValorMD+$ValorMN+$ValorMVD+$ValorMVN;
         $ISS=number_format($TG*0.03, 2, '.', '');
         $AFP=number_format($TG*0.0625, 2, '.', '');
-        $RENTA=number_format(0, 2, '.', '');
+        $RENTA=calculoDeRentaHE($TG,$TRAMO1,$TRAMO2,$TRAMO3,$TRAMO4);
         $TOTD=$ISS+$AFP+$RENTA;
         $LR=$TG-$TOTD;
         //Valores totales
@@ -384,5 +412,12 @@ function TimeToMinut($Time){
   $Time= explode(":",$Time);
   $Second=((float)$Time[0]*60)+((float)$Time[1])+(round((float)$Time[2]/60));
   return floor((float)$Second);
+}
+function calculoDeRentaHE($TG,$TRAMO1,$TRAMO2,$TRAMO3,$TRAMO4){
+  //$TRAMO1=array("Desde" => $row["Desde"],"Hasta" => $row["Hasta"],"porcentaje_aplicar" => $row["porcentaje_aplicar"],"sobre_exceso" => $row["sobre_exceso"],"Cuota_fija" => $row["Cuota_fija"]);
+  if(((float)$TG>(float)$TRAMO1["Desde"])||()){
+
+  }
+  return number_format($RENTA, 2, '.', '');
 }
 ?>

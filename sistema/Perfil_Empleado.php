@@ -1,15 +1,16 @@
 <?php
 	include '../php/funciones.php';
 	include '../php/verificar_sesion.php';
+		 if(trim($_POST['numDoc']) == ""){
+		   header('Location: verEmpleados.php');
+		   exit();
+		 }
 		 $NumeroDocumento=$_POST["numDoc"];
 		 $empleado=new empleado_class();
 		 $empleado=getInfoEmpleado($NumeroDocumento);
 		 $htrabajo=new htrabajo_class();
 		 $htrabajo=getInfoHTrabajo($NumeroDocumento);
-		 if(trim($_POST['numDoc']) == ""){
-		   header('Location: verEmpleados.php');
-		   exit();
-		 }
+		 $Bancos=getAllBankAccount();
 
 	 ?>
 <!doctype html>
@@ -35,6 +36,33 @@
     <script src="../js/jquery-3.1.1.min.js" type="text/javascript"></script>
 	<script>
 	$(document).ready(function(){
+
+			//change pass
+			$("#changePass").change(function() {
+				if($(this).is(":checked")) {
+            $("#pass").attr("disabled", false);
+        }else{
+					$("#pass").attr("disabled", true);
+				}
+			});
+			//Numero De Cuenta
+			$("#Banco").change(function(){
+				var id=$(this).val();
+				var NumeroDocumento = <?php echo json_encode($NumeroDocumento); ?>;
+				$.ajax({
+				 type: "POST",
+				 url: "../php/get_CuentaBanco.php",
+				 data: {
+						 id: id,
+						 NumeroDocumento: NumeroDocumento
+				 },
+				 success: function(html){
+						$("#divCount").html(html);
+				 }
+				 });
+
+			});
+
 	    $("#AreaTrabajo").change(function(){
 			  var id=$(this).val();
 			  var dataString = 'id='+ id;
@@ -164,13 +192,23 @@
 																		</div>
 																	</div>
 																	<div class="col-md-6">
-																		<div class="form-group">
-																			<label for="exampleInputEmail1">Cambiar Contraseña<star>*</star></label>
-																			<input id="pass"type="password" class="form-control" placeholder="contraseña" value="<?php echo $empleado->getPass(); ?>" required>
+																		<div class="row">
+																			<div class="col-md-3">
+																				<br>
+																				<label>
+																					<input type="checkbox" id="changePass"name="optionsCheckboxes"><span class="checkbox-material"><span class="check"></span></span>
+																					Cambiar Contraseña
+																				</label>
+																			</div>
+																			<div class="col-md-9">
+																				<div class="form-group">
+																					<label for="exampleInputEmail1"> Contraseña<star>*</star></label>
+																					<input disabled="TRUE" id="pass" type="password" class="form-control" placeholder="contraseña">
+																				</div>
+																			</div>
 																		</div>
-																	</div>
 																</div>
-
+															</div>
 																<div class="row">
 																	<div class="col-md-6">
 																		<div class="form-group">
@@ -624,21 +662,32 @@
 																		<div class="form-group">
 																			<label>Banco</label>
 																			<br>
-																			<select name="T_AFP" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
-																				<option value="00">Cuscatlan</option>
-																				<option value="01">America Cental</option>
-																				<option value="02">Promerica</option>
-																				<option value="03">Hipotecario</option>
-																				<option value="03">Agricola</option>
-																				<option value="03">HSBC</option>
-																				<option value="03">Banco Azul</option>
+																			<select id="Banco" name="Banco" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+																				<?php
+																					/*
+																					$Bancos=getAllBankAccount();
+																					$cuentasBanco=getCuentaBanco($NumeroDocumento);
+																					*/
+																					$BancosID=$Bancos[0];//los id
+																					$BancosNombre=$Bancos[1];//Los nombres
+																					echo "<option value='0'>SELECCIONE UNO</option>";
+																					for($i = 0; $i < sizeof($BancosID);$i++){
+																							$idBanco=$BancosID[$i];
+																							$nombreBancos=$BancosNombre[$idBanco];
+ 																							echo "<option value='".$idBanco."'>".$nombreBancos."</option>";
+																					}
+																				?>
 																			</select>
 																		</div>
 																	</div>
                                   <div class="col-md-4 ">
 																		<div class="form-group">
 																			<label>Cuenta Bancaria</label>
-																			<input type="number" class="form-control" value="">
+																			<div id="divCount">
+																				<?php
+																					echo '<input disabled  type="number" id="CuentaBanco" class="form-control" placeholder="SELECCIONE PARA VER SI TIENE CUENTA">';
+																				 ?>
+																			</div>
 																		</div>
 																	</div>
 																</div>

@@ -32,52 +32,116 @@
 				}
 			}
 			if($flag==0){
-					if(!isset($_POST["NumeroDocumento"])||!isset($_POST["FechaIngreso"])||!isset($_POST["Pass"])||!isset($_POST["PrimerNombre"])||!isset($_POST["PrimerApellido"])||!isset($_POST["Nit"])||!isset($_POST["NumeroIsss"])||!isset($_POST["SalarioNominal"])){
+					if(!isset($_POST["NumeroDocumento"])||!isset($_POST["FechaIngreso"])||!isset($_POST["PrimerNombre"])||!isset($_POST["PrimerApellido"])||!isset($_POST["Nit"])||!isset($_POST["NumeroIsss"])||!isset($_POST["SalarioNominal"])){
 						echo "0";
 					}elseif(!(isset($_POST["Desde"]) || !isset($_POST["Hasta"]))){
 							echo "5";
 					}elseif(!(verify_time_format($_POST["Desde"]) && verify_time_format($_POST["Hasta"]))){
 						echo "4";
 					}else{
-						$htrabajo = new htrabajo_class();
-						$empleado = new empleado_class();
-						$empleado->setNumerodocumento($_POST["NumeroDocumento"]);
-						$empleado->setTipodocumento($_POST["TipoDocumento"]);
-						$empleado->setIdcargos($_POST["idCargos"]);
-						$empleado->setPass($_POST["Pass"]);
-						$empleado->setActivo($_POST["Activo"]);
-						$empleado->setNup($_POST["Nup"]);
-						$empleado->setInstitucionprevisional($_POST["InstitucionPrevisional"]);
-						$empleado->setPrimernombre($_POST["PrimerNombre"]);
-						$empleado->setSegundonombre($_POST["SegundoNombre"]);
-						$empleado->setPrimerapellido($_POST["PrimerApellido"]);
-						$empleado->setSegundoapellido($_POST["SegundoApellido"]);
-						$empleado->setApellidocasada($_POST["ApellidoCasada"]);
-						$empleado->setConocidopor($_POST["ConocidoPor"]);
-						$empleado->setNit($_POST["Nit"]);
-						$empleado->setNumeroisss($_POST["NumeroIsss"]);
-						$empleado->setNumeroinpep($_POST["NumeroInpep"]);
-						$empleado->setGenero($_POST["Genero"]);
-						$empleado->setNacionalidad($_POST["Nacionalidad"]);
-						$empleado->setSalarionominal($_POST["SalarioNominal"]);
-						$empleado->setFechanacimiento($_POST["FechaNacimiento"]);
-						$empleado->setEstadocivil($_POST["EstadoCivil"]);
-						$empleado->setDireccion($_POST["Direccion"]);
-						$empleado->setDepartamento($_POST["Departamento"]);
-						$empleado->setMunicipio($_POST["Municipio"]);
-						$empleado->setNumerotelefonico($_POST["NumeroTelefonico"]);
-						$empleado->setCorreoelectronico($_POST["CorreoElectronico"]);
-						$empleado->setFechaingreso($_POST["FechaIngreso"]);
-						$empleado->setFecharetiro($_POST["FechaRetiro"]);
-						$empleado->setFechafallecimiento($_POST["FechaFallecimiento"]);
-						$htrabajo->setDesde($_POST["Desde"]);
-						$htrabajo->setHasta($_POST["Hasta"]);
-						$htrabajo->setIdturno($_POST["idTurno"]);
-						if(actualizarUsuario($empleado,$htrabajo)){
-							echo "2";
-						}else{
-							echo "1";
+						if (!empty($_POST["nCuenta"])) {
+							if (!ctype_digit($_POST["nCuenta"])){
+								echo "6";//Solo numeros
+							}
 						}
+						if($_POST["changePass"]==1){
+							if(empty($_POST["Pass"])){
+								echo "7";
+							}else{
+								$options = [
+								  'cost' => 11
+								];
+								$EncrypPass=password_hash($_POST["Pass"], PASSWORD_BCRYPT, $options);
+								$idBanco=$_POST["idBanco"];
+								$NumeroCuenta=$_POST["nCuenta"];
+								$htrabajo = new htrabajo_class();
+								$empleado = new empleado_class();
+								$empleado->setNumerodocumento($_POST["NumeroDocumento"]);
+								$empleado->setTipodocumento($_POST["TipoDocumento"]);
+								$empleado->setIdcargos($_POST["idCargos"]);
+								$empleado->setPass($EncrypPass);
+								$empleado->setActivo($_POST["Activo"]);
+								$empleado->setNup($_POST["Nup"]);
+								$empleado->setInstitucionprevisional($_POST["InstitucionPrevisional"]);
+								$empleado->setPrimernombre($_POST["PrimerNombre"]);
+								$empleado->setSegundonombre($_POST["SegundoNombre"]);
+								$empleado->setPrimerapellido($_POST["PrimerApellido"]);
+								$empleado->setSegundoapellido($_POST["SegundoApellido"]);
+								$empleado->setApellidocasada($_POST["ApellidoCasada"]);
+								$empleado->setConocidopor($_POST["ConocidoPor"]);
+								$empleado->setNit($_POST["Nit"]);
+								$empleado->setNumeroisss($_POST["NumeroIsss"]);
+								$empleado->setNumeroinpep($_POST["NumeroInpep"]);
+								$empleado->setGenero($_POST["Genero"]);
+								$empleado->setNacionalidad($_POST["Nacionalidad"]);
+								$empleado->setSalarionominal($_POST["SalarioNominal"]);
+								$empleado->setFechanacimiento($_POST["FechaNacimiento"]);
+								$empleado->setEstadocivil($_POST["EstadoCivil"]);
+								$empleado->setDireccion($_POST["Direccion"]);
+								$empleado->setDepartamento($_POST["Departamento"]);
+								$empleado->setMunicipio($_POST["Municipio"]);
+								$empleado->setNumerotelefonico($_POST["NumeroTelefonico"]);
+								$empleado->setCorreoelectronico($_POST["CorreoElectronico"]);
+								$empleado->setFechaingreso($_POST["FechaIngreso"]);
+								$empleado->setFecharetiro($_POST["FechaRetiro"]);
+								$empleado->setFechafallecimiento($_POST["FechaFallecimiento"]);
+								$htrabajo->setDesde($_POST["Desde"]);
+								$htrabajo->setHasta($_POST["Hasta"]);
+								$htrabajo->setIdturno($_POST["idTurno"]);
+								if(actualizarUsuario($empleado,$htrabajo,$idBanco,$NumeroCuenta)){
+									echo "2";
+								}else{
+									echo "1";
+								}
+
+							}
+							//y si no quiero modificar la pass??
+						}else{
+							$idBanco=$_POST["idBanco"];
+							$NumeroCuenta=$_POST["nCuenta"];
+							$htrabajo = new htrabajo_class();
+							$empleado = new empleado_class();
+							$empleado->setNumerodocumento($_POST["NumeroDocumento"]);
+							$empleado->setTipodocumento($_POST["TipoDocumento"]);
+							$empleado->setIdcargos($_POST["idCargos"]);
+							$empleado->setPass("");
+							$empleado->setActivo($_POST["Activo"]);
+							$empleado->setNup($_POST["Nup"]);
+							$empleado->setInstitucionprevisional($_POST["InstitucionPrevisional"]);
+							$empleado->setPrimernombre($_POST["PrimerNombre"]);
+							$empleado->setSegundonombre($_POST["SegundoNombre"]);
+							$empleado->setPrimerapellido($_POST["PrimerApellido"]);
+							$empleado->setSegundoapellido($_POST["SegundoApellido"]);
+							$empleado->setApellidocasada($_POST["ApellidoCasada"]);
+							$empleado->setConocidopor($_POST["ConocidoPor"]);
+							$empleado->setNit($_POST["Nit"]);
+							$empleado->setNumeroisss($_POST["NumeroIsss"]);
+							$empleado->setNumeroinpep($_POST["NumeroInpep"]);
+							$empleado->setGenero($_POST["Genero"]);
+							$empleado->setNacionalidad($_POST["Nacionalidad"]);
+							$empleado->setSalarionominal($_POST["SalarioNominal"]);
+							$empleado->setFechanacimiento($_POST["FechaNacimiento"]);
+							$empleado->setEstadocivil($_POST["EstadoCivil"]);
+							$empleado->setDireccion($_POST["Direccion"]);
+							$empleado->setDepartamento($_POST["Departamento"]);
+							$empleado->setMunicipio($_POST["Municipio"]);
+							$empleado->setNumerotelefonico($_POST["NumeroTelefonico"]);
+							$empleado->setCorreoelectronico($_POST["CorreoElectronico"]);
+							$empleado->setFechaingreso($_POST["FechaIngreso"]);
+							$empleado->setFecharetiro($_POST["FechaRetiro"]);
+							$empleado->setFechafallecimiento($_POST["FechaFallecimiento"]);
+							$htrabajo->setDesde($_POST["Desde"]);
+							$htrabajo->setHasta($_POST["Hasta"]);
+							$htrabajo->setIdturno($_POST["idTurno"]);
+							if(actualizarUsuario($empleado,$htrabajo,$idBanco,$NumeroCuenta)){
+								echo "2";
+							}else{
+								echo "1";
+							}
+
+
+						}
+
 					}
 				};
 			break;

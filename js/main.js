@@ -9,6 +9,7 @@ $(document).ready(function() {
         var Descanso = $("#descanso").val();
         var Periodo_Pago = $("#PPago").val();
         var H_Descanso = document.getElementById("H_Descanso").value;
+        var MJornada= document.getElementById("MJornada").value;
         //alert("user: "+user+" - pass: "+contra);
         $.ajax({
             url: '../php/verificar_TurnoM.php',
@@ -20,6 +21,7 @@ $(document).ready(function() {
                 Hasta: Hasta,
                 Descanso: Descanso,
                 Periodo_Pago: Periodo_Pago,
+                MJornada: MJornada,
                 H_Descanso: H_Descanso
             },
             beforeSend: function() {
@@ -46,6 +48,9 @@ $(document).ready(function() {
                     case "3":
                         respAlert("warning", "Error en base ");
                         break;
+                    case "4":
+                            respAlert("warning", "El formato de tiempo es 00:00 a 23:59");
+                            break;
                     case "5":
                         respAlert("warning", "Coloque un Periodo de Pago valido");
                         break;
@@ -507,6 +512,7 @@ $(document).ready(function() {
         var Descanso = $("#descanso").val();
         var H_Descanso = document.getElementById("H_Descanso").value;
         var Periodo_Pago = $("#PPago").val();
+        var MJornada= document.getElementById("MJornada").value;
         //alert("user: "+user+" - pass: "+contra);
         $.ajax({
             url: '../php/verificar_Turno.php',
@@ -518,6 +524,7 @@ $(document).ready(function() {
                 Hasta: Hasta,
                 Descanso: Descanso,
                 Periodo_Pago: Periodo_Pago,
+                MJornada:MJornada,
                 H_Descanso: H_Descanso
             },
             beforeSend: function() {
@@ -540,6 +547,9 @@ $(document).ready(function() {
                         break;
                     case "3":
                         respAlert("warning", "Error en base ");
+                        break;
+                    case "4":
+                        respAlert("warning", "El formato de tiempo es 00:00 a 23:59");
                         break;
                     case "5":
                         respAlert("warning", "El Periodo de Pago es Incorrecto");
@@ -1016,6 +1026,7 @@ $(document).ready(function() {
         var NumeroDocumento = document.getElementById("Ndocumento").value;
         var TipoDocumento = $("#Tdocumento").val();
         var idCargos = $("#cargo").val();
+        var changePass=document.getElementById('changePass');
         var Pass = document.getElementById("pass").value;
         var Activo = $("#activo").val();
         var Nup = document.getElementById("NNUP").value;
@@ -1046,7 +1057,15 @@ $(document).ready(function() {
         var Desde = document.getElementById("hEntrada").value;
         var Hasta = document.getElementById("hSalida").value;
         var idTurno = $("#idTurno").val();
-
+        //BANCOS
+        var idBanco = $("#Banco").val();
+        var nCuenta = document.getElementById("CuentaBanco").value;
+        //PARA el checkbox
+        if (changePass.checked) {
+          changePass=1;
+        } else {
+          changePass=0;
+        }
         console.log(NumeroDocumento);
         $.ajax({
             url: 'agregar.php',
@@ -1057,6 +1076,7 @@ $(document).ready(function() {
                 TipoDocumento: TipoDocumento,
                 idCargos: idCargos,
                 Pass: Pass,
+                changePass: changePass,
                 Activo: Activo,
                 Nup: Nup,
                 InstitucionPrevisional: InstitucionPrevisional,
@@ -1084,7 +1104,9 @@ $(document).ready(function() {
                 FechaFallecimiento: FechaFallecimiento,
                 Desde: Desde,
                 Hasta: Hasta,
-                idTurno: idTurno
+                idTurno: idTurno,
+                idBanco: idBanco,
+                nCuenta: nCuenta
             },
             beforeSend: function() {
                 console.log("NumeroDocumento: " + NumeroDocumento);
@@ -1114,6 +1136,12 @@ $(document).ready(function() {
                     case "5":
                         respAlert("warning", "Ingrese Horario de Entrada y Horario de Salida");
                         break;
+                    case "6":
+                        respAlert("warning", "El numero de cuenta unicamente pueden ser digitos Numericos");
+                        break;
+                    case "7":
+                        respAlert("warning", "La contraseña no puede ir vacia");
+                        break;
                 }
             },
             error: function(data) {
@@ -1123,7 +1151,6 @@ $(document).ready(function() {
         });
         event.preventDefault();
     });
-
 
 });
 

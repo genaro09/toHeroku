@@ -197,8 +197,8 @@
 		$result=mysqli_query($cnx,$query);
 		$flag=FALSE;
 		while($row=mysqli_fetch_array($result)){
-			if($row["Pass"]==$Pass){
-				$flag=TRUE;
+			if (password_verify($Pass, $row["Pass"])) {
+			    $flag=TRUE;
 			}
 		}
 		mysqli_close($cnx);
@@ -300,6 +300,7 @@
 			$turno->setDescanso($row["Descanso"]);
 			$turno->setHDescanso($row["H_Descanso"]);
 			$turno->setperiodo_Pago($row["Periodo_Pago"]);
+			$turno->setH_MJornada($row["H_MJornada"]);
 		}
 		mysqli_close($cnx);
 		return $turno;
@@ -616,40 +617,105 @@ function eliminarCargos($idCargos,$NitEmpresa){
 	mysqli_close($cnx);
 	return $estado;
 }
-	function actualizarUsuario($empleado,$htrabajo){
+function checkCuentaBanco($NumeroDocuento,$idBanco){
+	$cnx=cnx();
+	$flag=FALSE;
+	$query=sprintf("SELECT * FROM cuentasbanco WHERE NumeroDocumento= '%s' AND idBanco='%s' ",mysqli_real_escape_string($cnx,$NumeroDocuento),mysqli_real_escape_string($cnx,$idBanco));
+	$result=mysqli_query($cnx,$query);
+	$row=mysqli_fetch_array($result);
+	if($row[0]!=""){
+		$flag=TRUE;
+	}
+	mysqli_close($cnx);
+	return $flag;
+}
+	function actualizarUsuario($empleado,$htrabajo,$idBanco,$NumeroCuenta){
 		$cnx = cnx();
-		$query = sprintf("UPDATE empleado SET idCargos = '%s', Pass ='%s', Activo = '%s', Nup = '%s', InstitucionPrevisional = '%s', PrimerNombre = '%s',SegundoNombre = '%s' , PrimerApellido = '%s' , SegundoApellido = '%s' , ApellidoCasada = '%s' , ConocidoPor = '%s' , TipoDocumento = '%s' , NumeroDocumento = '%s' , Nit = '%s' , NumeroIsss = '%s' , NumeroInpep = '%s' , Genero = '%s' , Nacionalidad = '%s' , SalarioNominal = '%s' , FechaNacimiento = '%s' , EstadoCivil = '%s' , Direccion = '%s' , Departamento = '%s' , Municipio = '%s' , NumeroTelefonico = '%s' , CorreoElectronico = '%s' , FechaIngreso = '%s' , FechaRetiro = '%s' , FechaFallecimiento = '%s' WHERE NumeroDocumento = '%s'",
-			mysqli_real_escape_string($cnx, $empleado->getIdcargos()),
-			mysqli_real_escape_string($cnx, $empleado->getPass()),
-			mysqli_real_escape_string($cnx, $empleado->getActivo()),
-			mysqli_real_escape_string($cnx, $empleado->getNup()),
-			mysqli_real_escape_string($cnx, $empleado->getInstitucionprevisional()),
-			mysqli_real_escape_string($cnx, $empleado->getPrimernombre()),
-			mysqli_real_escape_string($cnx, $empleado->getSegundonombre()),
-			mysqli_real_escape_string($cnx, $empleado->getPrimerapellido()),
-			mysqli_real_escape_string($cnx, $empleado->getSegundoapellido()),
-			mysqli_real_escape_string($cnx, $empleado->getApellidocasada()),
-			mysqli_real_escape_string($cnx, $empleado->getConocidopor()),
-			mysqli_real_escape_string($cnx, $empleado->getTipodocumento()),
-			mysqli_real_escape_string($cnx, $empleado->getNumerodocumento()),
-			mysqli_real_escape_string($cnx, $empleado->getNit()),
-			mysqli_real_escape_string($cnx, $empleado->getNumeroisss()),
-			mysqli_real_escape_string($cnx, $empleado->getNumeroinpep()),
-			mysqli_real_escape_string($cnx, $empleado->getGenero()),
-			mysqli_real_escape_string($cnx, $empleado->getNacionalidad()),
-			mysqli_real_escape_string($cnx, $empleado->getSalarionominal()),
-			mysqli_real_escape_string($cnx, $empleado->getFechanacimiento()),
-			mysqli_real_escape_string($cnx, $empleado->getEstadocivil()),
-			mysqli_real_escape_string($cnx, $empleado->getDireccion()),
-			mysqli_real_escape_string($cnx, $empleado->getDepartamento()),
-			mysqli_real_escape_string($cnx, $empleado->getMunicipio()),
-			mysqli_real_escape_string($cnx, $empleado->getNumerotelefonico()),
-			mysqli_real_escape_string($cnx, $empleado->getCorreoelectronico()),
-			mysqli_real_escape_string($cnx, $empleado->getFechaingreso()),
-			mysqli_real_escape_string($cnx, $empleado->getFecharetiro()),
-			mysqli_real_escape_string($cnx, $empleado->getFechafallecimiento()),
+		if(checkCuentaBanco($empleado->getNumerodocumento(),$idBanco)){
+			$NumeroCuentaEncr=encrypt_decrypt('encrypt', $NumeroCuenta);
+			$query3 = sprintf("UPDATE cuentasbanco SET NumeroCuenta = '%s' WHERE idBanco ='%s' AND NumeroDocumento = '%s'",
+			mysqli_real_escape_string($cnx, $NumeroCuentaEncr),
+			mysqli_real_escape_string($cnx, $idBanco),
 			mysqli_real_escape_string($cnx, $empleado->getNumerodocumento())
 			);
+			$estado3 = mysqli_query($cnx, $query3);
+		}else{
+			$NumeroCuentaEncr=encrypt_decrypt('encrypt', $NumeroCuenta);
+			$query3 = sprintf("INSERT INTO cuentasbanco(NumeroDocumento,idBanco,NumeroCuenta) VALUES ('%s','%s','%s')",
+				mysqli_real_escape_string($cnx,$empleado->getNumerodocumento()),
+				mysqli_real_escape_string($cnx,$idBanco),
+				mysqli_real_escape_string($cnx,$NumeroCuentaEncr)
+			);
+			$estado3 = mysqli_query($cnx, $query3);
+
+		}
+		if(strcmp($empleado->getPass(), "")==0){
+			$query = sprintf("UPDATE empleado SET idCargos = '%s',  Activo = '%s', Nup = '%s', InstitucionPrevisional = '%s', PrimerNombre = '%s',SegundoNombre = '%s' , PrimerApellido = '%s' , SegundoApellido = '%s' , ApellidoCasada = '%s' , ConocidoPor = '%s' , TipoDocumento = '%s' , NumeroDocumento = '%s' , Nit = '%s' , NumeroIsss = '%s' , NumeroInpep = '%s' , Genero = '%s' , Nacionalidad = '%s' , SalarioNominal = '%s' , FechaNacimiento = '%s' , EstadoCivil = '%s' , Direccion = '%s' , Departamento = '%s' , Municipio = '%s' , NumeroTelefonico = '%s' , CorreoElectronico = '%s' , FechaIngreso = '%s' , FechaRetiro = '%s' , FechaFallecimiento = '%s' WHERE NumeroDocumento = '%s'",
+				mysqli_real_escape_string($cnx, $empleado->getIdcargos()),
+				mysqli_real_escape_string($cnx, $empleado->getActivo()),
+				mysqli_real_escape_string($cnx, $empleado->getNup()),
+				mysqli_real_escape_string($cnx, $empleado->getInstitucionprevisional()),
+				mysqli_real_escape_string($cnx, $empleado->getPrimernombre()),
+				mysqli_real_escape_string($cnx, $empleado->getSegundonombre()),
+				mysqli_real_escape_string($cnx, $empleado->getPrimerapellido()),
+				mysqli_real_escape_string($cnx, $empleado->getSegundoapellido()),
+				mysqli_real_escape_string($cnx, $empleado->getApellidocasada()),
+				mysqli_real_escape_string($cnx, $empleado->getConocidopor()),
+				mysqli_real_escape_string($cnx, $empleado->getTipodocumento()),
+				mysqli_real_escape_string($cnx, $empleado->getNumerodocumento()),
+				mysqli_real_escape_string($cnx, $empleado->getNit()),
+				mysqli_real_escape_string($cnx, $empleado->getNumeroisss()),
+				mysqli_real_escape_string($cnx, $empleado->getNumeroinpep()),
+				mysqli_real_escape_string($cnx, $empleado->getGenero()),
+				mysqli_real_escape_string($cnx, $empleado->getNacionalidad()),
+				mysqli_real_escape_string($cnx, $empleado->getSalarionominal()),
+				mysqli_real_escape_string($cnx, $empleado->getFechanacimiento()),
+				mysqli_real_escape_string($cnx, $empleado->getEstadocivil()),
+				mysqli_real_escape_string($cnx, $empleado->getDireccion()),
+				mysqli_real_escape_string($cnx, $empleado->getDepartamento()),
+				mysqli_real_escape_string($cnx, $empleado->getMunicipio()),
+				mysqli_real_escape_string($cnx, $empleado->getNumerotelefonico()),
+				mysqli_real_escape_string($cnx, $empleado->getCorreoelectronico()),
+				mysqli_real_escape_string($cnx, $empleado->getFechaingreso()),
+				mysqli_real_escape_string($cnx, $empleado->getFecharetiro()),
+				mysqli_real_escape_string($cnx, $empleado->getFechafallecimiento()),
+				mysqli_real_escape_string($cnx, $empleado->getNumerodocumento())
+				);
+		}else{
+			$query = sprintf("UPDATE empleado SET idCargos = '%s', Pass ='%s', Activo = '%s', Nup = '%s', InstitucionPrevisional = '%s', PrimerNombre = '%s',SegundoNombre = '%s' , PrimerApellido = '%s' , SegundoApellido = '%s' , ApellidoCasada = '%s' , ConocidoPor = '%s' , TipoDocumento = '%s' , NumeroDocumento = '%s' , Nit = '%s' , NumeroIsss = '%s' , NumeroInpep = '%s' , Genero = '%s' , Nacionalidad = '%s' , SalarioNominal = '%s' , FechaNacimiento = '%s' , EstadoCivil = '%s' , Direccion = '%s' , Departamento = '%s' , Municipio = '%s' , NumeroTelefonico = '%s' , CorreoElectronico = '%s' , FechaIngreso = '%s' , FechaRetiro = '%s' , FechaFallecimiento = '%s' WHERE NumeroDocumento = '%s'",
+				mysqli_real_escape_string($cnx, $empleado->getIdcargos()),
+				mysqli_real_escape_string($cnx, $empleado->getPass()),
+				mysqli_real_escape_string($cnx, $empleado->getActivo()),
+				mysqli_real_escape_string($cnx, $empleado->getNup()),
+				mysqli_real_escape_string($cnx, $empleado->getInstitucionprevisional()),
+				mysqli_real_escape_string($cnx, $empleado->getPrimernombre()),
+				mysqli_real_escape_string($cnx, $empleado->getSegundonombre()),
+				mysqli_real_escape_string($cnx, $empleado->getPrimerapellido()),
+				mysqli_real_escape_string($cnx, $empleado->getSegundoapellido()),
+				mysqli_real_escape_string($cnx, $empleado->getApellidocasada()),
+				mysqli_real_escape_string($cnx, $empleado->getConocidopor()),
+				mysqli_real_escape_string($cnx, $empleado->getTipodocumento()),
+				mysqli_real_escape_string($cnx, $empleado->getNumerodocumento()),
+				mysqli_real_escape_string($cnx, $empleado->getNit()),
+				mysqli_real_escape_string($cnx, $empleado->getNumeroisss()),
+				mysqli_real_escape_string($cnx, $empleado->getNumeroinpep()),
+				mysqli_real_escape_string($cnx, $empleado->getGenero()),
+				mysqli_real_escape_string($cnx, $empleado->getNacionalidad()),
+				mysqli_real_escape_string($cnx, $empleado->getSalarionominal()),
+				mysqli_real_escape_string($cnx, $empleado->getFechanacimiento()),
+				mysqli_real_escape_string($cnx, $empleado->getEstadocivil()),
+				mysqli_real_escape_string($cnx, $empleado->getDireccion()),
+				mysqli_real_escape_string($cnx, $empleado->getDepartamento()),
+				mysqli_real_escape_string($cnx, $empleado->getMunicipio()),
+				mysqli_real_escape_string($cnx, $empleado->getNumerotelefonico()),
+				mysqli_real_escape_string($cnx, $empleado->getCorreoelectronico()),
+				mysqli_real_escape_string($cnx, $empleado->getFechaingreso()),
+				mysqli_real_escape_string($cnx, $empleado->getFecharetiro()),
+				mysqli_real_escape_string($cnx, $empleado->getFechafallecimiento()),
+				mysqli_real_escape_string($cnx, $empleado->getNumerodocumento())
+				);
+		}
+
 			$query2 = sprintf("UPDATE htrabajo SET Desde = '%s', Hasta ='%s', idTurno = '%s' WHERE NumeroDocumento = '%s'",
 			mysqli_real_escape_string($cnx, $htrabajo->getDesde()),
 			mysqli_real_escape_string($cnx, $htrabajo->getHasta()),
@@ -658,21 +724,22 @@ function eliminarCargos($idCargos,$NitEmpresa){
 			);
 		$estado = mysqli_query($cnx, $query);
 		$estado2 = mysqli_query($cnx, $query2);
-		$estadoT=$estado+$estado2;
+		$estadoT=$estado+$estado2+$estado3;
 		mysqli_close($cnx);
 		return $estadoT;
 
 	}
-	function agregarTurno($NitEmpresa,$nombreTurno,$Desde,$Hasta,$Descanso,$H_Descanso,$Periodo_Pago){
+	function agregarTurno($NitEmpresa,$nombreTurno,$Desde,$Hasta,$Descanso,$H_Descanso,$Periodo_Pago,$H_MJornada){
 		$cnx = cnx();
-		$query = sprintf("INSERT INTO turno(NitEmpresa,nombreTurno,Desde,Hasta,Descanso,H_Descanso,Periodo_Pago) VALUES ('%s','%s','%s','%s','%s','%s','%s')",
+		$query = sprintf("INSERT INTO turno(NitEmpresa,nombreTurno,Desde,Hasta,Descanso,H_Descanso,Periodo_Pago,H_MJornada) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
 			mysqli_real_escape_string($cnx,$NitEmpresa),
 			mysqli_real_escape_string($cnx,$nombreTurno),
 			mysqli_real_escape_string($cnx,$Desde),
 			mysqli_real_escape_string($cnx,$Hasta),
 			mysqli_real_escape_string($cnx,$Descanso),
 			mysqli_real_escape_string($cnx,$H_Descanso),
-			mysqli_real_escape_string($cnx,$Periodo_Pago)
+			mysqli_real_escape_string($cnx,$Periodo_Pago),
+			mysqli_real_escape_string($cnx,$H_MJornada)
 		);
 		$estado = mysqli_query($cnx, $query);
 		mysqli_close($cnx);
@@ -736,15 +803,16 @@ function eliminarCargos($idCargos,$NitEmpresa){
 		return $estado;
 	}
 
-	function actualizarTurno($idTurno,$nombreTurno,$Desde,$Hasta,$Descanso,$H_Descanso,$Periodo_Pago){
+	function actualizarTurno($idTurno,$nombreTurno,$Desde,$Hasta,$Descanso,$H_Descanso,$Periodo_Pagos,$H_MJornada){
 		$cnx = cnx();
-		$query = sprintf("UPDATE turno SET nombreTurno = '%s', Desde ='%s', Hasta = '%s', Descanso = '%s', H_Descanso = '%s', Periodo_Pago = '%s' WHERE idTurno = '%s'",
+		$query = sprintf("UPDATE turno SET nombreTurno = '%s', Desde ='%s', Hasta = '%s', Descanso = '%s', H_Descanso = '%s', Periodo_Pago = '%s', H_MJornada= '%s' WHERE idTurno = '%s'",
 			mysqli_real_escape_string($cnx, $nombreTurno),
 			mysqli_real_escape_string($cnx, $Desde),
 			mysqli_real_escape_string($cnx, $Hasta),
 			mysqli_real_escape_string($cnx, $Descanso),
 			mysqli_real_escape_string($cnx, $H_Descanso),
-		 	mysqli_real_escape_string($cnx,$Periodo_Pago),
+		 	mysqli_real_escape_string($cnx, $Periodo_Pagos),
+			mysqli_real_escape_string($cnx, $H_MJornada),
 			mysqli_real_escape_string($cnx, $idTurno)
 			);
 		$estado = mysqli_query($cnx, $query);
@@ -838,6 +906,61 @@ function eliminarCargos($idCargos,$NitEmpresa){
 	  $pattern1 = '/^(0?\d|1\d|2[0-3]):[0-5]\d:[0-5]\d$/';
 	  return preg_match($pattern1, $value);
   }
+	function getAllBankAccount(){
+		$cnx = cnx();
+		$i=0;
+		$pila= array();
+		$pila2= array();
+		$query=sprintf("SELECT * FROM banco");
+		$result=mysqli_query($cnx,$query);
+		while ($row=mysqli_fetch_array($result)) {
+			$pila[$i] = $row["idBanco"];
+			$pila2[$row["idBanco"]] = $row["NombreBanco"];
+			//"Jan"=> 1
+			$i++;
+		}
+		mysqli_close($cnx);
+		return [$pila,$pila2];
 
+	}
+	function getCuentaBanco($NumeroDocumento,$idBanco){
+		$cnx = cnx();
+		$query=sprintf("SELECT * FROM cuentasbanco  WHERE NumeroDocumento='%s' AND idBanco='%s'",mysqli_real_escape_string($cnx,$NumeroDocumento),mysqli_real_escape_string($cnx,$idBanco));
+		$result=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($result);
+		if($row[0]!=""){
+			$cuenta= encrypt_decrypt('decrypt', $row["NumeroCuenta"]);
+			$idBanco=$row["idBanco"];
+		}else {
+			$cuenta=NULL;
+			$idBanco=0;
+			}
+		mysqli_close($cnx);
+		return [$cuenta,$idBanco];
+
+	}
+	function encrypt_decrypt($action, $string) {
+	    $output = false;
+
+	    $encrypt_method = "AES-256-CBC";
+	    $secret_key = 'ASCAS';
+	    $secret_iv = 'ASCASiv';
+
+	    // hash
+	    $key = hash('sha256', $secret_key);
+
+	    // iv - encrypt method AES-256-CBC expects 16 bytes - else you will get a warning
+	    $iv = substr(hash('sha256', $secret_iv), 0, 16);
+
+	    if( $action == 'encrypt' ) {
+	        $output = openssl_encrypt($string, $encrypt_method, $key, 0, $iv);
+	        $output = base64_encode($output);
+	    }
+	    else if( $action == 'decrypt' ){
+	        $output = openssl_decrypt(base64_decode($string), $encrypt_method, $key, 0, $iv);
+	    }
+
+	    return $output;
+	}
 
 ?>
