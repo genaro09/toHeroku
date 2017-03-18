@@ -18,8 +18,10 @@
 						echo "5";
 					}
 					$H_Descanso="";
-					if(!(verify_time_format($Desde.":00")&&verify_time_format($Hasta.":00")&&verify_time_format($Desde.":00"))){
+					if(!(verify_time_format($Desde.":00")&&verify_time_format($Hasta.":00"))){
 						echo "4";
+					}elseif(!(($MJornada==2)||($MJornada==1))){
+						echo "6";
 					}elseif(agregarTurno($NitEmpresa,$nombreTurno,$Desde,$Hasta,$Descanso,$H_Descanso,$Periodo_Pago,$MJornada)){
 						echo "2";
 					}else{
@@ -29,8 +31,10 @@
 					if(!(($_POST["Periodo_Pago"]==10)||($_POST["Periodo_Pago"]==20)||($_POST["Periodo_Pago"]==30)||($_POST["Periodo_Pago"]==40))){
 						echo "5";
 					}
-					if(!(verify_time_format($Desde.":00")&&verify_time_format($Hasta.":00")&&verify_time_format($Desde.":00"))){
+					if(!(verify_time_format($Desde.":00")&&verify_time_format($Hasta.":00"))){
 						echo "4";
+					}elseif(!(($MJornada==2)||($MJornada==1))){
+						echo "6";
 					}elseif(agregarTurno($NitEmpresa,$nombreTurno,$Desde,$Hasta,$Descanso,$H_Descanso,$Periodo_Pago,$MJornada)){
 						echo "2";
 					}else{

@@ -9,7 +9,7 @@ $(document).ready(function() {
         var Descanso = $("#descanso").val();
         var Periodo_Pago = $("#PPago").val();
         var H_Descanso = document.getElementById("H_Descanso").value;
-        var MJornada= document.getElementById("MJornada").value;
+        var MJornada= $("#MJornada").val();
         //alert("user: "+user+" - pass: "+contra);
         $.ajax({
             url: '../php/verificar_TurnoM.php',
@@ -512,7 +512,7 @@ $(document).ready(function() {
         var Descanso = $("#descanso").val();
         var H_Descanso = document.getElementById("H_Descanso").value;
         var Periodo_Pago = $("#PPago").val();
-        var MJornada= document.getElementById("MJornada").value;
+        var MJornada=$("#MJornada").val();
         //alert("user: "+user+" - pass: "+contra);
         $.ajax({
             url: '../php/verificar_Turno.php',
@@ -553,6 +553,9 @@ $(document).ready(function() {
                         break;
                     case "5":
                         respAlert("warning", "El Periodo de Pago es Incorrecto");
+                        break;
+                    case "6":
+                        respAlert("warning", "El Inicio de la media jornada es Incorrecto");
                         break;
                 }
                 //respAlert("success",data[0]);
@@ -743,7 +746,7 @@ $(document).ready(function() {
                         respAlert("warning", "Las fechas tienen que estar en formato Dia/Mes/Años");
                         break;
                     case "2":
-                        respAlert("warning", "El horario de Entrada tiene que ser menor al de salida");
+                        respAlert("warning", "El Valor de Tipo de pago que quiere acceder es invalido");
                         break;
                     case "3":
                       document.getElementById('Fechas').value = str;

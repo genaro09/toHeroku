@@ -41,10 +41,60 @@
 			   success: function(html)
 			   {
 			      $("#semana").html(html);
+						document.getElementById("idTurno").options[0].selected=true;
+						var id=$("#idTurno").val();
+						var anio=$("#annio").val();
+						var semana=$("#semana").val();
+						var dataString = 'id='+ id +';'+'annio='+anio;
+						$.ajax({
+						 type: "POST",
+						 url: "get_Fechas.php",
+						 data:{
+						id:id,
+						anio:anio,
+						semana:semana,
+						dataString:dataString
+						},
+						 cache: false,
+						 beforeSend: function() {
+							 $("#fechas").html("<div class='w3-panel w3-yellow' style='paddin:1px;'><h3>Cargando!</h3><p>Se esta obteniendo la informacion</p></div>");
+						 },
+						 success: function(html)
+						 {
+								$("#fechas").html(html);
+						 }
+						 });
 			   }
 			   });
 
 	    });
+
+			$("#semana").change(function(){
+				document.getElementById("idTurno").options[0].selected=true;
+				var id=$("#idTurno").val();
+				var anio=$("#annio").val();
+				var semana=$("#semana").val();
+				var dataString = 'id='+ id +';'+'annio='+anio;
+				$.ajax({
+				 type: "POST",
+				 url: "get_Fechas.php",
+				 data:{
+				id:id,
+				anio:anio,
+				semana:semana,
+				dataString:dataString
+				},
+				 cache: false,
+				 beforeSend: function() {
+					 $("#fechas").html("<div class='w3-panel w3-yellow' style='paddin:1px;'><h3>Cargando!</h3><p>Se esta obteniendo la informacion</p></div>");
+				 },
+				 success: function(html)
+				 {
+						$("#fechas").html(html);
+				 }
+				 });
+	    });
+
 	});
 	$(document).ready(function(){
 	    $("#idTurno").change(function(){
@@ -143,7 +193,7 @@
 														<label for="exampleInputEmail1">Turno</label>
 														<br>
 														<select id="idTurno" name="idTurno" class="form-control selectpicker" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
-															<option>Ninguna</option>
+															<option value="0">SELECCIONE UNO</option>
 														<?php
 															$NitEmpresa=getNitEmpresa($_SESSION['usuario_sesion']);
 															include "get_SelectTurno.php";
@@ -168,6 +218,7 @@
 	            	</div>
 	            </div>
 	        </div>
+					<?php include 'footer.php'; ?>
 	    </div>
 	</div>
 </body>

@@ -59,6 +59,9 @@ if($opc==0){
         }
         $FechaInicio=$Fecha[1]."-".$Fecha[0]."-".$dayI;//Y-M-D
         $FechaFin=$Fecha[1]."-".$Fecha[0]."-".$dayF;//Y-M-D
+      }else{
+        echo "2,'','',''";
+        break;
       }
 
     //FIN
@@ -80,10 +83,18 @@ if($opc==1){
     exit();
   }
   $Nombre= $_SESSION['usuario_sesion']->getPrimernombre()." ".$_SESSION['usuario_sesion']->getPrimerapellido()." ".$_SESSION['usuario_sesion']->getSegundoapellido();
-  $TipoPago=$_POST['TPago'];
+  $TipoPago=$_POST['TPago'];//1 Mensual, 2 y 3 quincenal, 4 semanal
   $TipoPago=str_split($TipoPago);
   //Tipo de Pago para tomar en consideracion para la RENTA
-  $tipoRenta=$TipoPago[0];
+  if($TipoPago[0]==1){//mensual
+    $tipoRenta=1;
+  }elseif(($TipoPago[0]==2) || ($TipoPago[0]==3)){
+    # code...
+    $tipoRenta=2;
+  }elseif(($TipoPago[0]==2) || ($TipoPago[0]==3)){
+    # code...
+    $tipoRenta=3;
+  }
   $TRAMO1= array();
   $TRAMO2= array();
   $TRAMO3= array();
@@ -92,7 +103,7 @@ if($opc==1){
   $query=sprintf("SELECT * FROM renta WHERE tipo_pago='%s' ",mysqli_real_escape_string($cnx,$tipoRenta));
   $result=mysqli_query($cnx,$query);
   $j=1;
-  while ($row=mysqli_fetch_array($result)) {
+  while($row=mysqli_fetch_array($result)) {
     if(strcmp($row["nombre_tramo"],"I Tramo")==0){
       $TRAMO1=array("Desde" => $row["Desde"],"Hasta" => $row["Hasta"],"porcentaje_aplicar" => $row["porcentaje_aplicar"],"sobre_exceso" => $row["sobre_exceso"],"Cuota_fija" => $row["Cuota_fija"]);
     }
@@ -415,8 +426,16 @@ function TimeToMinut($Time){
 }
 function calculoDeRentaHE($TG,$TRAMO1,$TRAMO2,$TRAMO3,$TRAMO4){
   //$TRAMO1=array("Desde" => $row["Desde"],"Hasta" => $row["Hasta"],"porcentaje_aplicar" => $row["porcentaje_aplicar"],"sobre_exceso" => $row["sobre_exceso"],"Cuota_fija" => $row["Cuota_fija"]);
-  if(((float)$TG>(float)$TRAMO1["Desde"])||()){
-
+  if(((float)$TG>(float)$TRAMO1["Desde"])&&((float)$TG<(float)$TRAMO1["Hasta"])){
+    $RENTA=(($TG-$TRAMO1["sobre_exceso"])*$TRAMO1["porcentaje_aplicar"])+$TRAMO1["Cuota_fija"];
+  }elseif(((float)$TG>(float)$TRAMO2["Desde"])&&((float)$TG<(float)$TRAMO2["Hasta"])) {
+    # code...
+    $RENTA=(($TG-$TRAMO2["sobre_exceso"])*$TRAMO2["porcentaje_aplicar"])+$TRAMO2["Cuota_fija"];
+  }elseif(((float)$TG>(float)$TRAMO3["Desde"])&&((float)$TG<(float)$TRAMO3["Hasta"])) {
+    # code...
+    $RENTA=(($TG-$TRAMO3["sobre_exceso"])*$TRAMO3["porcentaje_aplicar"])+$TRAMO3["Cuota_fija"];
+  }else{
+    $RENTA=(($TG-$TRAMO4["sobre_exceso"])*$TRAMO4["porcentaje_aplicar"])+$TRAMO4["Cuota_fija"];
   }
   return number_format($RENTA, 2, '.', '');
 }

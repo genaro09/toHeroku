@@ -418,6 +418,8 @@
 	            </div>
 	        </div>
 	    </div>
+			<?php include 'footer.php'; ?>
+
 	</div>
 
         <!--   Core JS Files   -->

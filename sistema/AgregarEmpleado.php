@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8" />
-	
+
 	<link rel="icon" type="image/png" href="../img/favicon.png" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 	<title>ASCAS, S.A. DE C.V.</title>
@@ -148,6 +148,8 @@
 
 	            </div>
 	        </div>
+					<?php include 'footer.php'; ?>
+
 	    </div>
 	</div>
 </body>

@@ -7,15 +7,16 @@ if($_POST['id']){
     $NitEmpresa=getNitEmpresa($_SESSION['usuario_sesion']);
     $annio=$_POST['anio'];
     $semana=$_POST['semana'];
-    echo "
-    <div class='header'>
-        <h4 class='title'>Turno: ".$idTurno."  Semana:".$semana."  Año: ".$annio."</h4>
-    </div>
-    ";
     $queryP=sprintf("SELECT * FROM htrabajo where idTurno='%s' ",mysqli_real_escape_string($cnx,$idTurno));
     $resultP=mysqli_query($cnx,$queryP);
     $rowP=mysqli_fetch_array($resultP);
     if($rowP[0]!=""){
+        $turno=getInfoTurnor($idTurno);
+        echo "
+        <div class='header'>
+            <h4 class='title'>Turno: ".$turno->getNombreturno()."  Semana:".$semana."  Año: ".$annio."</h4>
+        </div>
+        ";
         if(ExisteSP($semana,$annio,$NitEmpresa,$idTurno)){
             $query=sprintf("SELECT * FROM semanal where NitEmpresa='%s' and nSemana='%s' and anno='%s' and idTurno='%s' ",mysqli_real_escape_string($cnx,$NitEmpresa),mysqli_real_escape_string($cnx,$semana),mysqli_real_escape_string($cnx,$annio),mysqli_real_escape_string($cnx,$idTurno));
             $result=mysqli_query($cnx,$query);

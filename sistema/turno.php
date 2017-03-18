@@ -105,7 +105,10 @@
 												<div class="form-group">
 													<label>Inicio de Media Jornada<star>*</star></label>
 													<br>
-													<input id="MJornada" type="text" class="form-control timepicker" maxlength="5" value="08:00" required/>
+													<select id="MJornada" name="PPago" class="form-control selectpicker" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+														<option value="1">Al inicio de la jornada</option>
+														<option value="2">Al final de la jornada</option>
+													</select>
 												</div>
 											</div>
 											<div class="col-md-4">
@@ -181,6 +184,7 @@
 
 	            </div>
 	        </div>
+					<?php include 'footer.php'; ?>
 	    </div>
 	</div>
 </body>

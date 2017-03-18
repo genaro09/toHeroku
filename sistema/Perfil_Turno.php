@@ -156,7 +156,21 @@
 															<div class="form-group">
 																<label>Inicio de Media Jornada<star>*</star></label>
 																<br>
-																<input id="MJornada" type="text" class="form-control timepicker" maxlength="5"  value="<?php echo $turno->getH_MJornada(); ?>" required/>
+																<select id="MJornada" name="PPago" class="form-control selectpicker" data-style="btn-default btn-block" data-menu-style="dropdown-blue">
+																	<?php
+																		if($turno->getH_MJornada()==1){
+																			echo '<option selected="true" value="1">Al inicio de la jornada</option>';
+																			echo '<option value="2">Al final de la jornada</option>';
+																		}elseif ($turno->getH_MJornada()==2) {
+																			echo '<option value="1">Al inicio de la jornada</option>';
+																			echo '<option selected="true" value="2">Al final de la jornada</option>';
+																		}else{
+																			echo '<option selected="true" value="0">SELECCIONE UNA OPCION</option>';
+																			echo '<option value="1">Al inicio de la jornada</option>';
+																			echo '<option value="2">Al final de la jornada</option>';
+																		}
+																	 ?>
+																</select>
 															</div>
 														</div>
 														<div class="col-md-4">
@@ -194,12 +208,14 @@
 																				<tr>
 																						<th>DUI</th>
 																						<th>Nombre</th>
+																						 <th class="disabled-sorting text-right">Acciones</th>
 																				</tr>
 																		</thead>
 																		<tfoot>
 																				<tr>
 																					<th>DUI</th>
 																					<th>Nombre</th>
+																					<th class="text-right">Acciones</th>
 																				</tr>
 																		</tfoot>
 

@@ -12,11 +12,15 @@
 			$query3=sprintf("SELECT * FROM empleado where idCargos='%s'",mysqli_real_escape_string($cnx,$idCargos));
 			$result3=mysqli_query($cnx,$query3);
 			while ($row3=mysqli_fetch_array($result3)) {
+        if($row3["Activo"]==1){
+          $activo="Activo";
+        }else $activo="Inactivo";
+          $salarioNominal=number_format($row3["SalarioNominal"], 2, '.', '');
 				 echo "<tr>
 						<td>".$row3["NumeroDocumento"]."</td>
 						<td>".$row3["PrimerNombre"]." ".$row3["PrimerApellido"]."</td>
-						<td>".$row3["SalarioNominal"]."</td>
-						<td>".$row3["Activo"]."</td>
+						<td>".$salarioNominal."</td>
+						<td>".$activo."</td>
 						<td>".$row["NombreDepartamento"]."</td>
 						<td class='text-right'>
 							<form method='post' action='Perfil_Empleado.php'>

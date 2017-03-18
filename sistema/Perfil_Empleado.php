@@ -670,7 +670,7 @@
 																					*/
 																					$BancosID=$Bancos[0];//los id
 																					$BancosNombre=$Bancos[1];//Los nombres
-																					echo "<option value='0'>SELECCIONE UNO</option>";
+																					echo "<option value='0'>SELECCIONE UN BANCO</option>";
 																					for($i = 0; $i < sizeof($BancosID);$i++){
 																							$idBanco=$BancosID[$i];
 																							$nombreBancos=$BancosNombre[$idBanco];
@@ -685,7 +685,7 @@
 																			<label>Cuenta Bancaria</label>
 																			<div id="divCount">
 																				<?php
-																					echo '<input disabled  type="number" id="CuentaBanco" class="form-control" placeholder="SELECCIONE PARA VER SI TIENE CUENTA">';
+																					echo '<input disabled  type="number" id="CuentaBanco" class="form-control" placeholder="SELECCIONE UN BANCO PARA VER CUENTA">';
 																				 ?>
 																			</div>
 																		</div>
@@ -739,6 +739,7 @@
 						</div>
 					</div>
 				</div>
+				<?php include 'footer.php'; ?>
 			</div>
 	</div>
 </body>

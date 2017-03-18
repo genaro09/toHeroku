@@ -18,15 +18,21 @@
 				if($nombreTurno!=" " && ($Desde<$Hasta)){
 					if($Descanso==0){
 						$H_Descanso="";
-						if(!(verify_time_format($Desde.":00")&&verify_time_format($Hasta.":00")&&verify_time_format($Desde.":00"))){
+						if(!(verify_time_format($Desde.":00")&&verify_time_format($Hasta.":00"))){
 							echo "4";
+						}elseif(!(($MJornada==2)||($MJornada==1))){
+							echo "6";
 						}elseif(actualizarTurno($idTurno,$nombreTurno,$Desde,$Hasta,$Descanso,$H_Descanso,$Periodo_Pago,$MJornada)){
 							echo "2";
 						}else{
 							echo "3";
 						}
 					}else {
-						if(actualizarTurno($idTurno,$nombreTurno,$Desde,$Hasta,$Descanso,$H_Descanso,$Periodo_Pago,$MJornada)){
+						if(!(verify_time_format($Desde.":00")&&verify_time_format($Hasta.":00"))){
+							echo "4";
+						}elseif(!(($MJornada==2)||($MJornada==1))){
+							echo "6";
+						}elseif(actualizarTurno($idTurno,$nombreTurno,$Desde,$Hasta,$Descanso,$H_Descanso,$Periodo_Pago,$MJornada)){
 							echo "2";
 						}else{
 							echo "3";
