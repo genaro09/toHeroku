@@ -22,6 +22,16 @@ class htrabajo_class
     private $idhtrabajo;
 
     /**
+     * @var integer
+     */
+    private $Descanso;
+
+    /**
+     * @var time
+     */
+    private $H_Descanso;
+
+    /**
      * @var \AppBundle\Entity\Turno
      */
     private $idturno;
@@ -81,6 +91,57 @@ class htrabajo_class
     }
 
     /**
+     * Get Descanso
+     *
+     * @return integer
+     */
+    public function getDescanso()
+    {
+        return $this->Descanso;
+    }
+
+    /**
+     * Set Descanso
+     *
+     * @param \AppBundle\Entity\Turno $Descanso
+     *
+     * @return Descanso
+     */
+    public function setDescanso($Descanso)
+    {
+        $this->Descanso = $Descanso;
+
+        return $this;
+    }
+
+
+    /**
+     * Set H_Descanso
+     *
+     * @param time $H_Descanso
+     *
+     * @return H_Descanso
+     */
+    public function setH_Descanso($H_Descanso)
+    {
+        $this->H_Descanso = $H_Descanso;
+
+        return $this;
+    }
+
+    /**
+     * Get H_Descanso
+     *
+     * @return time
+     */
+    public function getH_Descanso()
+    {
+        return $this->H_Descanso;
+    }
+
+
+
+    /**
      * Get idhtrabajo
      *
      * @return integer
@@ -138,4 +199,3 @@ class htrabajo_class
         return $this->numerodocumento;
     }
 }
-

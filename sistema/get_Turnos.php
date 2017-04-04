@@ -4,18 +4,12 @@
  	$query=sprintf("SELECT * FROM turno where NitEmpresa='%s'",mysqli_real_escape_string($cnx,$NitEmpresa));
  	$result=mysqli_query($cnx,$query);
 	while ($row=mysqli_fetch_array($result)) {
-		if($row["Descanso"]==0){
-			$descansoV="NO";
-			$Hdescanso=" ";
-		}else{
-			$Hdescanso=$row["H_Descanso"];
-			$descansoV="SI";
-		}
+		
     if($row["Periodo_Pago"]=="10"){
       $PPAGO="Mensual";
-    }elseif ($row["Periodo_Pago"]=="20") {
-      $PPAGO="Quincenal";
     }elseif ($row["Periodo_Pago"]=="30") {
+      $PPAGO="Quincenal";
+    }elseif ($row["Periodo_Pago"]=="20") {
       $PPAGO="Catorcenal";
     }elseif ($row["Periodo_Pago"]=="40") {
       $PPAGO="Semanal";
@@ -24,8 +18,6 @@
 						<td>".$row["nombreTurno"]."</td>
 						<td>".$row["Desde"]."</td>
 						<td>".$row["Hasta"]."</td>
-						<td>".$descansoV."</td>
-						<td>".$Hdescanso."</td>
             <td>".$PPAGO."</td>
 						<td class='text-right'>
 							<form method='post' action='Perfil_Turno.php'>

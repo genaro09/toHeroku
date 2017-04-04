@@ -361,11 +361,9 @@ $queryHT=sprintf("SELECT * FROM htrabajo where  NumeroDocumento='%s' ",mysqli_re
 $resultHT=mysqli_query($cnx,$queryHT);
 $rowHT=mysqli_fetch_array($resultHT);
 
-$queryNT=sprintf("SELECT * FROM turno where  idTurno='%s' ",mysqli_real_escape_string($cnx,$rowHT["idTurno"]));
-$resultNT=mysqli_query($cnx,$queryNT);
-$rowNT=mysqli_fetch_array($resultNT);
 
-$tiempo_laboral=RevisarTiempo(1,$rowHT["Desde"],$rowHT["Hasta"],$rowNT["H_Descanso"]);
+
+$tiempo_laboral=RevisarTiempo(1,$rowHT["Desde"],$rowHT["Hasta"],$rowHT["H_Descanso"]);
 
 //Fin tiempo laboral
 
@@ -750,36 +748,7 @@ function Revisar_ALDP($str,$n,$str_ALDP,$arreglo_de_ART){
   }
   return $str_ALDP;
 }
-function RevisarTiempo($valor,$HIni,$HFin,$Des){
-  $HFin=new DateTime($HFin);
-  $HIni=new DateTime($HIni);
-  $Des=new DateTime($Des);
-  $interval = $HFin->diff($HIni);
-  $nvalor=$interval->format('%H:%I:%S');
-  $NDate= new DateTime($nvalor);
-  $intervalf = $NDate->diff($Des);
-  $workduration = $intervalf->format('%H:%I:%S');
-  $time_array = explode(':',$workduration);
-  $hours = (int)$time_array[0];
-  $minutes = (int)$time_array[1];
-  $seconds = (int)$time_array[2];
-  $total_seconds = ($hours * 3600) + ($minutes * 60) + $seconds;
-  $average = floor($total_seconds/2);
-  $hours = floor($average / 3600);
-  $mins = floor($average / 60 % 60);
-  $secs = floor($average % 60);
-  $timeFormat = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
-  if($valor==1){
-    $valorN=(String)($workduration);
-  }else if($valor==2){
-    $valorN=(String)($timeFormat);
-  }else{
-    $valorN="D";
-  }
 
-return $valorN;
-
-}
 
 
 

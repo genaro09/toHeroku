@@ -1,14 +1,72 @@
 $(document).ready(function() {
-    //Si le dio submit al recibo
+
+    //Agregar una suspension
+
+    //confirmar Reporte llegadas tarde
+    $("#btnConfirmarReporteLlegadasTarde").click(function(){
+      var idReporteLlegadasTarde = document.getElementById("idLlegadasTarde").value;
+      swal({
+        title: 'Desea Confirmar',
+        text: "Ya no se podra editar!",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si, confirmar',
+        cancelButtonText: 'No, cancelar!',
+        confirmButtonClass: 'btn btn-success',
+        cancelButtonClass: 'btn btn-danger',
+        buttonsStyling: false
+      }).then(function () {
+        $.ajax({
+          url: '../php/Insert_Ajax.php',
+          type: 'POST',
+          data: {
+            opcAjax:19,
+            idReporteLlegadasTarde:idReporteLlegadasTarde
+          },
+          beforeSend: function(){
+            respAlert("info","Comprobando..")
+          },
+          success: function(data){
+            data = data.split(",");
+            switch (data[0]) {
+              case '0':
+                respAlert("danger","No se pudo conectar con la base de datos");
+                break;
+              case '1':
+                setTimeout(function() {
+                    respAlert("success", "Comprobado correctamente, redireccionando..");
+                    redireccionar("Reporte_Llegadas_Tarde.php");
+                }, 2000);
+                break;
+              default:
+
+            }
+          }
+
+        });
+      }, function (dismiss) {
+        // dismiss can be 'cancel', 'overlay',
+        // 'close', and 'timer'
+        if (dismiss === 'cancel') {
+          swal(
+            'Cancelado',
+            '',
+            'error'
+          )
+        }
+      })
+
+
+    });
     //Modifinr turno
     $("#btnMTruno").click(function() {
         var idTurno = document.getElementById("idTurno").value;
         var nombreTurno = document.getElementById("Njornada").value;
         var Desde = document.getElementById("desde").value;
         var Hasta = document.getElementById("hasta").value;
-        var Descanso = $("#descanso").val();
         var Periodo_Pago = $("#PPago").val();
-        var H_Descanso = document.getElementById("H_Descanso").value;
         var MJornada= $("#MJornada").val();
         //alert("user: "+user+" - pass: "+contra);
         $.ajax({
@@ -19,16 +77,13 @@ $(document).ready(function() {
                 nombreTurno: nombreTurno,
                 Desde: Desde,
                 Hasta: Hasta,
-                Descanso: Descanso,
                 Periodo_Pago: Periodo_Pago,
-                MJornada: MJornada,
-                H_Descanso: H_Descanso
+                MJornada: MJornada
             },
             beforeSend: function() {
                 respAlert("info", "Verificando datos...");
             },
             success: function(data) {
-                console.log(data);
                 switch (data[0]) {
                     case "0":
                         setTimeout(function() {
@@ -398,6 +453,214 @@ $(document).ready(function() {
             }
         });
     });
+
+    //Modificar Permiso btnModificarPermiso
+    $("#btnModificarPermiso").click(function() {
+      var idPermiso = document.getElementById("idPermiso").value;
+      var TipoPermiso = $("#TPermiso").val();
+      if(TipoPermiso==1){
+        var DiaInicio =document.getElementById("FechaInicio").value;
+        var DiaFin = document.getElementById("FechaFin").value;
+        var HoraInicio = "00:00";
+        var HoraFin = "00:00";
+      }else if (TipoPermiso==2) {
+        var DiaInicio = document.getElementById("Fecha").value;
+        var DiaFin = "2017-04-19";
+        var HoraInicio = document.getElementById("hInicio").value;
+        var HoraFin = document.getElementById("hFin").value;
+      }
+      var Observacion= document.getElementById("Observacion").value;
+      var opc=6;
+        //alert("user: "+user+" - pass: "+contra);
+        $.ajax({
+            url: '../php/Modificar.php',
+            type: 'POST',
+            data: {
+              opc: 6,
+              idPermiso: idPermiso,
+              TipoPermiso: TipoPermiso,
+              DiaInicio: DiaInicio,
+              DiaFin: DiaFin,
+              HoraInicio: HoraInicio,
+              HoraFin: HoraFin,
+              Observacion: Observacion
+          },
+          beforeSend: function() {
+              respAlert("info", "Verificando datos...");
+          },
+          success: function(data) {
+              console.log(data);
+              var stringL = data.split(",");
+              data=stringL[0];
+              str=stringL[1];
+              switch (data[0]) {
+                  case "0":
+                      respAlert("warning", str);
+                      break;
+                  case "1":
+                      respAlert("success", "Moficacion correctamente, redireccionando..");
+                      setTimeout(function(){
+                        redireccionar("../sistema/Descuentos.php");
+                      },1000);
+                      break;
+                  case "2":
+                      respAlert("warning", "Error en la base de datos, contacte a soporte");
+                      break;
+                  case "3":
+                      respAlert("warning", "ERROR!!!, redireccionando..");
+                      setTimeout(function(){
+                        redireccionar("../sistema/Descuentos.php");
+                      },1000);
+                      break;
+                }
+                //respAlert("success",data[0]);
+                /*setTimeout(function(){
+                  redireccionar("sistema/home.php");
+                },1000);*/
+            },
+            error: function(data) {
+                console.log(data);
+                respAlert("danger", "Error...");
+            }
+        });
+    });
+
+    //Modificar Ausencia btnModificarAusencia
+    $("#btnModificarAusencia").click(function() {
+      var idAusencia = document.getElementById("idAusencia").value;
+      var TipoAusencia = $("#TAusencia").val();
+      if(TipoAusencia==1){
+        var EstadoAusencia = $("#EstadoAusencia").val();
+      }else {
+        var EstadoAusencia = "0";
+      }
+      var FechaAusencia = document.getElementById("FechaAusencia").value;
+      var Observacion= $("#Observacion").val();
+      var opc=5;
+        //alert("user: "+user+" - pass: "+contra);
+        $.ajax({
+            url: '../php/Modificar.php',
+            type: 'POST',
+            data: {
+              opc: 5,
+              idAusencia: idAusencia,
+              TipoAusencia: TipoAusencia,
+              EstadoAusencia: EstadoAusencia,
+              FechaAusencia: FechaAusencia,
+              Observacion: Observacion
+          },
+          beforeSend: function() {
+              respAlert("info", "Verificando datos...");
+          },
+          success: function(data) {
+              console.log(data);
+              var stringL = data.split(",");
+              data=stringL[0];
+              str=stringL[1];
+              switch (data[0]) {
+                  case "0":
+                      respAlert("warning", str);
+                      break;
+                  case "1":
+                      respAlert("success", "Agregado correctamente, redireccionando..");
+                      setTimeout(function(){
+                        redireccionar("../sistema/Descuentos.php");
+                      },1000);
+                      break;
+                  case "2":
+                      respAlert("warning", "Error en la base de datos, contacte a soporte");
+                      break;
+                  case "3":
+                      respAlert("warning", "ERROR!!!, redireccionando..");
+                      setTimeout(function(){
+                        redireccionar("../sistema/Descuentos.php");
+                      },1000);
+                      break;
+                }
+                //respAlert("success",data[0]);
+                /*setTimeout(function(){
+                  redireccionar("sistema/home.php");
+                },1000);*/
+            },
+            error: function(data) {
+                console.log(data);
+                respAlert("danger", "Error...");
+            }
+        });
+    });
+
+    //Modificar Incapacidad btnModificarIncap
+    $("#btnModificarIncap").click(function() {
+        var idIncapacidad = document.getElementById("idIncapacidad").value;
+        var TipoIncapacidad = $("#TIncapacidad").val();
+        if(TipoIncapacidad==2){
+          var NombreClinica = document.getElementById("nombreClinica").value;
+          var NumeroTelefonoClinica = document.getElementById("numTClinica").value;
+        }else {
+          var NombreClinica = "";
+          var NumeroTelefonoClinica = "";
+        }
+        var Doctor = document.getElementById("NDoctor").value;
+        var DiaInicio = document.getElementById("FechaInicio").value;
+        var DiaFin = document.getElementById("FechaFin").value;
+        var FechaExpedicion = document.getElementById("FechaExpedicion").value;
+        var EstadoComprobacion =0;
+        var opc=0;
+        //alert("user: "+user+" - pass: "+contra);
+        $.ajax({
+            url: '../php/Modificar.php',
+            type: 'POST',
+            data: {
+              opc: 4,
+              TipoIncapacidad: TipoIncapacidad,
+              idIncapacidad: idIncapacidad,
+              NombreClinica: NombreClinica,
+              NumeroTelefonoClinica: NumeroTelefonoClinica,
+              Doctor: Doctor,
+              DiaInicio: DiaInicio,
+              DiaFin: DiaFin,
+              FechaExpedicion: FechaExpedicion,
+              EstadoComprobacion: EstadoComprobacion
+          },
+          beforeSend: function() {
+              respAlert("info", "Verificando datos...");
+          },
+          success: function(data) {
+              console.log(data);
+              var stringL = data.split(",");
+              data=stringL[0];
+              str=stringL[1];
+              switch (data[0]) {
+                  case "0":
+                      respAlert("warning", str);
+                      break;
+                  case "1":
+                      respAlert("success", "Agregado correctamente, redireccionando..");
+                      setTimeout(function(){
+                        redireccionar("../sistema/Descuentos.php");
+                      },1000);
+                      break;
+                  case "2":
+                      respAlert("warning", "Error en la base de datos, contacte a soporte");
+                      break;
+                  case "3":
+                      respAlert("warning", "ERROR!!!, redireccionando..");
+                      setTimeout(function(){
+                        redireccionar("../sistema/Descuentos.php");
+                      },1000);
+                      break;
+                }
+                //respAlert("success",data[0]);
+                /*setTimeout(function(){
+                  redireccionar("sistema/home.php");
+                },1000);*/
+            },
+            error: function(data) {
+                console.log(data);
+                respAlert("danger", "Error...");
+            }
+        });
+    });
     //Modificar Cargo btnMCargos
     $("#btnMCargos").click(function() {
         var NombreCargo = document.getElementById("NombreCargo").value;
@@ -460,6 +723,138 @@ $(document).ready(function() {
             }
         });
     });
+    //Eliminar incapacidad btnEliminarIncap
+    $("#btnEliminarIncap").click(function() {
+          var idIncapacidad = document.getElementById("idIncapacidad").value;
+        //alert("user: "+user+" - pass: "+contra);
+        $.ajax({
+            url: '../php/Eliminar.php',
+            type: 'POST',
+            data: {
+                opc: 5,
+                idIncapacidad: idIncapacidad
+            },
+            beforeSend: function() {
+                respAlert("info", "Verificando datos...");
+            },
+            success: function(data) {
+                console.log(data);
+                switch (data[0]) {
+                    case "0":
+                        respAlert("warning", "Error en base de datos");
+                        break;
+                    case "1":
+                        setTimeout(function() {
+                            respAlert("success", "Correcto...");
+                            redireccionar("Descuentos.php");
+                        }, 1000);
+                        break;
+                    case "2":
+                        setTimeout(function() {
+                            respAlert("danger", "ERROR!!!!!");
+                            redireccionar("Descuentos.php");
+                        }, 1000);
+                        break;
+                }
+                //respAlert("success",data[0]);
+                /*setTimeout(function(){
+                	redireccionar("sistema/home.php");
+                },1000);*/
+            },
+            error: function(data) {
+                console.log(data);
+                respAlert("danger", "Error...");
+            }
+        });
+    });
+    //Eliminar Permisos btnEliminarPermiso
+    $("#btnEliminarPermiso").click(function() {
+          var idPermiso = document.getElementById("idPermiso").value;
+        //alert("user: "+user+" - pass: "+contra);
+        $.ajax({
+            url: '../php/Eliminar.php',
+            type: 'POST',
+            data: {
+                opc: 7,
+                idPermiso: idPermiso
+            },
+            beforeSend: function() {
+                respAlert("info", "Verificando datos...");
+            },
+            success: function(data) {
+                console.log(data);
+                switch (data[0]) {
+                    case "0":
+                        respAlert("warning", "Error en base de datos");
+                        break;
+                    case "1":
+                        setTimeout(function() {
+                            respAlert("success", "Correcto...");
+                            redireccionar("Descuentos.php");
+                        }, 1000);
+                        break;
+                    case "2":
+                        setTimeout(function() {
+                            respAlert("danger", "ERROR!!!!!");
+                            redireccionar("Descuentos.php");
+                        }, 1000);
+                        break;
+                }
+                //respAlert("success",data[0]);
+                /*setTimeout(function(){
+                  redireccionar("sistema/home.php");
+                },1000);*/
+            },
+            error: function(data) {
+                console.log(data);
+                respAlert("danger", "Error...");
+            }
+        });
+    });
+    //Eliminar incapacidad btnEliminarIncap
+    $("#btnEliminarAusencia").click(function() {
+          var idAusencia = document.getElementById("idAusencia").value;
+        //alert("user: "+user+" - pass: "+contra);
+        $.ajax({
+            url: '../php/Eliminar.php',
+            type: 'POST',
+            data: {
+                opc: 6,
+                idAusencia: idAusencia
+            },
+            beforeSend: function() {
+                respAlert("info", "Verificando datos...");
+            },
+            success: function(data) {
+                console.log(data);
+                switch (data[0]) {
+                    case "0":
+                        respAlert("warning", "Error en base de datos");
+                        break;
+                    case "1":
+                        setTimeout(function() {
+                            respAlert("success", "Correcto...");
+                            redireccionar("Descuentos.php");
+                        }, 1000);
+                        break;
+                    case "2":
+                        setTimeout(function() {
+                            respAlert("danger", "ERROR!!!!!");
+                            redireccionar("Descuentos.php");
+                        }, 1000);
+                        break;
+                }
+                //respAlert("success",data[0]);
+                /*setTimeout(function(){
+                	redireccionar("sistema/home.php");
+                },1000);*/
+            },
+            error: function(data) {
+                console.log(data);
+                respAlert("danger", "Error...");
+            }
+        });
+    });
     //Eliminar cargo btnEliminarCargos
     $("#btnEliminarCargos").click(function() {
         var idCargos = document.getElementById("idCargos").value;
@@ -509,8 +904,6 @@ $(document).ready(function() {
         var nombreTurno = document.getElementById("Njornada").value;
         var Desde = document.getElementById("desde").value;
         var Hasta = document.getElementById("hasta").value;
-        var Descanso = $("#descanso").val();
-        var H_Descanso = document.getElementById("H_Descanso").value;
         var Periodo_Pago = $("#PPago").val();
         var MJornada=$("#MJornada").val();
         //alert("user: "+user+" - pass: "+contra);
@@ -522,10 +915,8 @@ $(document).ready(function() {
                 nombreTurno: nombreTurno,
                 Desde: Desde,
                 Hasta: Hasta,
-                Descanso: Descanso,
                 Periodo_Pago: Periodo_Pago,
-                MJornada:MJornada,
-                H_Descanso: H_Descanso
+                MJornada:MJornada
             },
             beforeSend: function() {
                 respAlert("info", "Verificando datos...");
@@ -711,7 +1102,217 @@ $(document).ready(function() {
             }
         });
     });
+    //Agregar Ausencia btnAgregarAusencia
+    $("#btnAgregarAusencia").click(function() {
+        var TipoAusencia = $("#TAusencia").val();
+        if(TipoAusencia==1){
+          var EstadoAusencia = $("#EstadoAusencia").val();
+        }else {
+          var EstadoAusencia = "0";
+        }
+        var FechaAusencia = document.getElementById("FechaAusencia").value;
+        var Observacion= $("#Observacion").val();
+        var NumeroDocumento = document.getElementById("numDoc").value;
+        var opc=10;
+        //alert("Aqui voy");
+        $.ajax({
+            url: '../sistema/agregar.php',
+            type: 'POST',
+            data: {
+                opc: 10,
+                TipoAusencia: TipoAusencia,
+                EstadoAusencia: EstadoAusencia,
+                FechaAusencia: FechaAusencia,
+                Observacion: Observacion,
+                NumeroDocumento: NumeroDocumento
+            },
+            beforeSend: function() {
+                respAlert("info", "Verificando datos...");
+            },
+            success: function(data) {
+                console.log(data);
+                var stringL = data.split(",");
+                data=stringL[0];
+                str=stringL[1];
+                switch (data[0]) {
+                    case "0":
+                        respAlert("warning", str);
+                        break;
+                    case "1":
+                        respAlert("success", "Agregado correctamente, redireccionando..");
+                        setTimeout(function(){
+                          redireccionar("../sistema/Descuentos.php");
+                        },1000);
+                        break;
+                    case "2":
+                        respAlert("warning", "Error en la base de datos, contacte a soporte");
+                        break;
+                  }
+                //respAlert("success",data[0]);
+                /*
+                confirmButtonText: 'Si, guardar!'
+              }).then(function () {
 
+                setTimeout(function(){
+                  redireccionar("sistema/home.php");
+                },1000);*/
+            },
+            error: function(data) {
+                console.log(data);
+                respAlert("danger", "Error...");
+            }
+        });//Fin Ajax
+    });
+
+    //Agregar Permiso btnAgregarPermiso
+    $("#btnAgregarPermiso").click(function() {
+        var TipoPermiso = $("#TPermiso").val();
+        if(TipoPermiso==1){
+          //Dias
+          var DiaInicio = document.getElementById("FechaInicio").value;
+          var DiaFin = document.getElementById("FechaFin").value;
+          var HoraInicio = "00:00:00";
+          var HoraFin = "00:00:00";
+
+        }else {
+          //Horas
+          var DiaInicio = document.getElementById("Fecha").value;
+          var DiaFin = "1995-04-19";//Random date
+          var HoraInicio = document.getElementById("hInicio").value;
+          var HoraFin = document.getElementById("hFin").value;
+        }
+        var Observacion= $("#Observacion").val();
+
+        //NumeroDocumento
+        var NumeroDocumento = document.getElementById("numDoc").value;
+        var opc=10;
+        //alert("Aqui voy");
+        $.ajax({
+            url: '../sistema/agregar.php',
+            type: 'POST',
+            data: {
+                opc: 11,
+                TipoPermiso: TipoPermiso,
+                DiaInicio: DiaInicio,
+                DiaFin: DiaFin,
+                HoraInicio: HoraInicio,
+                HoraFin: HoraFin,
+                Observacion: Observacion,
+                NumeroDocumento:NumeroDocumento
+            },
+            beforeSend: function() {
+                respAlert("info", "Verificando datos...");
+            },
+            success: function(data) {
+                console.log(data);
+                var stringL = data.split(",");
+                data=stringL[0];
+                str=stringL[1];
+                switch (data[0]) {
+                    case "0":
+                        respAlert("warning", str);
+                        break;
+                    case "1":
+                        respAlert("success", "Agregado correctamente, redireccionando..");
+                        setTimeout(function(){
+                          redireccionar("../sistema/Descuentos.php");
+                        },1000);
+                        break;
+                    case "2":
+                        respAlert("warning", "Error en la base de datos, contacte a soporte");
+                        break;
+                    case "3":
+                        respAlert("warning", "ERROR INTENTO DE INGRESO DE DATO INCORRECTO, redireccionando..");
+                        setTimeout(function(){
+                        redireccionar("../sistema/menu.php");
+                        },1000);
+                        break;
+                  }
+                //respAlert("success",data[0]);
+                /*
+                confirmButtonText: 'Si, guardar!'
+              }).then(function () {
+
+                setTimeout(function(){
+                  redireccionar("sistema/home.php");
+                },1000);*/
+            },
+            error: function(data) {
+                console.log(data);
+                respAlert("danger", "Error...");
+            }
+        });//Fin Ajax
+    });
+    //Agregar Incapacidad btnAgregarIncap
+    $("#btnAgregarIncap").click(function() {
+        var TipoIncapacidad = $("#TIncapacidad").val();
+        var NumeroDocumento = document.getElementById("numDoc").value;
+        if(TipoIncapacidad==2){
+          var NombreClinica = document.getElementById("nombreClinica").value;
+          var NumeroTelefonoClinica = document.getElementById("numTClinica").value;
+        }else {
+          var NombreClinica = "";
+          var NumeroTelefonoClinica = "";
+        }
+        var Doctor = document.getElementById("NDoctor").value;
+        var DiaInicio = document.getElementById("FechaInicio").value;
+        var DiaFin = document.getElementById("FechaFin").value;
+        var FechaExpedicion = document.getElementById("FechaExpedicion").value;
+        var EstadoComprobacion =0;
+        var opc=0;
+        //alert("Aqui voy");
+        $.ajax({
+            url: '../sistema/agregar.php',
+            type: 'POST',
+            data: {
+                opc: 9,
+                TipoIncapacidad: TipoIncapacidad,
+                NumeroDocumento: NumeroDocumento,
+                NombreClinica: NombreClinica,
+                NumeroTelefonoClinica: NumeroTelefonoClinica,
+                Doctor: Doctor,
+                DiaInicio: DiaInicio,
+                DiaFin: DiaFin,
+                FechaExpedicion: FechaExpedicion,
+                EstadoComprobacion: EstadoComprobacion
+            },
+            beforeSend: function() {
+                respAlert("info", "Verificando datos...");
+            },
+            success: function(data) {
+                console.log(data);
+                var stringL = data.split(",");
+                data=stringL[0];
+                str=stringL[1];
+                switch (data[0]) {
+                    case "0":
+                        respAlert("warning", str);
+                        break;
+                    case "1":
+                        respAlert("success", "Agregado correctamente, redireccionando..");
+                        setTimeout(function(){
+                          redireccionar("../sistema/Descuentos.php");
+                        },1000);
+                        break;
+                    case "2":
+                        respAlert("warning", "Error en la base de datos, contacte a soporte");
+                        break;
+                  }
+                //respAlert("success",data[0]);
+                /*
+                confirmButtonText: 'Si, guardar!'
+              }).then(function () {
+
+                setTimeout(function(){
+                  redireccionar("sistema/home.php");
+                },1000);*/
+            },
+            error: function(data) {
+                console.log(data);
+                respAlert("danger", "Error...");
+            }
+        });//Fin Ajax
+    });
     //Generar Reporte Horas Extras
     $("#btnReporteHorasExtrasGeneral").click(function() {
         var FechaInicio = $("#FInicio").val();
@@ -815,6 +1416,13 @@ $(document).ready(function() {
         var idTurno = $("#idTurno").val();
         var activo = $("#activo").val();
         var idCargos = $("#cargo").val();
+        var descanso = $("#descanso").val();
+        if(descanso==1){
+          var H_Descanso = document.getElementById("H_Descanso").value;
+          H_Descanso=H_Descanso+":00";
+        }else{
+          var H_Descanso="00:00:00";
+        }
         $.ajax({
             url: 'agregar.php',
             type: 'POST',
@@ -831,7 +1439,9 @@ $(document).ready(function() {
                 FechaIngreso: FechaIngreso,
                 idTurno: idTurno,
                 activo: activo,
-                idCargos: idCargos
+                idCargos: idCargos,
+                descanso: descanso,
+                H_Descanso: H_Descanso
             },
             beforeSend: function() {
                 respAlert("info", "Verificando datos...");
@@ -869,6 +1479,12 @@ $(document).ready(function() {
                     case "8":
                         respAlert("warning", "Seleccione un Cargo valido");
                         break;
+                    case "9":
+                      setTimeout(function() {
+                          respAlert("danger", "Intento de ingreso invalido");
+                          redireccionar("menu.php");
+                      }, 2000);
+                        break;
                 }
 
             },
@@ -882,6 +1498,7 @@ $(document).ready(function() {
     //Nuevo Usuario
     $("#btnGuardarSemana").click(function() {
         var idSemanal = document.getElementById("idSemanal").value;
+        var idTurno = document.getElementById("idTurno").value;
         var SLunes = $("#SLunes").val();
         var SMartes = $("#SMartes").val();
         var SMiercoles = $("#SMiercoles").val();
@@ -889,12 +1506,15 @@ $(document).ready(function() {
         var SViernes = $("#SViernes").val();
         var SSabado = $("#SSabado").val();
         var SDomingo = $("#SDomingo").val();
+        var rev = 0;
         $.ajax({
             url: 'agregar.php',
             type: 'POST',
             data: {
                 opc: 4,
+                rev: 0,
                 idSemanal: idSemanal,
+                idTurno: idTurno,
                 SLunes: SLunes,
                 SMartes: SMartes,
                 SMiercoles: SMiercoles,
@@ -908,6 +1528,125 @@ $(document).ready(function() {
             },
             success: function(data) {
                 console.log(data);
+                resultadoR=data.split(",");
+                if(resultadoR[0]==1){
+                  //si se tiene que revisar
+                  swal({
+                    title: 'Desea Continuar?',
+                    text: "<div class='row'><div class='col-md-12'>Bajo el Art.161 del codigo de trabajo, las siguientes personas sobrepasan el maximo de tiempo en su jornada:</div>"+resultadoR[1]+"<div class='col-md-12'>Este exedente se tomara en cuenta en las horas extras, desea continuar?</div></div> ",
+                    type: 'warning',
+                    showCancelButton: true,
+                    allowOutsideClick: false,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si, continuar!',
+                    cancelButtonText: 'No, cancelar!'
+                  }).then(function () {
+                    $.ajax({
+                        url: 'agregar.php',
+                        type: 'POST',
+                        data: {
+                            opc: 4,
+                            rev: 1,
+                            idSemanal: idSemanal,
+                            idTurno: idTurno,
+                            SLunes: SLunes,
+                            SMartes: SMartes,
+                            SMiercoles: SMiercoles,
+                            SJueves: SJueves,
+                            SViernes: SViernes,
+                            SSabado: SSabado,
+                            SDomingo: SDomingo
+                        },
+                        beforeSend: function() {
+                            respAlert("info", "Verificando datos...");
+                        },
+                        success: function(data) {
+                          switch (data[0]) {
+                              case "0":
+                                  respAlert("warning", "Error en envio de datos");
+                                  break;
+                              case "1":
+                                  respAlert("warning", "No se encontro semanal anterior");
+                                  break;
+                              case "2":
+                                  setTimeout(function() {
+                                      respAlert("success", "Guardado Exitoso");
+                                  }, 2000);
+                                  break;
+                              case "3":
+                                  respAlert("warning", "Error en conexion a base de datos");
+                                  break;
+                          }
+
+                        },
+                        error: function(data) {
+                            console.log(data);
+                            respAlert("danger", "Error...");
+                        }
+                    });//fin ajax
+                  }, function (dismiss) {
+                    // dismiss can be 'cancel', 'overlay',
+                    // 'close', and 'timer'
+                    if (dismiss === 'cancel') {
+                      respAlert("info", "Cancelado");
+                      swal(
+                        'Cancelado',
+                        'El semanal no se ha modificado, para conocer de esta alerta contacte a soporte',
+                        'error'
+                      )
+                    }
+                }).catch(swal.noop);
+                }else{
+                  //Si no se tiene que revisar
+                  $.ajax({
+                      url: 'agregar.php',
+                      type: 'POST',
+                      data: {
+                          opc: 4,
+                          rev: 1,
+                          idSemanal: idSemanal,
+                          idTurno: idTurno,
+                          SLunes: SLunes,
+                          SMartes: SMartes,
+                          SMiercoles: SMiercoles,
+                          SJueves: SJueves,
+                          SViernes: SViernes,
+                          SSabado: SSabado,
+                          SDomingo: SDomingo
+                      },
+                      beforeSend: function() {
+                          respAlert("info", "Verificando datos...");
+                      },
+                      success: function(data) {
+                        switch (data[0]) {
+                            case "0":
+                                respAlert("warning", "Error en envio de datos");
+                                break;
+                            case "1":
+                                respAlert("warning", "No se encontro semanal anterior");
+                                break;
+                            case "2":
+                                setTimeout(function() {
+                                    respAlert("success", "Guardado Exitoso");
+                                }, 2000);
+                                break;
+                            case "3":
+                                respAlert("warning", "Error en conexion a base de datos");
+                                break;
+                        }
+
+                      },
+                      error: function(data) {
+                          console.log(data);
+                          respAlert("danger", "Error...");
+                      }
+                  });
+
+                //fin else
+                }
+
+                /*
                 switch (data[0]) {
                     case "0":
                         respAlert("warning", "Error en envio de datos");
@@ -924,6 +1663,7 @@ $(document).ready(function() {
                         respAlert("warning", "Error en conexion a base de datos");
                         break;
                 }
+                */
                 //respAlert("success",data[0]);
                 /*setTimeout(function(){
                 	redireccionar("sistema/home.php");
@@ -935,6 +1675,65 @@ $(document).ready(function() {
             }
         });
     });
+    //btnConfirmarPermiso
+    $("#btnConfirmarPermiso").click(function() {
+       var idPermiso = document.getElementById("idPermiso").value; //idPermiso
+       //contenidoCambiante
+         swal({
+           title: 'Desea Continuar?',
+           text: "Al continuar este Permiso ya no sera modificable",
+           type: 'warning',
+           showCancelButton: true,
+           allowOutsideClick: false,
+           confirmButtonColor: '#3085d6',
+           cancelButtonColor: '#d33',
+           confirmButtonText: 'Si, continuar!',
+           cancelButtonText: 'No, cancelar!'
+         }).then(function () {
+           $.ajax({
+               url: '../php/Modificar.php',
+               type: 'POST',
+               data: {
+                   opc: 7,
+                   idPermiso: idPermiso
+               },
+               beforeSend: function() {
+                   respAlert("info", "Verificando datos...");
+               },
+               success: function(data) {
+                 data=data.split(",");
+                 switch (data[0]) {
+                     case "0":
+                         respAlert("warning", data[1]);
+                         break;
+                     case "1":
+                         setTimeout(function() {
+                             respAlert("success", "Confirmado Exitoso");
+                             redireccionar("Descuentos.php");
+                         }, 2000);
+                         break;
+                 }
+
+               },
+               error: function(data) {
+                   console.log(data);
+                   respAlert("danger", "Error...");
+               }
+           });//fin ajax
+         }, function (dismiss) {
+           // dismiss can be 'cancel', 'overlay',
+           // 'close', and 'timer'
+           if (dismiss === 'cancel') {
+             respAlert("info", "Cancelado");
+             swal(
+               'Cancelado',
+               'Se ha cancelado la confirmacion',
+               'error'
+             )
+           }
+       }).catch(swal.noop);
+    });
+
     //Obtener valores de horas Extras
     $("#btnHorasExtras").click(function() {
         var table = $("#TablaHorasEx tbody");
@@ -1024,6 +1823,97 @@ $(document).ready(function() {
     });
     //Fin
 
+    //Obtener valores de horas Extras
+    $("#btnCrearLlegadasTarde").click(function() {
+        var table = $("#TablaHorasEx tbody");
+        var Fecha = document.getElementById("Fecha").value;
+        var IdArray = {};
+        var NombresArray = {};
+        var HoraEntradaArray = {};
+        var HoraSalidaArray = {};
+        table.find('tr').each(function(i) {
+            var $tds = $(this).find('td'),
+                Id = $tds.eq(0).find('input').val(),
+                Nombre = $tds.eq(0).text(),
+                HoraEntrada = $tds.eq(1).find('input').val(),
+                HoraSalida = $tds.eq(2).find('input').val();
+            // do something with productId, product, Quantity
+            IdArray[i] = Id;
+            NombresArray[i] = Nombre;
+            HoraEntradaArray[i] = HoraEntrada;
+            HoraSalidaArray[i] = HoraSalida;
+        });
+        $.ajax({
+            type: 'POST',
+            url: '../php/verificar_Llegadas_Tarde.php',
+            data: {
+                Fecha: Fecha,
+                IdArray: JSON.stringify(IdArray),
+                NombresArray: JSON.stringify(NombresArray),
+                HoraEntradaArray: JSON.stringify(HoraEntradaArray),
+                HoraSalidaArray: JSON.stringify(HoraSalidaArray)
+            },
+            beforeSend: function() {
+                respAlert("info", "Verificando datos...");
+            },
+            success: function(response) {
+                var response = "" + response;
+                var response = response.split(",");
+                if (response[0] == 1) {
+                    respAlert("warning", response[1]);
+                }else if (response[0] == 2) {
+                  var response = response[1].split("-");
+                  swal({
+                    title: 'Desea Continuar?',
+                    text: response[0]+" tiene el mismo horario "+response[1]+"-"+response[1]+" el dia anterior",
+                    type: 'warning',
+                    showCancelButton: true,
+                    allowOutsideClick: false,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si, guardar!'
+                  }).then(function () {
+                      $.ajax({
+                        type: 'POST',
+                        url: '../php/almacenar_HorasExtras.php',
+                        data: {
+                            Fecha: Fecha,
+                            IdArray: JSON.stringify(IdArray),
+                            NombresArray: JSON.stringify(NombresArray),
+                            HoraEntradaArray: JSON.stringify(HoraEntradaArray),
+                            HoraSalidaArray: JSON.stringify(HoraSalidaArray)
+                        },
+                        beforeSend: function() {
+                          respAlert("info", "Verificando datos...");
+                        },
+                        success: function(response) {
+                            var response = "" + response;
+                            var response = response.split(",");
+                            if (response[0] == 1) {
+                                respAlert("warning", response[1]);
+                            } else {
+                              setTimeout(function() {
+                                  respAlert("success", response[1]);
+                                  redireccionar("Llegadas_Tarde.php");
+                              }, 3000);
+                            }
+                        }
+                      });//Fin Ajax
+                  }).catch(swal.noop);
+                  respAlert("info", "Cancelado");
+                } else {
+                  setTimeout(function() {
+                      respAlert("success", response[1]);
+                      redireccionar("Llegadas_Tarde.php");
+                  }, 3000);
+                }
+            }
+        });//Fin Ajax
+    });
+    //Fin
+
+
+
     //Actualizar Usuario
     $("#btnActualizarUsuario").click(function() {
         var NumeroDocumento = document.getElementById("Ndocumento").value;
@@ -1060,6 +1950,8 @@ $(document).ready(function() {
         var Desde = document.getElementById("hEntrada").value;
         var Hasta = document.getElementById("hSalida").value;
         var idTurno = $("#idTurno").val();
+        var descanso = $("#descanso").val();
+
         //BANCOS
         var idBanco = $("#Banco").val();
         var nCuenta = document.getElementById("CuentaBanco").value;
@@ -1068,6 +1960,11 @@ $(document).ready(function() {
           changePass=1;
         } else {
           changePass=0;
+        }
+        if(descanso==1) {
+          var H_Descanso = document.getElementById("H_Descanso").value+":00";
+        }else {
+          var H_Descanso="00:00:00";
         }
         console.log(NumeroDocumento);
         $.ajax({
@@ -1107,6 +2004,8 @@ $(document).ready(function() {
                 FechaFallecimiento: FechaFallecimiento,
                 Desde: Desde,
                 Hasta: Hasta,
+                descanso: descanso,
+                H_Descanso: H_Descanso,
                 idTurno: idTurno,
                 idBanco: idBanco,
                 nCuenta: nCuenta
@@ -1131,10 +2030,10 @@ $(document).ready(function() {
                         }, 1000);
                         break;
                     case "3":
-                        respAlert("warning", "El horario de Entrada tiene que ser menor al de salida o el de Entrada mayor o igual a las 16:00:00");
+                        respAlert("warning", "El horario de Entrada tiene que ser menor al de salida");
                         break;
                     case "4":
-                        respAlert("warning", "El Tiempo tien que ser en formato de 24hrs ej:13:00:00 o 07:00:00");
+                        respAlert("warning", "El Tiempo tiene que ser en formato de 24hrs ej:13:00:00 o 07:00:00");
                         break;
                     case "5":
                         respAlert("warning", "Ingrese Horario de Entrada y Horario de Salida");
@@ -1144,6 +2043,12 @@ $(document).ready(function() {
                         break;
                     case "7":
                         respAlert("warning", "La contraseña no puede ir vacia");
+                        break;
+                    case "8":
+                        respAlert("danger", "Intento de ingreso de dato invalido");
+                        break;
+                    case "9":
+                        respAlert("warning", "El Tiempo de descanso que ser en formato de 24hrs ej:13:00:00 o 07:00:00");
                         break;
                 }
             },

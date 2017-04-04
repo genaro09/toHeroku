@@ -19,6 +19,9 @@
     <link href="../css/material-dashboard.css" rel="stylesheet"/>
     <!--custom css-->
     <link rel="stylesheet"  href="../css/customMainCSS.css">
+    <link rel="stylesheet" type="text/css" href="../css/icons.css" />
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
+    <script src="../js/jquery-3.1.1.min.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -90,11 +93,5 @@
 
 <!-- TagsInput Plugin -->
 <script src="../js/jquery.tagsinput.js"></script>
-<!-- Material Dashboard DEMO methods, don't include it in your project! -->
-<script src="../js/demo.js"></script>
-<!--  DateTime -->
-<script type="text/javascript" src="../js/jquery.datepicker.js"></script>
-
-<!-- Main js -->
 <script src="../js/main.js"></script>
 </html>

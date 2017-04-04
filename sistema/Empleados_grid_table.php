@@ -18,8 +18,8 @@
           $salarioNominal=number_format($row3["SalarioNominal"], 2, '.', '');
 				 echo "<tr>
 						<td>".$row3["NumeroDocumento"]."</td>
-						<td>".$row3["PrimerNombre"]." ".$row3["PrimerApellido"]."</td>
-						<td>".$salarioNominal."</td>
+						<td>".$row3["PrimerNombre"]." ".$row3["SegundoNombre"]." ".$row3["PrimerApellido"]." ".$row3["SegundoApellido"]."</td>
+						<td>".number_format((float)$salarioNominal, 2, '.', '')."</td>
 						<td>".$activo."</td>
 						<td>".$row["NombreDepartamento"]."</td>
 						<td class='text-right'>

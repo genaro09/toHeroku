@@ -30,13 +30,20 @@
     <link href="../css/material-dashboard.css" rel="stylesheet"/>
     <!--custom css-->
     <link rel="stylesheet"  href="../css/customMainCSS.css">
-		<!-- Date -->
-		<link rel="stylesheet" href="../css/jquery.datepicker.css">
-		<!-- otro -->
+    <link rel="stylesheet" type="text/css" href="../css/icons.css" />
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
     <script src="../js/jquery-3.1.1.min.js" type="text/javascript"></script>
-	<script>
-	$(document).ready(function(){
 
+	<script>
+	$(function() {
+			$('#descanso').change(function(){
+					$('#opcionDescanso').hide();
+					if($(this).val()==1){
+						$('#opcionDescanso').show();
+					}
+			});
+	});
+	$(document).ready(function(){
 			//change pass
 			$("#changePass").change(function() {
 				if($(this).is(":checked")) {
@@ -140,49 +147,53 @@
 					<div class="container-fluid">
 						<div class="row">
 							<div class="col-md-12">
+									<form id="form_actualizarUser">
+										<div class="nav-center">
+										 <ul class="nav nav-pills nav-pills-primary nav-pills-icons" role="tablist">
+												 <!--
+														 color-classes: "nav-pills-primary", "nav-pills-info", "nav-pills-success", "nav-pills-warning","nav-pills-danger"
+												 -->
+												 <li class="active">
+														 <a href="#description-logo" role="tab" data-toggle="tab">
+																 <i class="material-icons">info</i>
+																 Personal
+														 </a>
+												 </li>
+												 <li>
+														 <a href="#map-logo" role="tab" data-toggle="tab">
+																 <i class="material-icons">gavel</i>
+																 Laboral
+														 </a>
+												 </li>
+												 <li>
+														 <a href="#legal-logo" role="tab" data-toggle="tab">
+																 <i class="material-icons">schedule</i>
+																 Historial
+														 </a>
+												 </li>
+												 <li>
+														 <a href="#help-logo" role="tab" data-toggle="tab">
+																 <i class="material-icons">help_outline</i>
+																 Descuentos
+														 </a>
+												 </li>
+										 </ul>
+								 </div>
 								<div class="card" style="padding:10px;">
-									<div class="header">
-										<h4 class="title">Editar Perfil</h4>
-									</div>
-									<div class="content">
-										<form id="form_actualizarUser">
-
-											<div class="nav-container">
-												<div class="row nav nav-icons" role="tablist">
-													<div class="col-sm-6 col-lg-3 active">
-														<a href="#description-logo" role="tab" data-toggle="tab">
-															<i class="pe-7s-users"></i><br>
-															Datos Personales
-														</a>
-													</div>
-													<div class="col-sm-6 col-lg-3"> <a href="#map-logo" role="tab" data-toggle="tab">
-                                                    <i class="pe-7s-id"></i><br>
-													  Datos Laborales </a>
-													</div>
-													<div class="col-sm-6 col-lg-3">
-														<a href="#legal-logo" role="tab" data-toggle="tab">
-															<i class="pe-7s-note2"></i><br>
-															Historial
-														</a>
-													</div>
-													<div class="col-sm-6 col-lg-3">
-														<a href="#help-logo" role="tab" data-toggle="tab">
-															<i class="pe-7s-piggy"></i><br>
-															Descuentos Programados
-														</a>
-													</div>
-												</div>
-											</div>
-
 											<div class="tab-content">
 												<div class="tab-pane active" id="description-logo">
-													<div class="card" style="padding:15px;">
-														<div class="header">
-															<h4 class="title">Datos Personales</h4>
-															<input type="hidden" id="NumeroDocumento" value="<?php echo $NumeroDocumento; ?>">
+													<div class="card" >
+														<div class="card-header card-header-icon" data-background-color="purple">
+																<i class="material-icons">assignment</i>
 														</div>
 
-														<div class="content">
+														<div class="card-content">
+															<h4 class="card-title">Datos Personales</h4>
+															<input type="hidden" id="NumeroDocumento" value="<?php echo $NumeroDocumento; ?>">
+															<div class="toolbar">
+																	<!--        Here you can write extra buttons/actions for the toolbar              -->
+															</div>
+															<br>
 															<form>
 																<div class="row">
 																	<div class="col-md-6">
@@ -478,11 +489,16 @@
 
 												<div class="tab-pane" id="map-logo">
 													<div class="card">
-														<div class="header">
-															<h4 class="title">Datos Laborales</h4>
+														<div class="card-header card-header-icon" data-background-color="purple">
+																<i class="material-icons">assignment</i>
 														</div>
 
-														<div class="content">
+														<div class="card-content">
+															<h4 class="card-title">Datos Laborales</h4>
+															<div class="toolbar">
+																	<!--        Here you can write extra buttons/actions for the toolbar              -->
+															</div>
+															<br>
 															<form>
 																<div class="row">
 																	<div class="col-sm-4">
@@ -643,7 +659,44 @@
 																			<label>Horario de Salida</label>
 																			<input type="text" id="hSalida" class="form-control timepicker" placeholder="14:30:00" value="<?php echo $htrabajo->getHasta(); ?>"/>
 																		</div>
-																	</div>
+																</div>
+																<?php
+																	if($htrabajo->getDescanso()==0){
+																		echo '
+																				<div class="form-group col-md-4">
+																						<label for="exampleInputEmail1">Descanso<star>*</star></label>
+																						<br>
+																							<select id="descanso" class="form-control selectpicker" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
+																								<option value="1" >SI</option>
+																								<option value="0" selected>NO</option>
+																							</select>
+																				</div>
+																				<div class="form-group col-md-4" id="opcionDescanso" style="display:none">
+																						<label>Tiempo de Descanso<star>*</star></label>
+																						<input id="H_Descanso" type="text" class="form-control timepicker" maxlength="5" value="00:00" required/>
+																				</div>
+																		';
+																	}elseif ($htrabajo->getDescanso()==1) {
+																		$horaDeDescanso=explode(":", $htrabajo->getH_Descanso());
+																		$horaDeDescanso=$horaDeDescanso[0].":".$horaDeDescanso[1];
+																		echo '
+																				<div class="form-group col-md-4">
+																						<label for="exampleInputEmail1">Descanso<star>*</star></label>
+																						<br>
+																							<select id="descanso" class="form-control selectpicker" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
+																								<option value="1" selected>SI</option>
+																								<option value="0">NO</option>
+																							</select>
+																				</div>
+																				<div class="form-group col-md-4" id="opcionDescanso" >
+																						<label>Tiempo de Descanso<star>*</star></label>
+																						<input id="H_Descanso" type="text" class="form-control timepicker" maxlength="5" value="'.$horaDeDescanso.'" required/>
+																				</div>
+																		';
+																	}
+
+																 ?>
+
                                 <div class="col-sm-4">
 																		<div class="form-group">
 																			<label>Turno</label>
@@ -699,26 +752,34 @@
 
 												<div class="tab-pane" id="legal-logo">
 													<div class="card">
-														<div class="header">
-															<h4 class="title">Expediente Permanente</h4>
-															<p class="category">More information here</p>
+														<div class="card-header card-header-icon" data-background-color="purple">
+																<i class="material-icons">assignment</i>
 														</div>
 
-														<div class="content">
-															<p>The first...</p>
+														<div class="card-content">
+															<h4 class="card-title">Expediente Permanente</h4>
+															<div class="toolbar">
+																	<!--        Here you can write extra buttons/actions for the toolbar              -->
+															</div>
+															<br>
+															<p>Aun no se encuentra</p>
 														</div>
 													</div>
 												</div>
 
 												<div class="tab-pane" id="help-logo">
 													<div class="card">
-														<div class="header">
-															<h4 class="title">Descuentos Programados</h4>
-															<p class="category">More information here</p>
+														<div class="card-header card-header-icon" data-background-color="purple">
+																<i class="material-icons">assignment</i>
 														</div>
 
-														<div class="content">
-															<p>From the seamless...</p>
+														<div class="card-content">
+															<h4 class="card-title">Descuentos Programados</h4>
+															<div class="toolbar">
+																	<!--        Here you can write extra buttons/actions for the toolbar              -->
+															</div>
+															<br>
+															<p>Aun no se encuentra...</p>
 														</div>
 													</div>
 												</div>
@@ -743,72 +804,54 @@
 			</div>
 	</div>
 </body>
-     <!--   Core JS Files   -->
-    <script src="../js/jquery-ui.min.js" type="text/javascript"></script>
-    <script src="../js/bootstrap.min.js" type="text/javascript"></script>
-    <script src="../js/material.min.js" type="text/javascript"></script>
-    <script src="../js/perfect-scrollbar.jquery.min.js" type="text/javascript"></script>
-    <!-- Forms Validations Plugin -->
-    <script src="../js/jquery.validate.min.js"></script>
-    <!-- Material Dashboard javascript methods -->
-    <script src="../js/material-dashboard.js"></script>
+<!--   Core JS Files   -->
+<script src="../js/jquery-3.1.1.min.js" type="text/javascript"></script>
+<script src="../js/jquery-ui.min.js" type="text/javascript"></script>
+<script src="../js/bootstrap.min.js" type="text/javascript"></script>
+<script src="../js/material.min.js" type="text/javascript"></script>
+<script src="../js/perfect-scrollbar.jquery.min.js" type="text/javascript"></script>
+<!-- Forms Validations Plugin -->
+<script src="../js/jquery.validate.min.js"></script>
+<!-- Material Dashboard javascript methods -->
+<script src="../js/material-dashboard.js"></script>
 
-	<!--  Plugin for Date Time Picker and Full Calendar Plugin-->
-	<script src="../js/moment.min.js"></script>
+<!--  Plugin for Date Time Picker and Full Calendar Plugin-->
+<script src="../js/moment.min.js"></script>
 
-	<!--  Charts Plugin -->
-	<script src="../js/chartist.min.js"></script>
+<!--  Charts Plugin -->
+<script src="../js/chartist.min.js"></script>
 
-	<!--  Plugin for the Wizard -->
-	<script src="../js/jquery.bootstrap-wizard.js"></script>
+<!--  Plugin for the Wizard -->
+<script src="../js/jquery.bootstrap-wizard.js"></script>
 
-	<!--  Notifications Plugin    -->
-	<script src="../js/bootstrap-notify.js"></script>
+<!--  Notifications Plugin    -->
+<script src="../js/bootstrap-notify.js"></script>
 
-	<!-- DateTimePicker Plugin -->
-	<script src="../js/bootstrap-datetimepicker.js"></script>
+<!-- DateTimePicker Plugin -->
+<script src="../js/bootstrap-datetimepicker.js"></script>
 
-	<!-- Vector Map plugin -->
-	<script src="../js/jquery-jvectormap.js"></script>
+<!-- Vector Map plugin -->
+<script src="../js/jquery-jvectormap.js"></script>
 
-	<!-- Sliders Plugin -->
-	<script src="../js/nouislider.min.js"></script>
+<!-- Sliders Plugin -->
+<script src="../js/nouislider.min.js"></script>
 
-	<!-- Select Plugin -->
-	<script src="../js/jquery.dropdown.js"></script>
-
-	<!--  DataTables.net Plugin    -->
-	<script src="../js/jquery.datatables.js"></script>
-
-	<!-- Sweet Alert 2 plugin -->
-	<script src="../js/sweetalert2.js"></script>
-
-	<!--  Full Calendar Plugin    -->
-	<script src="../js/fullcalendar.min.js"></script>
-
-	<!-- TagsInput Plugin -->
-	<script src="../js/jquery.tagsinput.js"></script>
-
-	<!-- Material Dashboard DEMO methods, don't include it in your project! -->
-	<script src="../js/demo.js"></script>
-	<!--  DateTime -->
-	<script type="text/javascript" src="../js/jquery.datepicker.js"></script>
+<!-- Select Plugin -->
+<script src="../js/jquery.dropdown.js"></script>
 
 
 
-    <!-- Main js -->
-    <script src="../js/main.js"></script>
+<!--  DataTables.net Plugin    -->
+<script src="../js/jquery.datatables.js"></script>
 
- <script type="text/javascript">
-        $().ready(function(){
+<!-- Sweet Alert 2 plugin -->
+<script src="../js/sweetalert2.js"></script>
 
-            // Init Sliders
-            demo.initFormExtendedSliders();
+<!--  Full Calendar Plugin    -->
+<script src="../js/fullcalendar.min.js"></script>
 
-            // Init DatetimePicker
-            demo.initFormExtendedDatetimepickers();
-			moment().format("ddd, hA");
-        });
- </script>
+<!-- TagsInput Plugin -->
+<script src="../js/jquery.tagsinput.js"></script>
+<script src="../js/main.js"></script>
 
 </html>

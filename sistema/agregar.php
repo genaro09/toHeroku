@@ -24,13 +24,15 @@
 			break;
 		case '2':
 			# code...
-			$flag=0;
+			$flag =0;
 			if($_POST["Desde"]>$_POST["Hasta"]){
-				if($_POST["Desde"]<"16:00:00"){
 					echo "3";
 					$flag=1;
-				}
+			}elseif (!(($_POST["descanso"]==0)||($_POST["descanso"]==1))) {
+					echo "8";
+					$flag=1;
 			}
+
 			if($flag==0){
 					if(!isset($_POST["NumeroDocumento"])||!isset($_POST["FechaIngreso"])||!isset($_POST["PrimerNombre"])||!isset($_POST["PrimerApellido"])||!isset($_POST["Nit"])||!isset($_POST["NumeroIsss"])||!isset($_POST["SalarioNominal"])){
 						echo "0";
@@ -38,6 +40,8 @@
 							echo "5";
 					}elseif(!(verify_time_format($_POST["Desde"]) && verify_time_format($_POST["Hasta"]))){
 						echo "4";
+					}elseif(!(verify_time_format($_POST["H_Descanso"]))){
+						echo "9";
 					}else{
 						if (!empty($_POST["nCuenta"])) {
 							if (!ctype_digit($_POST["nCuenta"])){
@@ -48,6 +52,7 @@
 							if(empty($_POST["Pass"])){
 								echo "7";
 							}else{
+
 								$options = [
 								  'cost' => 11
 								];
@@ -88,7 +93,7 @@
 								$htrabajo->setDesde($_POST["Desde"]);
 								$htrabajo->setHasta($_POST["Hasta"]);
 								$htrabajo->setIdturno($_POST["idTurno"]);
-								if(actualizarUsuario($empleado,$htrabajo,$idBanco,$NumeroCuenta)){
+								if(actualizarUsuario($empleado,$htrabajo,$idBanco,$NumeroCuenta,$_POST["H_Descanso"],$_POST["descanso"])){
 									echo "2";
 								}else{
 									echo "1";
@@ -133,7 +138,7 @@
 							$htrabajo->setDesde($_POST["Desde"]);
 							$htrabajo->setHasta($_POST["Hasta"]);
 							$htrabajo->setIdturno($_POST["idTurno"]);
-							if(actualizarUsuario($empleado,$htrabajo,$idBanco,$NumeroCuenta)){
+							if(actualizarUsuario($empleado,$htrabajo,$idBanco,$NumeroCuenta,$_POST["H_Descanso"],$_POST["descanso"])){
 								echo "2";
 							}else{
 								echo "1";
@@ -159,7 +164,7 @@
 				$row2=0;
 		        $row2=obtToUpdateSemanal($_POST["NitEmpresa"],$semana,$annio,$_POST["idTurno"]);
 		        if($row2[0]!=""){
-		        	$estado=UpdateSemanal($_POST["idSemanal"],$row2["Lunes"],$row2["Martes"],$row2["Miercoles"],$row2["Jueves"],$row2["Viernes"],$row2["Sabado"],$row2["Domingo"]);
+		        	$estado=UpdateSemanal($_POST["idTurno"],$_POST["idSemanal"],$row2["Lunes"],$row2["Martes"],$row2["Miercoles"],$row2["Jueves"],$row2["Viernes"],$row2["Sabado"],$row2["Domingo"]);
 		        	if($estado){
 		        		echo "2";
 		        	}echo "3";
@@ -170,14 +175,23 @@
 		break;
 		case '4':
 			# code...
-			if($_POST["SLunes"]==" "||$_POST["SMartes"]==" "||$_POST["SMiercoles"]==" "||$_POST["SJueves"]==" "||$_POST["idSemanal"]==" "){
-				echo "0";
-			}else{
-		        $estado=UpdateSemanal($_POST["idSemanal"],$_POST["SLunes"],$_POST["SMartes"],$_POST["SMiercoles"],$_POST["SJueves"],$_POST["SViernes"],$_POST["SSabado"],$_POST["SDomingo"]);
-		        if($estado){
-		        	echo "2";
-		        }echo "3";
-		    }
+			if($_POST["rev"]==0){
+				//revisar
+				$resultado=revisarSemanalConEmpleado($_POST["idTurno"],$_POST["SLunes"],$_POST["SMartes"],$_POST["SMiercoles"],$_POST["SJueves"],$_POST["SViernes"],$_POST["SSabado"],$_POST["SDomingo"]);
+				echo $resultado;
+			}elseif($_POST["rev"]==1){
+						//no revisar
+						if($_POST["SLunes"]==" "||$_POST["SMartes"]==" "||$_POST["SMiercoles"]==" "||$_POST["SJueves"]==" "||$_POST["SViernes"]==" "||$_POST["SSabado"]==" "||$_POST["SDomingo"]==" "||$_POST["idSemanal"]==" "){
+							echo "0";
+						}else{
+									$estado=UpdateSemanal($_POST["idTurno"],$_POST["idSemanal"],$_POST["SLunes"],$_POST["SMartes"],$_POST["SMiercoles"],$_POST["SJueves"],$_POST["SViernes"],$_POST["SSabado"],$_POST["SDomingo"]);
+									if($estado){
+										echo "2";
+									}echo "3";
+							}
+			}else {
+				echo "ERROR";
+			}
 
 		break;
 		case '5':
@@ -191,12 +205,16 @@
 				echo "8";
 			}elseif($_POST["idTurno"]==0){
 				echo "6";
+			}elseif (!(($_POST["descanso"]==0)||($_POST["descanso"]==1))) {
+				echo "9";
 			}elseif(!(isset($_POST["Desde"])) || !isset($_POST["Hasta"])){
 					echo "5";
+			}elseif(!((verify_time_format($_POST["Desde"]))&&(verify_time_format($_POST["Hasta"]))&&(verify_time_format($_POST["H_Descanso"])))){
+				echo "5";
 			}elseif($_POST["Desde"]>=$_POST["Hasta"]){
 				echo "3";
 			}else{
-				if(AgregarEmpleado($_POST["Tdocumento"],$_POST["NumeroDocumento"],$_POST["PrimerNombre"],$_POST["PrimerApellido"],$_POST["Pass"],$_POST["SMensual"],$_POST["Desde"],$_POST["Hasta"],$_POST["FechaIngreso"],$_POST["idTurno"],$_POST["activo"],$_POST["idCargos"])){
+				if(AgregarEmpleado($_POST["Tdocumento"],$_POST["NumeroDocumento"],$_POST["PrimerNombre"],$_POST["PrimerApellido"],$_POST["Pass"],$_POST["SMensual"],$_POST["Desde"],$_POST["Hasta"],$_POST["FechaIngreso"],$_POST["idTurno"],$_POST["activo"],$_POST["idCargos"],$_POST["descanso"],$_POST["H_Descanso"])){
 					echo "2";
 				}else {
 					echo "1";
@@ -246,6 +264,97 @@
 				}else echo "3";
 			}
 		break;
+		case '9':
+			//Cargos
+			if(empty($_POST["TipoIncapacidad"])||empty($_POST["NumeroDocumento"])||empty($_POST["DiaInicio"])||empty($_POST["DiaFin"])||empty($_POST["FechaExpedicion"])){
+				echo "0, Ingrese todos los datos";
+			}else {
+				# code...
+				$FechaInicio = str_replace('/', '-', $_POST["DiaInicio"]);
+			  $FechaInicio  = date('Y-m-d', strtotime($FechaInicio));
+				$FechaFin = str_replace('/', '-', $_POST["DiaFin"]);
+			  $FechaFin  = date('Y-m-d', strtotime($FechaFin));
+				$FechaExpedicion = str_replace('/', '-', $_POST["FechaExpedicion"]);
+			  $FechaExpedicion  = date('Y-m-d', strtotime($FechaExpedicion));
+				if(!isUserExist($_POST["NumeroDocumento"])){
+					echo "0, El usuario no existe";
+				}elseif(!((verify_date_format($FechaInicio))&&(verify_date_format($FechaFin))&&(verify_date_format($FechaExpedicion)))){
+					echo "0, El Formato de las fechas es incorrecto";
+				}elseif($FechaFin<$FechaInicio){
+					echo "0, La Fecha de Inicio no puede ser mayor que la de fin";
+				}else {
+					$estado=AgregarIncapacidad($_POST["TipoIncapacidad"],$_SESSION["usuario_sesion"]->getNumeroDocumento(),$_POST["NumeroDocumento"],$_POST["NombreClinica"],$_POST["NumeroTelefonoClinica"],$_POST["Doctor"],$FechaInicio,$FechaFin,$FechaExpedicion,$_POST["EstadoComprobacion"]);
+					if($estado){
+						echo "1, ";
+					}else echo "2, ";
+				}
+			}
+		break;
+		case '10':
+				//Cargos
+				if(empty($_POST["TipoAusencia"])||empty($_POST["FechaAusencia"])||empty($_POST["NumeroDocumento"])){
+					echo "0, Ingrese todos los datos";
+				}else {
+					# code...
+					$FechaAusencia = str_replace('/', '-', $_POST["FechaAusencia"]);
+					$FechaAusencia  = date('Y-m-d', strtotime($FechaAusencia));
+					if(!isUserExist($_POST["NumeroDocumento"])){
+						echo "0, El usuario no existe";
+					}elseif(!((verify_date_format($FechaAusencia)))){
+						echo "0, El Formato de las fechas es incorrecto";
+					}else {
+						$estado=AgregarAusencia($_POST["TipoAusencia"],$_SESSION["usuario_sesion"]->getNumeroDocumento(),$_POST["EstadoAusencia"],$FechaAusencia,$_POST["Observacion"],$_POST["NumeroDocumento"]);
+						if($estado){
+							echo "1, ";
+						}else echo "2, ";
+					}
+				}
+			break;
+			case '11':
+					//Cargos
+					if(empty($_POST["TipoPermiso"])||empty($_POST["DiaInicio"])||empty($_POST["NumeroDocumento"])){
+						echo "0, Ingrese todos los datos";
+					}else {
+						if ($_POST["TipoPermiso"]==1) {
+							//Dias
+							$DiaInicio = str_replace('/', '-', $_POST["DiaInicio"]);
+							$DiaInicio  = date('Y-m-d', strtotime($DiaInicio));
+							$DiaFin = str_replace('/', '-', $_POST["DiaFin"]);
+							$DiaFin  = date('Y-m-d', strtotime($DiaFin));
+							$HoraInicio = "00:00:00";
+							$HoraFin = "00:00:00";
+						}elseif ($_POST["TipoPermiso"]==2) {
+							//Horas
+							$DiaInicio = str_replace('/', '-', $_POST["DiaInicio"]);
+							$DiaInicio  = date('Y-m-d', strtotime($DiaInicio));
+							$DiaFin="1995-04-19";
+							$HoraInicio = $_POST["HoraInicio"].":00";
+							$HoraFin = $_POST["HoraFin"].":00";
+						}else{
+							echo "3,";
+							die();
+						}
+						if(!isUserExist($_POST["NumeroDocumento"])){
+							echo "0, El usuario no existe";
+						}elseif(!((verify_date_format($DiaInicio))&&(verify_date_format($DiaFin)))){
+							echo "0, El Formato de las fechas es incorrecto ejm: 01/01/2000";
+						}elseif (!((verify_time_format($HoraInicio))&&(verify_time_format($HoraFin)))) {
+							echo "0, El Formato de las Horas es incorrecto ejm: 21:00";
+						}elseif (($_POST["TipoPermiso"]==1)&&($DiaInicio>$DiaFin)) {
+							//Dias
+							echo "0, La fecha de inicio no puede ser mayor";
+						}elseif (($_POST["TipoPermiso"]==2)&&($HoraInicio>$HoraFin)) {
+							//Horas
+							echo "0, La Hora de inicio no puede ser mayor";
+						}else {
+							$estadoPermiso=0;
+							$estado=AgregarPermiso($_POST["TipoPermiso"],$_SESSION["usuario_sesion"]->getNumeroDocumento(),$estadoPermiso,$DiaInicio,$DiaFin,$HoraInicio,$HoraFin,$_POST["Observacion"],$_POST["NumeroDocumento"]);
+							if($estado){
+								echo "1, ";
+							}else echo "2, ";
+						}
+					}
+				break;
 		default:
 			# code...
 			echo "nada";

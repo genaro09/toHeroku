@@ -87,6 +87,18 @@
 																			<input type="text" id="Hasta" class="form-control timepicker" placeholder="14:00:00" required="true" />
 															</div>
 															<div class="form-group col-md-6">
+																	<label for="exampleInputEmail1">Descanso<star>*</star></label>
+																	<br>
+																		<select id="descanso" class="form-control selectpicker" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
+																			<option value="1" >SI</option>
+																			<option value="0" selected>NO</option>
+																		</select>
+															</div>
+															<div class="form-group col-md-6" id="opcionDescanso" style="display:none">
+																	<label>Tiempo de Descanso<star>*</star></label>
+																	<input id="H_Descanso" type="text" class="form-control timepicker" maxlength="5" value="01:00" required/>
+															</div>
+															<div class="form-group col-md-6">
 																		 <label>Fecha Ingreso</label>
 																		 <div class='input-group date' id='datetimepicker1'>
 																				<?php echo"<input style='width:100%;' type='text' class='form-control' placeholder=".date("d")."/".date("m")."/".date("Y")." name='date' id='FechaIngreso' data-select='datepicker'/>";
@@ -170,6 +182,14 @@
 		<!-- Date -->
 		<link rel="stylesheet" href="../css/jquery.datepicker.css">
 		<script>
+		$(function() {
+        $('#descanso').change(function(){
+            $('#opcionDescanso').hide();
+            if($(this).val()==1){
+            	$('#opcionDescanso').show();
+            }
+        });
+    });
 			$(document).ready(function(){
 		    $("#AreaTrabajo").change(function(){
 				  var id=$(this).val();

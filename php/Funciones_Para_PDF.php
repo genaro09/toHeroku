@@ -1,5 +1,4 @@
 <?php
-include_once '../php/cn.php';
 function Realizar_Recibo($user,$NumeroDocumento,$V,$S,$A,$L,$RV,$Salario_Mensual,$Cargo_Empleado,$Nitempresa){
   $cnx=cnx();
   $NameDataBase=NameDataBase();

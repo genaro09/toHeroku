@@ -8,8 +8,8 @@
 
                 <div class="sidebar-wrapper">
                   <div style="padding-bottom:2px;" class="user">
-                    <div style="width: 120px;height: 140px;overflow: hidden;  margin: 0 auto;">
-                      <a href="menu.php" class="simple-text">
+                    <div style="width: 100%;max-width: 120px;height: 140px;overflow: hidden;  margin: 0 auto;">
+                      <a href="menu.php" class="simple-text" style="width: 100%;">
 		                    <img  style="height:100%;width:100%;" src="../img/LogoBlanco.png" />
                       </a>
 		                </div>
@@ -17,6 +17,9 @@
                   </div>
                     <div class="user">
                         <div class="info">
+                          <div class="imagen" style="text-align:center;">
+          		                <img src="../img/icons/person_pin_white.png" />
+          		            </div>
                             <a data-toggle="collapse" href="#collapseExample" class="collapsed">
                                 <?php echo $_SESSION['usuario_sesion']->getPrimernombre()." ".$_SESSION['usuario_sesion']->getPrimerapellido(); ?>
                                <?php
@@ -47,9 +50,9 @@
                     if($TipoEmpresa==1){
                       echo "
                       <li>
-                      <a data-toggle='collapse' href='#componentsExamples'>
-                      <p>EMPRESA <b class='caret'></b> </p>
-                      </a>
+                        <a data-toggle='collapse' href='#componentsExamples'>
+                          <p>EMPRESA <b class='caret'></b> </p>
+                        </a>
                       <div class='collapse' id='componentsExamples'>
                         <ul class='nav'>
                           <li><a href='ENCLOSURE-EMPRESAS.php'>EMPRESAS</a></li>
@@ -71,9 +74,10 @@
                     if($cargo->getPPlanilla()&& $TipoEmpresa!=1){
                       echo "
                       <li>
-                      <a data-toggle='collapse' href='#componentsExamples'>
-                      <p>PLANILLAS <b class='caret'></b> </p>
-                      </a>
+                        <a data-toggle='collapse' href='#componentsExamples'>
+                          <i class='material-icons'>local_parking</i>
+                          <p>PLANILLAS <b class='caret'></b> </p>
+                        </a>
                       <div class='collapse' id='componentsExamples'>
                         <ul class='nav'>
                           <li><a href='#'>Salarios</a></li>
@@ -85,6 +89,7 @@
                             <ul class='nav'>
                               <li><a href='Horas_Extras.php'><span style='font-size:14px;margin-left:10%;'>Crear Horas Extras</span></a></li>
                               <li><a href='Reporte_Horas_Extras.php'><span style='font-size:14px;margin-left:10%;'>Reporte Horas Extras</span></a></li>
+                              <li><a href='Pagos_Horas_Extras.php'><span style='font-size:14px;margin-left:10%;'>Pago Horas Extras</span></a></li>
                             </ul>
                           </li>
                           <li><a href='#'>Aguinaldo</a></li>
@@ -96,25 +101,29 @@
                     <!--Seguro Social-->
                     <li>
                         <a href=''>
+                            <i class='material-icons'>security</i>
                             <p>SEGURO SOCIAL</p>
                         </a>
                     </li>
                     <!--Pensiones-->
                     <li>
                         <a href=''>
+                            <i class='material-icons'>monetization_on</i>
                             <p>FONDO DE PENSIONES</p>
                         </a>
                     </li>
                     <!--Ministerio de hacienda-->
                     <li>
                         <a href=''>
+                            <i class='material-icons'>account_balance</i>
                             <p>MINISTERIO DE HACIENDA</p>
                         </a>
                     </li>
                     <!--Jornadas-->
                      <li>
                       <a data-toggle='collapse' href='#componentsExamples4'>
-                      <p>JORNADAS <b class='caret'></b> </p>
+                        <i class='material-icons'>work</i>
+                        <p>JORNADAS <b class='caret'></b> </p>
                       </a>
                       <div class='collapse' id='componentsExamples4'>
                         <ul class='nav'>
@@ -134,6 +143,7 @@
                       if($cargo->getPempleado()){
                         echo "<li>
                               <a data-toggle='collapse' href='#componentsExamples3'>
+                              <i class='material-icons'>account_circle</i>
                               <p>EMPLEADOS <b class='caret'></b> </p>
                               </a>
                               <div class='collapse' id='componentsExamples3'>
@@ -147,14 +157,27 @@
                       echo "
                         <li>
                          <a data-toggle='collapse' href='#componentsExamples2'>
+                            <i class='material-icons'>perm_contact_calendar</i>
                            <p>CONTROL R.R.H.H. <b class='caret'></b> </p>
                            </a>
                            <div class='collapse' id='componentsExamples2'>
                              <ul class='nav'>
                                <li><a href='departamento.php'>Departamentos</a></li>
                                <li><a href='cargos.php'>Cargos</a></li>
+                               <li><a href='Descuentos.php'>Descuentos</a></li>
+                               <li><a href='Suspension.php'>Suspension</a></li>
                                <li><a href='#'>Constancias de Salarios</a></li>
                                <li><a href='#'>Expedientes de Empleados</a></li>
+                               <li>
+                                 <a data-toggle='collapse' href='#componentsExamples6'>
+                                 <p>Llegadas Tarde<b class='caret'></b> </p>
+                                 </a>
+                                 <div class='collapse' id='componentsExamples6'>
+                                 <ul class='nav'>
+                                   <li><a href='Llegadas_Tarde.php'><span style='font-size:14px;margin-left:10%;'>Crear Llegadas Tarde</span></a></li>
+                                   <li><a href='Reporte_Llegadas_Tarde.php'><span style='font-size:14px;margin-left:10%;'>Reporte Lleg. Tarde</span></a></li>
+                                 </ul>
+                               </li>
                              </ul>
                            </div>
                          </li>

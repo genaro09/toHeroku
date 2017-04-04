@@ -406,25 +406,12 @@ mysqli_close($cnx);
 if($flag==0){
   echo "0, Guardado Exitoso";
 }
-function HourToNum($Hour){
-  $Hour=(string)$Hour;
-  $Hour= explode(":",$Hour);
-  $Hour=$Hour[0].".".$Hour[1];
-  return (float)$Hour;
-}
+
 function RevisarNocDiu($Hour,$HDiurnoMX,$HDiurnoMN){
   if((HourToNum($HDiurnoMN)<=HourToNum($Hour))&&(HourToNum($Hour)<HourToNum($HDiurnoMX))){
     return  "D";
   }else
     return  "N";
 }
-function subsTwoTimes($First,$End){
-  $str_time = (string)$First.":00";
-  sscanf($str_time, "%d:%d:%d", $hours, $minutes, $seconds);
-  $FirstTimeSeconds = isset($seconds) ? $hours * 3600 + $minutes * 60 + $seconds : $hours * 60 + $minutes;
-  $str_time = (string)$End.":00";
-  sscanf($str_time, "%d:%d:%d", $hours, $minutes, $seconds);
-  $EndTimeSeconds = isset($seconds) ? $hours * 3600 + $minutes * 60 + $seconds : $hours * 60 + $minutes;
-  return abs($EndTimeSeconds-$FirstTimeSeconds);
-}
+
  ?>

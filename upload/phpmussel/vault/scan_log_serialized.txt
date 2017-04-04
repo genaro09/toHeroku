@@ -1,0 +1,28 @@
+a:7:{s:10:"start_time";i:1490373540;s:8:"end_time";i:1490373541;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490373785;s:8:"end_time";i:1490373786;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490373870;s:8:"end_time";i:1490373871;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490373968;s:8:"end_time";i:1490373969;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490374272;s:8:"end_time";i:1490374273;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490374351;s:8:"end_time";i:1490374352;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490374745;s:8:"end_time";i:1490374746;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490374836;s:8:"end_time";i:1490374837;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490374858;s:8:"end_time";i:1490374859;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:2;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:121:"Filename manipulation detected (Curr%C3%ADculo+Genaro+Alvarenga.docx%3EC%3A%5Cxampp%5Ctmp%5Cphp975C.tmp%2F_rels%2F.rels)!";}
+a:7:{s:10:"start_time";i:1490374908;s:8:"end_time";i:1490374908;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:46:"Filetype blacklisted (eliminar+empleados.sql)!";}
+a:7:{s:10:"start_time";i:1490375177;s:8:"end_time";i:1490375178;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490375233;s:8:"end_time";i:1490375233;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490376074;s:8:"end_time";i:1490376074;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490376709;s:8:"end_time";i:1490376709;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490376734;s:8:"end_time";i:1490376735;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490376848;s:8:"end_time";i:1490376848;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490377479;s:8:"end_time";i:1490377479;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490377575;s:8:"end_time";i:1490377575;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490377785;s:8:"end_time";i:1490377786;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490377831;s:8:"end_time";i:1490377832;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490378006;s:8:"end_time";i:1490378006;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490378105;s:8:"end_time";i:1490378106;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490382310;s:8:"end_time";i:1490382310;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490382398;s:8:"end_time";i:1490382398;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490382598;s:8:"end_time";i:1490382599;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490384483;s:8:"end_time";i:1490384483;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}
+a:7:{s:10:"start_time";i:1490386793;s:8:"end_time";i:1490386793;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:34:"Filetype blacklisted (dbtuts.sql)!";}
+a:7:{s:10:"start_time";i:1490386822;s:8:"end_time";i:1490386822;s:6:"origin";s:3:"::1";s:15:"objects_scanned";i:1;s:16:"detections_count";i:0;s:11:"scan_errors";i:0;s:10:"detections";s:0:"";}

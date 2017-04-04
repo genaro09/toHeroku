@@ -41,6 +41,17 @@
                 <?php
                   $Nombre= $_SESSION['usuario_sesion']->getPrimernombre()." ".$_SESSION['usuario_sesion']->getPrimerapellido();
                  ?>
+								 <div class="row">
+									 <div class="col-md-12">
+
+												 <div class="row">
+														<div class="header text-center">
+															<h3 class="title">Horas Extras</h3>
+													</div>
+												</div>
+
+									 </div>
+								 </div>
 								 <!--  cabe   -->
 								 <div class="row">
 									 <div class="col-md-12">
@@ -48,7 +59,7 @@
 												 <div class="row">
 													 <div class="card-header card-header-icon" data-background-color="purple">
  					                    <i class="material-icons">equalizer</i>
- 					                </div>
+ 					                 </div>
  					                <div class="card-content">
  					                    <h4 class="card-title">Reporte Horas Extras</h4>
  					                    <div class="material-datatables">

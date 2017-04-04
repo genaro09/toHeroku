@@ -42,6 +42,53 @@
         echo "0";
 			}
 		break;
+		case '5':
+			# code...
+			if(!isIncapExist($_POST["idIncapacidad"])){
+				echo "3";
+			}else{
+				$result=eliminarIncapacidad($_POST["idIncapacidad"]);
+				if($result==1){
+					echo "1";
+				}else{
+	        echo "0";
+				}
+			}
+			break;
+			case '6':
+				# code...
+				if(!isAusenExist($_POST["idAusencia"])){
+					echo "3";
+				}else{
+					$result=eliminarAusencia($_POST["idAusencia"]);
+					if($result==1){
+						echo "1";
+					}else{
+						echo "0";
+					}
+				}
+				break;
+		case '7':
+				# code...
+				if(!isPermisoExist($_POST["idPermiso"])){
+					echo "3";
+				}else{
+					$result=eliminarPermisos($_POST["idPermiso"]);
+					if($result==1){
+						echo "1";
+					}else{
+						echo "0";
+					}
+				}
+			break;
+			case "8":
+	      $result=eliminarLlegadasTarde($_POST["id"]);
+				if($result){
+					echo "1";
+				}else{
+	        echo "0";
+				}
+			break;
 		default:
 			# code...
 			echo "nada";

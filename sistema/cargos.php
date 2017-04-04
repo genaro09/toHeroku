@@ -37,15 +37,19 @@
 		<div class="main-panel">
 			<!-- Header -->
 			<?php include 'header.php'; ?>
-	        <div class="content">
-	            <div class="container-fluid">
-	            	<div class="row">
-	            		<div class="col-md-12">
-	            			<div class="card" style="padding:10px;">
-								<div class="header">
-									<h4 class="title">Agregar Cargo</h4>
+	    <div class="content">
+	    	<div class="container-fluid">
+      		<div class="row">
+	       		<div class="col-md-12">
+	     				<div class="card">
+								<div class="card-header card-header-icon" data-background-color="purple">
+										<i class="material-icons">add_circle</i>
 								</div>
-								<div class="content">
+								<div class="card-content">
+										<h4 class="card-title">Agregar Cargo</h4>
+										<div class="toolbar">
+												<!--        Here you can write extra buttons/actions for the toolbar              -->
+										</div>
 									<form id="form_actualizarUser" role="form">
 										<div class="row">
 											<div class="col-md-4">

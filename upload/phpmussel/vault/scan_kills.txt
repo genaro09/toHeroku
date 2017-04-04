@@ -1,0 +1,22 @@
+<?php die; ?>
+DATE: Fri, 24 Mar 2017 18:00:58 +0100
+IP ADDRESS: ::1
+== SCAN RESULTS / WHY FLAGGED ==
+Filename manipulation detected (Curr%C3%ADculo+Genaro+Alvarenga.docx%3EC%3A%5Cxampp%5Ctmp%5Cphp975C.tmp%2F_rels%2F.rels)!
+== MD5 SIGNATURE RECONSTRUCTION (FILE-HASH:FILE-SIZE:FILE-NAME) ==
+29f309b350da2fbdd04057161c62e292:737:Currículo Genaro Alvarenga.docx>C:\xampp\tmp\php975C.tmp/_rels/.rels
+
+DATE: Fri, 24 Mar 2017 18:01:48 +0100
+IP ADDRESS: ::1
+== SCAN RESULTS / WHY FLAGGED ==
+Filetype blacklisted (eliminar+empleados.sql)!
+== MD5 SIGNATURE RECONSTRUCTION (FILE-HASH:FILE-SIZE:FILE-NAME) ==
+--FILETYPE-BLACKLISTED--NO-HASH-:217:eliminar empleados.sql
+
+DATE: Fri, 24 Mar 2017 21:19:53 +0100
+IP ADDRESS: ::1
+== SCAN RESULTS / WHY FLAGGED ==
+Filetype blacklisted (dbtuts.sql)!
+== MD5 SIGNATURE RECONSTRUCTION (FILE-HASH:FILE-SIZE:FILE-NAME) ==
+--FILETYPE-BLACKLISTED--NO-HASH-:1063:dbtuts.sql
+

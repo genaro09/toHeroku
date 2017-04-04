@@ -22,11 +22,12 @@
     <link href="../bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 	<!--  Material Dashboard CSS  -->
     <link href="../css/material-dashboard.css" rel="stylesheet"/>
-
+    <!-- Date -->
+		<link rel="stylesheet" href="../css/jquery.datepicker.css">
     <!--custom css-->
     <link rel="stylesheet"  href="../css/customMainCSS.css">
-		<!-- Date -->
-		<link rel="stylesheet" href="../css/jquery.datepicker.css">
+    <link rel="stylesheet" type="text/css" href="../css/icons.css" />
+    <link href="../css/font-awesome.min.css" rel="stylesheet">
 		<!-- for alert -->
 		<script src="../dist/sweetalert.js"></script>
     <link rel="stylesheet" href="../dist/sweetalert.css">
@@ -62,11 +63,13 @@
                  ?>
                  <div class="row">
                     <div class="col-md-8">
- 	            			      <div class="card" style="padding:10px;">
-                            <div class="header">
-            									<h4 class="title">INFORMACION DEL EMPLEADO</h4>
-            								</div>
-            								<div class="content">
+ 	            			      <div class="card">
+														<div class="card-header card-header-icon" data-background-color="purple">
+  					                    <i class="material-icons">perm_contact_calendar</i>
+  					                 </div>
+  					                <div class="card-content">
+  					                    <h4 class="card-title">INFORMACION DEL EMPLEADO</h4>
+                            	<br>
                               <div class="row">
                                 <div class="col-md-6">
                                   <div class="form-group">

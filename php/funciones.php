@@ -5,7 +5,61 @@
 	function estadoCnx(){
 		return pruebaCnx();
 	}
+	function checkPagoHorasExtras($FechaIni,$FechaFin,$tipoPago,$formaPago,$NitEmpresa){
+		$cnx=cnx();
+		$flag=FALSE;
+		$query=sprintf("SELECT * FROM pagos_horas_extras where FechaIni='%s' AND FechaFin='%s'AND tipoPago='%s'AND formaPago='%s' AND NitEmpresa='%s'",mysqli_real_escape_string($cnx,$FechaIni),mysqli_real_escape_string($cnx,$FechaFin),mysqli_real_escape_string($cnx,$tipoPago),mysqli_real_escape_string($cnx,$formaPago),mysqli_real_escape_string($cnx,$NitEmpresa));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!="")
+			$flag=TRUE;
+		mysqli_close($cnx);
+		return $flag;
+	}
+	function getPagosHorasExtras($FechaIni,$FechaFin,$tipoPago,$formaPago,$NitEmpresa){
+		$cnx=cnx();
+		$flag=FALSE;
+		$query=sprintf("SELECT * FROM pagos_horas_extras where FechaIni='%s' AND FechaFin='%s'AND tipoPago='%s'AND formaPago='%s' AND NitEmpresa='%s'",mysqli_real_escape_string($cnx,$FechaIni),mysqli_real_escape_string($cnx,$FechaFin),mysqli_real_escape_string($cnx,$tipoPago),mysqli_real_escape_string($cnx,$formaPago),mysqli_real_escape_string($cnx,$NitEmpresa));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		$PagoHorasExtras = array('idPagos_Horas_Extras' => $row["idPagos_Horas_Extras"],'NumeroDocumentoPor' => $row["NumeroDocumentoPor"],'FechaCreacion' => $row["FechaCreacion"],'NombrePor' => $row["NombrePor"]);
+		mysqli_close($cnx);
+		return $PagoHorasExtras;
+	}
+	function isLlegadasTardeExist($idLlegadasTarde){
+		$cnx=cnx();
+		$flag=FALSE;
+		$query=sprintf("SELECT * FROM llegadas_tarde where idLlegadasTarde='%s'",mysqli_real_escape_string($cnx,$idLlegadasTarde));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!="")
+			$flag=TRUE;
+		mysqli_close($cnx);
+		return $flag;
 
+	}
+	function getReporteLlegadasTardeEmpleado($NitEmpresa){
+		$cnx=cnx();
+		$query=sprintf("SELECT empleado.NumeroDocumento, empleado.PrimerNombre, empleado.SegundoNombre, empleado.PrimerApellido, empleado.SegundoApellido FROM empleado INNER JOIN cargos INNER JOIN departamento INNER JOIN empresa WHERE empresa.NitEmpresa=departamento.NitEmpresa AND departamento.idDepartamento= cargos.idDepartamento AND cargos.idCargos=empleado.idCargos and empresa.NitEmpresa='%s'",mysqli_real_escape_string($cnx,$NitEmpresa));
+		$result=mysqli_query($cnx,$query);
+		while ($row=mysqli_fetch_array($result)) {
+			$NombreCompleto="".$row["PrimerNombre"]." ".$row["SegundoNombre"]." ".$row["PrimerApellido"]." ".$row["SegundoApellido"];
+				echo "<tr>
+					 <td>".$row["NumeroDocumento"]."</td>
+					 <td>".$NombreCompleto."</td>
+					 <td class='text-right'>
+						 <div class='col-md-12'>
+							 <form method='post' action='Reporte_Llegadas_Tarde_Empleados.php'>
+								 <input type='hidden' name='numDoc' value='".$row["NumeroDocumento"]."'>
+								 <input type='submit' style='background: url(../img/icons/assignment.png);border: 0;' value='   '>
+							 </form>
+						 </div>
+					 </td>
+				 </tr>";
+
+		}
+		mysqli_close($cnx);
+	}
 	function isUserExist($user){
 		$cnx=cnx();
 		$flag=FALSE;
@@ -29,6 +83,43 @@
 		mysqli_close($cnx);
 		return $flag;
 
+	}
+	function GuardarColPagosHorasExtras($idPago_HorasExtras,$NIT,$NumeroDocumento,$Nombre,$MontoLiquido,$ISS,$AFP,$Renta,$CuentaBanco){
+		$cnx=cnx();
+		$query=sprintf("INSERT INTO col_pago_horas_extras(idPago_HorasExtras, NIT, NumeroDocumento,Nombre,MontoLiquido,ISS,AFP,Renta,CuentaBanco) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+		mysqli_real_escape_string($cnx,$idPago_HorasExtras),
+		mysqli_real_escape_string($cnx,$NIT),
+		mysqli_real_escape_string($cnx,$NumeroDocumento),
+		mysqli_real_escape_string($cnx,$Nombre),
+		mysqli_real_escape_string($cnx,$MontoLiquido),
+		mysqli_real_escape_string($cnx,$ISS),
+		mysqli_real_escape_string($cnx,$AFP),
+		mysqli_real_escape_string($cnx,$Renta),
+		mysqli_real_escape_string($cnx,$CuentaBanco)
+		);
+		$estado = mysqli_query($cnx,$query);
+		mysqli_close($cnx);
+		return $estado;
+	}
+	function GuardarPagosHorasExtras($idPagos_Horas_Extras,$NitEmpresa, $NumeroDocumentoPor,$NombrePor,$FechaCreacion,$Descripcion,$tipoPago,$formaPago,$idBanco,$estadoPago,$FechaIni,$FechaFin){
+		$cnx=cnx();
+		$query=sprintf("INSERT INTO pagos_horas_extras( idPagos_Horas_Extras, NitEmpresa, NumeroDocumentoPor,NombrePor,FechaCreacion,Descripcion,tipoPago,formaPago,idBanco,estadoPago,FechaIni,FechaFin) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+		mysqli_real_escape_string($cnx,$idPagos_Horas_Extras),
+		mysqli_real_escape_string($cnx,$NitEmpresa),
+		mysqli_real_escape_string($cnx,$NumeroDocumentoPor),
+		mysqli_real_escape_string($cnx,$NombrePor),
+		mysqli_real_escape_string($cnx,$FechaCreacion),
+		mysqli_real_escape_string($cnx,$Descripcion),
+		mysqli_real_escape_string($cnx,$tipoPago),
+		mysqli_real_escape_string($cnx,$formaPago),
+		mysqli_real_escape_string($cnx,$idBanco),
+		mysqli_real_escape_string($cnx,$estadoPago),
+		mysqli_real_escape_string($cnx,$FechaIni),
+		mysqli_real_escape_string($cnx,$FechaFin)
+		);
+		$estado = mysqli_query($cnx,$query);
+		mysqli_close($cnx);
+		return $estado;
 	}
 	function GuardarArchivoHorasExtrasPDF($idHorasExtras,$rutaDocumento){
 		$cnx=cnx();
@@ -57,8 +148,106 @@
 		mysqli_close($cnx);
 		return $row["rutaDocumento"];
 	}
+	function getFileAusencias($idAusencia){
+		$cnx=cnx();
+		$query=sprintf("SELECT *  FROM ausencia_documentos where idAusencia='%s' ",mysqli_real_escape_string($cnx,$idAusencia));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		mysqli_close($cnx);
+		return [$row["tipoDocumento"],$row["rutaDocumento"]];
+	}
+	function getFileIncapacidades($idIncapacidad){
+		$cnx=cnx();
+		$query=sprintf("SELECT *  FROM incapacidad_documentos where idIncapacidad='%s' ",mysqli_real_escape_string($cnx,$idIncapacidad));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		mysqli_close($cnx);
+		return [$row["tipoDocumento"],$row["rutaDocumento"]];
+	}
+	function getReporteLlegadasTarde($idLlegadasTarde){
+		$cnx=cnx();
+		$data = array();
+		$data['exist']="0";
+		$query=sprintf("SELECT * FROM llegadas_tarde  where idLlegadasTarde='%s'",mysqli_real_escape_string($cnx,$idLlegadasTarde));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!=""){
+			$data['exist']="1";
+			$data['NitEmpresa']=$row["NitEmpresa"];
+			$data['Fecha']=$row["Fecha"];
+			$data['EstadoLlegadasTarde']=$row["EstadoLlegadasTarde"];
+		}
+		mysqli_close($cnx);
+		return $data;
+	}
+	function getAusencia($idAusencia){
+		$cnx=cnx();
+		$data = array();
+		$data['exist']="0";
+		$query=sprintf("SELECT * FROM ausencia  where idAusencia='%s'",mysqli_real_escape_string($cnx,$idAusencia));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!=""){
+			$data['exist']="1";
+			$data['FechaCreacion']=$row["FechaCreacion"];
+			$data['NumeroDocumentoPor']=$row["NumeroDocumentoPor"];
+			$data['NumeroDocumento']=$row["NumeroDocumento"];
+			$data['TipoAusencia']=$row["TipoAusencia"];
+			$data['FechaAusencia']=$row["FechaAusencia"];
+			$data['EstadoAusencia']=$row["EstadoAusencia"];
+			$data['Observacion']=$row["Observacion"];
+		}
+		mysqli_close($cnx);
+		return $data;
+	}
+	function getIncapacidad($idIncapacidad){
+		$cnx=cnx();
+		$data = array();
+		$data['exist']="0";
+		$query=sprintf("SELECT * FROM incapacidad where idIncapacidad='%s'",mysqli_real_escape_string($cnx,$idIncapacidad));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!=""){
+			$data['exist']="1";
+			$data['EstadoComprobacion']=$row["EstadoComprobacion"];
+			$data['TipoIncapacidad']=$row["TipoIncapacidad"];
+			$data['FechaCreacion']=$row["FechaCreacion"];
+			$data['NumeroDocumentoPor']=$row["NumeroDocumentoPor"];
+			$data['NumeroDocumento']=$row["NumeroDocumento"];
+			$data['NombreClinica']=$row["NombreClinica"];
+			$data['NumeroTelefonoClinica']=$row["NumeroTelefonoClinica"];
+			$data['Doctor']=$row["Doctor"];
+			$data['DiaInicio']=$row["DiaInicio"];
+			$data['DiaFin']=$row["DiaFin"];
+			$data['FechaExpedicion']=$row["FechaExpedicion"];
+		}
 
+		mysqli_close($cnx);
+		return $data;
 
+	}
+	function getPermiso($idPermiso){
+		$cnx=cnx();
+		$data = array();
+		$data['exist']="0";
+		$query=sprintf("SELECT * FROM permiso  where idPermiso='%s'",mysqli_real_escape_string($cnx,$idPermiso));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!=""){
+			$data['exist']="1";
+			$data['NumeroDocumento']=$row["NumeroDocumento"];
+			$data['NumeroDocumentoPor']=$row["NumeroDocumentoPor"];
+			$data['TipoPermiso']=$row["TipoPermiso"];
+			$data['DiaInicio']=$row["DiaInicio"];
+			$data['DiaFin']=$row["DiaFin"];
+			$data['HoraInicio']=$row["HoraInicio"];
+			$data['HoraFin']=$row["HoraFin"];
+			$data['EstadoPermiso']=$row["EstadoPermiso"];
+			$data['Observacion']=$row["Observacion"];
+		}
+		mysqli_close($cnx);
+		return $data;
+	}
 	function DatosHorasExtras($idHorasExtras){
 		$cnx=cnx();
 		$data['exist']="0";
@@ -262,6 +451,8 @@
 			$htrabajo->setDesde($row["Desde"]);
 			$htrabajo->setHasta($row["Hasta"]);
 			$htrabajo->setIdturno($row["idTurno"]);
+			$htrabajo->setDescanso($row["Descanso"]);
+			$htrabajo->setH_Descanso($row["H_Descanso"]);
 		}
 		mysqli_close($cnx);
 		return $htrabajo;
@@ -297,8 +488,6 @@
 			$turno->setNombreturno($row["nombreTurno"]);
 			$turno->setDesde($row["Desde"]);
 			$turno->setHasta($row["Hasta"]);
-			$turno->setDescanso($row["Descanso"]);
-			$turno->setHDescanso($row["H_Descanso"]);
 			$turno->setperiodo_Pago($row["Periodo_Pago"]);
 			$turno->setH_MJornada($row["H_MJornada"]);
 		}
@@ -473,8 +662,34 @@
 		return $estado;
 
 	}
-	function UpdateSemanal($idSemana,$Lunes,$Martes,$Miercoles,$Jueves,$Viernes,$Sabado,$Domingo){
+	function revisarUpdateSemanal($idTurno,$idSemana,$Lunes,$Martes,$Miercoles,$Jueves,$Viernes,$Sabado,$Domingo){
 		$cnx=cnx();
+		$query=sprintf("SELECT empleado.NumeroDocumento from empleado INNER JOIN turno INNER JOIN htrabajo WHERE turno.idTurno='%s' and turno.idTurno=htrabajo.idTurno and htrabajo.NumeroDocumento=empleado.NumeroDocumento",mysqli_real_escape_string($cnx,$idTurno));
+		$result=mysqli_query($cnx,$query);
+		while ($row=mysqli_fetch_array($result)){
+			$queryUpd=sprintf("SELECT col_semanal.idCol_Semanal from col_semanal where col_semanal.idSemanal='%s' and col_semanal.NumeroDocumento='%s'",mysqli_real_escape_string($cnx,$idSemana),mysqli_real_escape_string($cnx,$row["NumeroDocumento"]));
+			$resultUpd=mysqli_query($cnx,$queryUpd);
+			$rowUpd=mysqli_fetch_array($resultUpd);
+			if($rowUpd[0]==""){
+				$query2 = sprintf("INSERT INTO col_semanal(idSemanal,NumeroDocumento,Lunes,Martes,Miercoles,Jueves,Viernes,Sabado,Domingo) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+				mysqli_real_escape_string($cnx,$idSemana),
+				mysqli_real_escape_string($cnx,$row["NumeroDocumento"]),
+				mysqli_real_escape_string($cnx,$Lunes),
+				mysqli_real_escape_string($cnx,$Martes),
+				mysqli_real_escape_string($cnx,$Miercoles),
+				mysqli_real_escape_string($cnx,$Jueves),
+				mysqli_real_escape_string($cnx,$Viernes),
+				mysqli_real_escape_string($cnx,$Sabado),
+				mysqli_real_escape_string($cnx,$Domingo)
+				);
+				$estado2 = mysqli_query($cnx,$query2);
+			};
+		}
+		mysqli_close($cnx);
+	}
+	function UpdateSemanal($idTurno,$idSemana,$Lunes,$Martes,$Miercoles,$Jueves,$Viernes,$Sabado,$Domingo){
+		$cnx=cnx();
+				revisarUpdateSemanal($idTurno,$idSemana,$Lunes,$Martes,$Miercoles,$Jueves,$Viernes,$Sabado,$Domingo);
 				$query2=sprintf("SELECT * FROM col_semanal where idSemanal='%s'",mysqli_real_escape_string($cnx,$idSemana));
 		 		$result2=mysqli_query($cnx,$query2);
 				while ($row2=mysqli_fetch_array($result2)) {
@@ -493,6 +708,182 @@
 		mysqli_close($cnx);
 		return $estado;
 	}
+	function AddArrTime($times) {
+
+    // loop throught all the times
+		$total_seconds=0;
+    foreach ($times as $time) {
+        list($hour, $minute, $second) = explode(':', $time);
+        $total_seconds = $total_seconds + ($hour * 3600) + ($minute * 60) + $second;
+    }
+
+		$hours = floor($total_seconds / 3600);
+		$mins = floor($total_seconds / 60 % 60);
+	 $secs = floor($total_seconds % 60);
+
+    // returns the time already formatted
+    return sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
+	}
+	function RevisarTiempo($valor,$HIni,$HFin,$Des){
+	  $HFin=new DateTime($HFin);
+	  $HIni=new DateTime($HIni);
+	  $Des=new DateTime($Des);
+	  $interval = $HFin->diff($HIni);
+	  $nvalor=$interval->format('%H:%I:%S');
+	  $NDate= new DateTime($nvalor);
+	  $intervalf = $NDate->diff($Des);
+	  $workduration = $intervalf->format('%H:%I:%S');
+	  $time_array = explode(':',$workduration);
+	  $hours = (int)$time_array[0];
+	  $minutes = (int)$time_array[1];
+	  $seconds = (int)$time_array[2];
+	  $total_seconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+	  $average = floor($total_seconds/2);
+	  $hours = floor($average / 3600);
+	  $mins = floor($average / 60 % 60);
+	  $secs = floor($average % 60);
+	  $timeFormat = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
+	  if($valor==1){
+	    $valorN=(String)($workduration);
+	  }else if($valor==2){
+	    $valorN=(String)($timeFormat);
+	  }else{
+	    $valorN="D";
+	  }
+
+	return $valorN;
+
+	}
+	function revisarSemanalConEmpleado($idTurno,$lunes,$martes,$miercoles,$jueves,$viernes,$sabado,$domingo){
+		$cnx=cnx();
+		$flag=0;//0 es que no hay empleados que se pasen
+		$str="";
+		$query = sprintf("SELECT empleado.PrimerNombre,empleado.SegundoNombre,empleado.PrimerApellido,empleado.SegundoApellido,htrabajo.Desde,htrabajo.Hasta,htrabajo.H_Descanso from turno INNER JOIN htrabajo INNER JOIN empleado WHERE turno.idTurno='%s' and turno.idTurno=htrabajo.idTurno and htrabajo.NumeroDocumento=empleado.NumeroDocumento",mysqli_real_escape_string($cnx,$idTurno));
+		$result=mysqli_query($cnx,$query);
+		while ($row=mysqli_fetch_array($result)) {
+			$tot=0;
+			$HoraInicio=$row["Desde"];
+			$HoraInicio=explode(":",$HoraInicio);
+			$HoraInicio=$HoraInicio[0].":".$HoraInicio[1];
+			$HoraFin=$row["Hasta"];
+			$HoraFin=explode(":",$HoraFin);
+			$HoraFin=$HoraFin[0].":".$HoraFin[1];
+			$HoraDescanso=$row["H_Descanso"];
+			$HoraDescanso=explode(":",$HoraDescanso);
+			$HoraDescanso=$HoraDescanso[0].":".$HoraDescanso[1];
+			//Cuantos dias trabaja horario completo o mysqlnd_ms_get_last_used_connection
+			$totHorasLaborales=  array();
+			$LunesT=RevisarTiempo($lunes,$row["Desde"],$row["Hasta"],$row["H_Descanso"]);
+			if(strcmp("D",(string)$LunesT)!=0){
+				$totHorasLaborales[]=$LunesT;
+			}
+			$MartesT=RevisarTiempo($martes,$row["Desde"],$row["Hasta"],$row["H_Descanso"]);
+			if(strcmp("D",(string)$MartesT)!=0){
+				$totHorasLaborales[]=$MartesT;
+			}
+			$MiercolesT=RevisarTiempo($miercoles,$row["Desde"],$row["Hasta"],$row["H_Descanso"]);
+			if(strcmp("D",(string)$MiercolesT)!=0){
+				$totHorasLaborales[]=$MiercolesT;
+			}
+			$JuevesT=RevisarTiempo($jueves,$row["Desde"],$row["Hasta"],$row["H_Descanso"]);
+			if(strcmp("D",(string)$JuevesT)!=0){
+				$totHorasLaborales[]=$JuevesT;
+			}
+			$ViernesT=RevisarTiempo($viernes,$row["Desde"],$row["Hasta"],$row["H_Descanso"]);
+			if(strcmp("D",(string)$ViernesT)!=0){
+				$totHorasLaborales[]=$ViernesT;
+			}
+			$SabadoT=RevisarTiempo($sabado,$row["Desde"],$row["Hasta"],$row["H_Descanso"]);
+			if(strcmp("D",(string)$SabadoT)!=0){
+				$totHorasLaborales[]=$SabadoT;
+			}
+			$DomingoT=RevisarTiempo($domingo,$row["Desde"],$row["Hasta"],$row["H_Descanso"]);
+			if(strcmp("D",(string)$DomingoT)!=0){
+				$totHorasLaborales[]=$DomingoT;
+			}
+			//diurna 6-19
+			//tot horas ->
+			$totHorasLaborales=AddArrTime($totHorasLaborales);
+			$totHorasLaborales=explode(":",$totHorasLaborales);
+			$totHorasLaborales=$totHorasLaborales[0].":".$totHorasLaborales[1];
+			//is hornada is D or N
+			if (strcmp("D",isBetwenNightTime($HoraInicio,$HoraFin))==0) {
+				$MaxHoursWeek=44;//Max diurno
+				$tipoSemanaL="Diurna";
+			}else {
+				$MaxHoursWeek=39;//MAX nocturna
+				$tipoSemanaL="Nocturna";
+			}
+			if(HourToNum($totHorasLaborales)>$MaxHoursWeek){
+				//Si se pasa el total de horas semanales al permitido
+				$flag=1;
+				$str=$str."<p style='font-size:15px'>".$row["PrimerNombre"]." ".$row["SegundoNombre"]." ".$row["PrimerApellido"]." ".$row["SegundoApellido"]." tipo de semana laboral ".$tipoSemanaL." Exede en:".gmdate("H:i:s", (int)subsTwoTimes($totHorasLaborales.":00",$MaxHoursWeek.":00"))."</p>";
+			}
+
+		}
+		mysqli_close($cnx);
+
+		return $flag.",".$str;
+	}
+	function isBetwenNightTime($HoraInicio,$HoraFin){
+		//recibe tipo "00:00"
+		$DoN="D";
+		$HaCoprobar=0;
+		//Horas totales laborales
+			if(HourToNum($HoraInicio)<=HourToNum($HoraFin)){
+				$totHorasLaborales=subsTwoTimes($HoraFin,$HoraInicio);
+				$totHorasLaborales=gmdate("H:i:s", (int)$totHorasLaborales);
+				$totHorasLaborales=abs(HourToNum($totHorasLaborales));
+			}else{
+				$totHorasLaborales=subsTwoTimes($HoraInicio,$HoraFin);
+				$totHorasLaborales=gmdate("H:i:s", (int)$totHorasLaborales);
+				$totHorasLaborales=abs(HourToNum($totHorasLaborales));
+			}
+		if((HourToNum($HoraInicio)>=19 )||(HourToNum($HoraFin)<=6)){
+			//caso basico
+			$DoN="N";
+		}elseif ((HourToNum($HoraInicio)<6)) {
+			# code...
+			if(((6-HourToNum($HoraInicio))<=$totHorasLaborales)&&(6-HourToNum($HoraInicio))>0){
+				$HaCoprobar=subsTwoTimes($HoraInicio,"06:00");
+				if(HourToNum($HoraFin)>19){
+					//$HaCoprobar=subsTwoTimes();
+					//$NHorasDiurnas=gmdate("H:i:s", (int)$Tot);
+					$HaCoprobar=$HaCoprobar+subsTwoTimes("19:00",$HoraFin);
+				}
+				$HaCoprobar=gmdate("H:i:s", (int)$HaCoprobar);
+				if ($HaCoprobar>="04:00:00") {
+					$DoN="N";
+				}
+			}
+		}elseif ((HourToNum($HoraFin)>19)) {
+			if(((HourToNum($HoraFin)-19)<=$totHorasLaborales)&&(HourToNum($HoraFin)-19)>0){
+				$HaCoprobar=subsTwoTimes("19:00",$HoraFin);
+			}
+			$HaCoprobar=gmdate("H:i:s", (int)$HaCoprobar);
+			if ($HaCoprobar>="04:00:00") {
+				$DoN="N";
+			}
+		}
+		return $DoN;
+	}
+	function subsTwoTimes($First,$End){
+	  $str_time = (string)$First.":00";
+	  sscanf($str_time, "%d:%d:%d", $hours, $minutes, $seconds);
+	  $FirstTimeSeconds = isset($seconds) ? $hours * 3600 + $minutes * 60 + $seconds : $hours * 60 + $minutes;
+	  $str_time = (string)$End.":00";
+	  sscanf($str_time, "%d:%d:%d", $hours, $minutes, $seconds);
+	  $EndTimeSeconds = isset($seconds) ? $hours * 3600 + $minutes * 60 + $seconds : $hours * 60 + $minutes;
+	  return abs($EndTimeSeconds-$FirstTimeSeconds);
+	}
+
+	function HourToNum($Hour){
+	  $Hour=(string)$Hour;
+	  $Hour= explode(":",$Hour);
+	  $Hour=$Hour[0].".".$Hour[1];
+	  return (float)$Hour;
+	}
+
 	function UpdateDepartamento($NombreDepartamento,$CuentaContable,$idSalario_Minimo,$idDepartamento,$idCod_Municipio){
 		$cnx=cnx();
 		$query = sprintf("UPDATE departamento SET  NombreDepartamento = '%s',idSalario_Minimo = '%s',CuentaContable = '%s',idCod_Municipio = '%s' WHERE idDepartamento = '%s'",
@@ -501,6 +892,60 @@
 		mysqli_real_escape_string($cnx,$CuentaContable),
 		mysqli_real_escape_string($cnx,$idCod_Municipio),
 		mysqli_real_escape_string($cnx,$idDepartamento)
+		);
+		$estado = mysqli_query($cnx,$query);
+		mysqli_close($cnx);
+		return $estado;
+	}
+	function UpdatePermiso($TipoPermiso,$idPermiso,$estadoPermiso,$DiaInicio,$DiaFin,$HoraInicio,$HoraFin,$Observacion){
+		$cnx=cnx();
+		$query = sprintf("UPDATE permiso SET  TipoPermiso = '%s',DiaInicio = '%s',DiaFin = '%s',HoraInicio = '%s',HoraFin = '%s',Observacion = '%s' WHERE idPermiso = '%s'",
+		mysqli_real_escape_string($cnx,$TipoPermiso),
+		mysqli_real_escape_string($cnx,$DiaInicio),
+		mysqli_real_escape_string($cnx,$DiaFin),
+		mysqli_real_escape_string($cnx,$HoraInicio),
+		mysqli_real_escape_string($cnx,$HoraFin),
+		mysqli_real_escape_string($cnx,$Observacion),
+		mysqli_real_escape_string($cnx,$idPermiso)
+		);
+		$estado = mysqli_query($cnx,$query);
+		mysqli_close($cnx);
+		return $estado;
+	}
+	function ConfirmarPermiso($idPermiso){
+		$cnx=cnx();
+		$query = sprintf("UPDATE permiso SET  EstadoPermiso = '%s' WHERE idPermiso = '%s'",
+		mysqli_real_escape_string($cnx,1),
+		mysqli_real_escape_string($cnx,$idPermiso)
+		);
+		$estado = mysqli_query($cnx,$query);
+		mysqli_close($cnx);
+		return $estado;
+	}
+	function UpdateIncapacidad($TipoIncapacidad,$idIncapacidad,$NombreClinica,$NumeroTelefonoClinica,$Doctor,$FechaInicio,$FechaFin,$FechaExpedicion,$EstadoComprobacion){
+		$cnx=cnx();
+		$query = sprintf("UPDATE incapacidad SET  TipoIncapacidad = '%s',NombreClinica = '%s',NumeroTelefonoClinica = '%s',Doctor = '%s',DiaInicio = '%s',DiaFin = '%s',FechaExpedicion = '%s' WHERE idIncapacidad = '%s'",
+		mysqli_real_escape_string($cnx,$TipoIncapacidad),
+		mysqli_real_escape_string($cnx,$NombreClinica),
+		mysqli_real_escape_string($cnx,$NumeroTelefonoClinica),
+		mysqli_real_escape_string($cnx,$Doctor),
+		mysqli_real_escape_string($cnx,$FechaInicio),
+		mysqli_real_escape_string($cnx,$FechaFin),
+		mysqli_real_escape_string($cnx,$FechaExpedicion),
+		mysqli_real_escape_string($cnx,$idIncapacidad)
+		);
+		$estado = mysqli_query($cnx,$query);
+		mysqli_close($cnx);
+		return $estado;
+	}
+	function UpdateAusencia($idAusencia,$TipoAusencia,$EstadoAusencia,$FechaAusencia,$Observacion){
+		$cnx=cnx();
+		$query = sprintf("UPDATE ausencia SET  TipoAusencia = '%s',FechaAusencia = '%s',EstadoAusencia = '%s',Observacion = '%s' WHERE idAusencia = '%s'",
+		mysqli_real_escape_string($cnx,$TipoAusencia),
+		mysqli_real_escape_string($cnx,$FechaAusencia),
+		mysqli_real_escape_string($cnx,$EstadoAusencia),
+		mysqli_real_escape_string($cnx,$Observacion),
+		mysqli_real_escape_string($cnx,$idAusencia)
 		);
 		$estado = mysqli_query($cnx,$query);
 		mysqli_close($cnx);
@@ -590,11 +1035,52 @@ function eliminarDepartamento($idDepartamento,$NitEmpresa){
 	mysqli_close($cnx);
 	return $estado;
 }
+//eliminarPermisos
+function eliminarPermisos($idPermiso){
+		$cnx=cnx();
+		$estado=1;
+		$query=sprintf("DELETE FROM permiso WHERE idPermiso='%s'",mysqli_real_escape_string($cnx,$idPermiso));
+		$estado = mysqli_query($cnx, $query);
+
+	mysqli_close($cnx);
+	return $estado;
+}
+
+//eliminarAusencia
+function eliminarAusencia($idAusencia){
+		$cnx=cnx();
+		$estado=1;
+		$query=sprintf("DELETE FROM ausencia WHERE idAusencia='%s'",mysqli_real_escape_string($cnx,$idAusencia));
+		$estado = mysqli_query($cnx, $query);
+
+	mysqli_close($cnx);
+	return $estado;
+}
+//eliminarIncapacidad
+function eliminarIncapacidad($idIncapacidad){
+		$cnx=cnx();
+		$estado=1;
+		$query=sprintf("DELETE FROM incapacidad WHERE idIncapacidad='%s'",mysqli_real_escape_string($cnx,$idIncapacidad));
+		$estado = mysqli_query($cnx, $query);
+
+	mysqli_close($cnx);
+	return $estado;
+}
 //eliminarHoraExtra
 function eliminarHoras_extras($IdColHorasExtras){
 		$cnx=cnx();
 		$estado=1;
 		$query=sprintf("DELETE FROM col_horas_extras WHERE IdColHorasExtras='%s'",mysqli_real_escape_string($cnx,$IdColHorasExtras));
+		$estado = mysqli_query($cnx, $query);
+
+	mysqli_close($cnx);
+	return $estado;
+}
+//eliminarLlegadasTarde
+function eliminarLlegadasTarde($idColLlegadas_Tarde){
+		$cnx=cnx();
+		$estado=1;
+		$query=sprintf("DELETE FROM col_llegadas_tarde WHERE idColLlegadas_Tarde='%s'",mysqli_real_escape_string($cnx,$idColLlegadas_Tarde));
 		$estado = mysqli_query($cnx, $query);
 
 	mysqli_close($cnx);
@@ -629,7 +1115,7 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 	mysqli_close($cnx);
 	return $flag;
 }
-	function actualizarUsuario($empleado,$htrabajo,$idBanco,$NumeroCuenta){
+	function actualizarUsuario($empleado,$htrabajo,$idBanco,$NumeroCuenta,$H_Descanso,$descanso){
 		$cnx = cnx();
 		if(checkCuentaBanco($empleado->getNumerodocumento(),$idBanco)){
 			$NumeroCuentaEncr=encrypt_decrypt('encrypt', $NumeroCuenta);
@@ -716,11 +1202,14 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 				);
 		}
 
-			$query2 = sprintf("UPDATE htrabajo SET Desde = '%s', Hasta ='%s', idTurno = '%s' WHERE NumeroDocumento = '%s'",
+			$query2 = sprintf("UPDATE htrabajo SET Desde = '%s', Hasta ='%s', idTurno = '%s', Descanso = '%s', H_Descanso = '%s' WHERE NumeroDocumento = '%s'",
 			mysqli_real_escape_string($cnx, $htrabajo->getDesde()),
 			mysqli_real_escape_string($cnx, $htrabajo->getHasta()),
 			mysqli_real_escape_string($cnx, $htrabajo->getIdturno()),
+			mysqli_real_escape_string($cnx, $descanso),
+			mysqli_real_escape_string($cnx, $H_Descanso),
 			mysqli_real_escape_string($cnx, $empleado->getNumerodocumento())
+
 			);
 		$estado = mysqli_query($cnx, $query);
 		$estado2 = mysqli_query($cnx, $query2);
@@ -729,15 +1218,147 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 		return $estadoT;
 
 	}
-	function agregarTurno($NitEmpresa,$nombreTurno,$Desde,$Hasta,$Descanso,$H_Descanso,$Periodo_Pago,$H_MJornada){
+
+	function insertarDocumentoAusencia($idAusencia,$name,$extension){
+		$cnx=cnx();
+		$query = sprintf("INSERT INTO ausencia_documentos(idAusencia,rutaDocumento,tipoDocumento) VALUES ('%s','%s','%s')",
+			mysqli_real_escape_string($cnx,$idAusencia),
+			mysqli_real_escape_string($cnx,$name),
+			mysqli_real_escape_string($cnx,$extension)
+		);
+		$estado = mysqli_query($cnx, $query);
+		mysqli_close($cnx);
+	}
+
+	function insertarDocumentoIncapacidades($idIncapacidad,$name,$extension){
+		$cnx=cnx();
+		$query = sprintf("INSERT INTO incapacidad_documentos(idIncapacidad,rutaDocumento,tipoDocumento) VALUES ('%s','%s','%s')",
+			mysqli_real_escape_string($cnx,$idIncapacidad),
+			mysqli_real_escape_string($cnx,$name),
+			mysqli_real_escape_string($cnx,$extension)
+		);
+		$estado = mysqli_query($cnx, $query);
+		$query = sprintf("UPDATE incapacidad SET EstadoComprobacion = '%s' WHERE idIncapacidad = '%s'",
+			mysqli_real_escape_string($cnx, 1),
+			mysqli_real_escape_string($cnx, $idIncapacidad)
+			);
+		$estado = mysqli_query($cnx, $query);
+		mysqli_close($cnx);
+	}
+
+	function isIncapExist($idIncapacidad){
+		$cnx=cnx();
+		$flag=FALSE;
+		$query=sprintf("SELECT * FROM incapacidad where idIncapacidad='%s'",mysqli_real_escape_string($cnx,$idIncapacidad));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!="")
+			$flag=TRUE;
+		mysqli_close($cnx);
+		return $flag;
+
+	}
+	function isPermisoExist($idPermiso){
+		$cnx=cnx();
+		$flag=FALSE;
+		$query=sprintf("SELECT * FROM permiso where idPermiso='%s'",mysqli_real_escape_string($cnx,$idPermiso));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!="")
+			$flag=TRUE;
+		mysqli_close($cnx);
+		return $flag;
+
+	}
+	function isAusenExist($idAusencia){
+		$cnx=cnx();
+		$flag=FALSE;
+		$query=sprintf("SELECT * FROM ausencia where idAusencia='%s'",mysqli_real_escape_string($cnx,$idAusencia));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!="")
+			$flag=TRUE;
+		mysqli_close($cnx);
+		return $flag;
+	}
+	function isAusenDocExist($idAusencia){
+		$cnx=cnx();
+		$flag=FALSE;
+		$query=sprintf("SELECT * FROM ausencia_documentos where idAusencia='%s'",mysqli_real_escape_string($cnx,$idAusencia));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!="")
+			$flag=TRUE;
+		mysqli_close($cnx);
+		return $flag;
+	}
+		function AgregarPermiso($TipoPermiso,$NumeroDocumentoPor,$estadoPermiso,$DiaInicio,$DiaFin,$HoraInicio,$HoraFin,$Observacion,$NumeroDocumento){
+		date_default_timezone_set('America/El_Salvador');
+		$dateTime = date("Y-m-d H:i:s");
 		$cnx = cnx();
-		$query = sprintf("INSERT INTO turno(NitEmpresa,nombreTurno,Desde,Hasta,Descanso,H_Descanso,Periodo_Pago,H_MJornada) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
+		$query = sprintf("INSERT INTO permiso(FechaCreacion	,NumeroDocumentoPor,NumeroDocumento,TipoPermiso,DiaInicio,DiaFin,HoraInicio,HoraFin,EstadoPermiso,Observacion) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+			mysqli_real_escape_string($cnx,$dateTime),
+			mysqli_real_escape_string($cnx,$NumeroDocumentoPor),
+			mysqli_real_escape_string($cnx,$NumeroDocumento),
+			mysqli_real_escape_string($cnx,$TipoPermiso),
+			mysqli_real_escape_string($cnx,$DiaInicio),
+			mysqli_real_escape_string($cnx,$DiaFin),
+			mysqli_real_escape_string($cnx,$HoraInicio),
+			mysqli_real_escape_string($cnx,$HoraFin),
+			mysqli_real_escape_string($cnx,$estadoPermiso),
+			mysqli_real_escape_string($cnx,$Observacion)
+
+		);
+		$estado = mysqli_query($cnx, $query);
+		mysqli_close($cnx);
+		return $estado;
+	}
+	function AgregarAusencia($TipoAusencia,$NumeroDocumentoPor,$EstadoAusencia,$FechaAusencia,$Observacion,$NumeroDocumento){
+		date_default_timezone_set('America/El_Salvador');
+		$dateTime = date("Y-m-d H:i:s");
+		$cnx = cnx();
+		$query = sprintf("INSERT INTO ausencia(FechaCreacion,NumeroDocumentoPor,NumeroDocumento,TipoAusencia,FechaAusencia,EstadoAusencia,Observacion) VALUES ('%s','%s','%s','%s','%s','%s','%s')",
+			mysqli_real_escape_string($cnx,$dateTime),
+			mysqli_real_escape_string($cnx,$NumeroDocumentoPor),
+			mysqli_real_escape_string($cnx,$NumeroDocumento),
+			mysqli_real_escape_string($cnx,$TipoAusencia),
+			mysqli_real_escape_string($cnx,$FechaAusencia),
+			mysqli_real_escape_string($cnx,$EstadoAusencia),
+			mysqli_real_escape_string($cnx,$Observacion)
+		);
+		$estado = mysqli_query($cnx, $query);
+		mysqli_close($cnx);
+		return $estado;
+	}
+	function AgregarIncapacidad($TipoIncapacidad,$NumeroDocumentoPor,$NumeroDocumento,$NombreClinica,$NumeroTelefonoClinica,$Doctor,$DiaInicio,$DiaFin,$FechaExpedicion,$EstadoComprobacion)
+	{
+		date_default_timezone_set('America/El_Salvador');
+    $dateTime = date("Y-m-d H:i:s");
+		$cnx = cnx();
+		$query = sprintf("INSERT INTO incapacidad(TipoIncapacidad,FechaCreacion,NumeroDocumentoPor,NumeroDocumento,NombreClinica,NumeroTelefonoClinica,Doctor,DiaInicio,DiaFin,FechaExpedicion,EstadoComprobacion) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+			mysqli_real_escape_string($cnx,$TipoIncapacidad),
+			mysqli_real_escape_string($cnx,$dateTime),
+			mysqli_real_escape_string($cnx,$NumeroDocumentoPor),
+			mysqli_real_escape_string($cnx,$NumeroDocumento),
+			mysqli_real_escape_string($cnx,$NombreClinica),
+			mysqli_real_escape_string($cnx,$NumeroTelefonoClinica),
+			mysqli_real_escape_string($cnx,$Doctor),
+			mysqli_real_escape_string($cnx,$DiaInicio),
+			mysqli_real_escape_string($cnx,$DiaFin),
+			mysqli_real_escape_string($cnx,$FechaExpedicion),
+			mysqli_real_escape_string($cnx,"0")
+		);
+		$estado = mysqli_query($cnx, $query);
+		mysqli_close($cnx);
+		return $estado;
+	}
+	function agregarTurno($NitEmpresa,$nombreTurno,$Desde,$Hasta,$Periodo_Pago,$H_MJornada){
+		$cnx = cnx();
+		$query = sprintf("INSERT INTO turno(NitEmpresa,nombreTurno,Desde,Hasta,Periodo_Pago,H_MJornada) VALUES ('%s','%s','%s','%s','%s','%s')",
 			mysqli_real_escape_string($cnx,$NitEmpresa),
 			mysqli_real_escape_string($cnx,$nombreTurno),
 			mysqli_real_escape_string($cnx,$Desde),
 			mysqli_real_escape_string($cnx,$Hasta),
-			mysqli_real_escape_string($cnx,$Descanso),
-			mysqli_real_escape_string($cnx,$H_Descanso),
 			mysqli_real_escape_string($cnx,$Periodo_Pago),
 			mysqli_real_escape_string($cnx,$H_MJornada)
 		);
@@ -776,7 +1397,7 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 		return $estado;
 
 	}
-	function AgregarEmpleado($TipoDocumento,$NumeroDocumento,$PrimerNombre,$PrimerApellido,$Pass,$SalarioNominal,$Desde,$Hasta,$FechaIngreso,$idTurno,$Activo,$idCargos){
+	function AgregarEmpleado($TipoDocumento,$NumeroDocumento,$PrimerNombre,$PrimerApellido,$Pass,$SalarioNominal,$Desde,$Hasta,$FechaIngreso,$idTurno,$Activo,$idCargos,$Descanso,$H_Descanso){
 		$cnx = cnx();
 		$query = sprintf("INSERT INTO empleado(NumeroDocumento,TipoDocumento,Pass,Activo,PrimerNombre,PrimerApellido,SalarioNominal,FechaIngreso,idCargos) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')",
 			mysqli_real_escape_string($cnx,$NumeroDocumento),
@@ -791,11 +1412,13 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 		);
 		$estado = mysqli_query($cnx, $query);
 		if($estado){
-			$query = sprintf("INSERT INTO htrabajo(NumeroDocumento,Desde,Hasta,idTurno) VALUES ('%s','%s','%s','%s')",
+			$query = sprintf("INSERT INTO htrabajo(NumeroDocumento,Desde,Hasta,idTurno,Descanso,H_Descanso) VALUES ('%s','%s','%s','%s','%s','%s')",
 				mysqli_real_escape_string($cnx,$NumeroDocumento),
 				mysqli_real_escape_string($cnx,$Desde),
 				mysqli_real_escape_string($cnx,$Hasta),
-				mysqli_real_escape_string($cnx,$idTurno)
+				mysqli_real_escape_string($cnx,$idTurno),
+				mysqli_real_escape_string($cnx,$Descanso),
+				mysqli_real_escape_string($cnx,$H_Descanso)
 			);
 			$estado = mysqli_query($cnx, $query);
 		}
@@ -803,14 +1426,12 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 		return $estado;
 	}
 
-	function actualizarTurno($idTurno,$nombreTurno,$Desde,$Hasta,$Descanso,$H_Descanso,$Periodo_Pagos,$H_MJornada){
+	function actualizarTurno($idTurno,$nombreTurno,$Desde,$Hasta,$Periodo_Pagos,$H_MJornada){
 		$cnx = cnx();
-		$query = sprintf("UPDATE turno SET nombreTurno = '%s', Desde ='%s', Hasta = '%s', Descanso = '%s', H_Descanso = '%s', Periodo_Pago = '%s', H_MJornada= '%s' WHERE idTurno = '%s'",
+		$query = sprintf("UPDATE turno SET nombreTurno = '%s', Desde ='%s', Hasta = '%s',  Periodo_Pago = '%s', H_MJornada= '%s' WHERE idTurno = '%s'",
 			mysqli_real_escape_string($cnx, $nombreTurno),
 			mysqli_real_escape_string($cnx, $Desde),
 			mysqli_real_escape_string($cnx, $Hasta),
-			mysqli_real_escape_string($cnx, $Descanso),
-			mysqli_real_escape_string($cnx, $H_Descanso),
 		 	mysqli_real_escape_string($cnx, $Periodo_Pagos),
 			mysqli_real_escape_string($cnx, $H_MJornada),
 			mysqli_real_escape_string($cnx, $idTurno)
@@ -906,6 +1527,16 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 	  $pattern1 = '/^(0?\d|1\d|2[0-3]):[0-5]\d:[0-5]\d$/';
 	  return preg_match($pattern1, $value);
   }
+
+	function verify_date_format($date) {
+		//format YY-MM-DD
+		if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$date))
+    {
+        return true;
+    }else{
+        return false;
+    }
+  }
 	function getAllBankAccount(){
 		$cnx = cnx();
 		$i=0;
@@ -939,6 +1570,27 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 		return [$cuenta,$idBanco];
 
 	}
+	function TimeToMinut($Time){
+	  $Time=(string)$Time;
+	  $Time= explode(":",$Time);
+	  $Second=((float)$Time[0]*60)+((float)$Time[1])+(round((float)$Time[2]/60));
+	  return floor((float)$Second);
+	}
+	function calculoDeRentaHE($TG,$TRAMO1,$TRAMO2,$TRAMO3,$TRAMO4){
+	  //$TRAMO1=array("Desde" => $row["Desde"],"Hasta" => $row["Hasta"],"porcentaje_aplicar" => $row["porcentaje_aplicar"],"sobre_exceso" => $row["sobre_exceso"],"Cuota_fija" => $row["Cuota_fija"]);
+	  if(((float)$TG>(float)$TRAMO1["Desde"])&&((float)$TG<(float)$TRAMO1["Hasta"])){
+	    $RENTA=(($TG-$TRAMO1["sobre_exceso"])*$TRAMO1["porcentaje_aplicar"])+$TRAMO1["Cuota_fija"];
+	  }elseif(((float)$TG>(float)$TRAMO2["Desde"])&&((float)$TG<(float)$TRAMO2["Hasta"])) {
+	    # code...
+	    $RENTA=(($TG-$TRAMO2["sobre_exceso"])*$TRAMO2["porcentaje_aplicar"])+$TRAMO2["Cuota_fija"];
+	  }elseif(((float)$TG>(float)$TRAMO3["Desde"])&&((float)$TG<(float)$TRAMO3["Hasta"])) {
+	    # code...
+	    $RENTA=(($TG-$TRAMO3["sobre_exceso"])*$TRAMO3["porcentaje_aplicar"])+$TRAMO3["Cuota_fija"];
+	  }else{
+	    $RENTA=(($TG-$TRAMO4["sobre_exceso"])*$TRAMO4["porcentaje_aplicar"])+$TRAMO4["Cuota_fija"];
+	  }
+	  return number_format($RENTA, 2, '.', '');
+	}
 	function encrypt_decrypt($action, $string) {
 	    $output = false;
 
@@ -961,6 +1613,188 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 	    }
 
 	    return $output;
+	}
+	function ifEmployHaveAccount($NumeroDocumento){
+		$cnx = cnx();
+		$flag=0;
+		$query=sprintf("SELECT * FROM cuentasbanco  WHERE NumeroDocumento='%s'",mysqli_real_escape_string($cnx,$NumeroDocumento));
+		$result=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($result);
+		if($row[0]!="") $flag=1;
+		mysqli_close($cnx);
+		return $flag;
+	}
+function checkIsTheyPayExtraHours($NumeroDocumento,$NitEmpresa,$FechaIni,$FechaFin){
+	$cnx= cnx();
+	$flag=0;//0 No existe
+	$query=sprintf("SELECT * FROM pagos_horas_extras INNER JOIN col_pago_horas_extras where pagos_horas_extras.idPagos_Horas_Extras=col_pago_horas_extras.idPago_HorasExtras AND col_pago_horas_extras.NumeroDocumento='%s' AND pagos_horas_extras.NitEmpresa='%s' AND pagos_horas_extras.FechaIni='%s' AND pagos_horas_extras.FechaFin='%s'",mysqli_real_escape_string($cnx,$NumeroDocumento),mysqli_real_escape_string($cnx,$NitEmpresa),mysqli_real_escape_string($cnx,$FechaIni),mysqli_real_escape_string($cnx,$FechaFin));
+	$result=mysqli_query($cnx,$query);
+	$row=mysqli_fetch_array($result);
+	if($row[0]!="") $flag=1;
+	mysqli_close($cnx);
+	return $flag;
+
+}
+
+	function getRowColPagoHorasExtras($idPago_HorasExtras){
+		$cnx = cnx();
+		$query=sprintf("SELECT * FROM col_pago_horas_extras  WHERE idPago_HorasExtras='%s'",mysqli_real_escape_string($cnx,$idPago_HorasExtras));
+		$result=mysqli_query($cnx,$query);
+		$totAPagar=0.00;
+		while ($row=mysqli_fetch_array($result)) {
+			$totAPagar=$totAPagar+$row["MontoLiquido"];
+			$empleado= getInfoEmpleado($row["NumeroDocumento"]);
+			$Cargo= getInfoCargos($empleado->getIdcargos());
+			$Departamento = getInfoDepartamentos($Cargo->getIddepartamento());
+			echo "
+				<tr style='width:100%;'>
+				 <td style='width:12%;white-space: nowrap;overflow:hidden;text-overflow: ellipsis;display: inline-block;'><span style='white-space: nowrap;overflow:hidden;text-overflow: ellipsis;display: inline-block;'>".$row["Nombre"]."</span></td>
+				 <td style='width:12%;white-space: nowrap;overflow:hidden;text-overflow: ellipsis;display: inline-block;'><span style='white-space: nowrap;overflow:hidden;text-overflow: ellipsis;display: inline-block;'>".$row["NIT"]."</span></td>
+				 <td style='width:12%;white-space: nowrap;overflow:hidden;text-overflow: ellipsis;display: inline-block;'><span style='white-space: nowrap;overflow:hidden;text-overflow: ellipsis;display: inline-block;'>".$row["NumeroDocumento"]."</span></td>
+				 <td style='width:12%;white-space: nowrap;overflow:hidden;text-overflow: ellipsis;display: inline-block;'><span style='white-space: nowrap;overflow:hidden;text-overflow: ellipsis;display: inline-block;'>".$row["ISS"]."</span></td>
+				 <td style='width:12%;white-space: nowrap;overflow:hidden;text-overflow: ellipsis;display: inline-block;'><span style='white-space: nowrap;overflow:hidden;text-overflow: ellipsis;display: inline-block;'>".$row["AFP"]."</span></td>
+				 <td style='width:12%;white-space: nowrap;overflow:hidden;text-overflow: ellipsis;display: inline-block;'><span style='white-space: nowrap;overflow:hidden;text-overflow: ellipsis;display: inline-block;'>".$row["Renta"]."</span></td>
+				 <td style='width:16%;white-space: nowrap;overflow:hidden;text-overflow: ellipsis;display: inline-block;'><span style='white-space: nowrap;overflow:hidden;text-overflow: ellipsis;display: inline-block;'>".$row["MontoLiquido"]."</span></td>
+				 <td style='width:12%;white-space: nowrap;overflow:hidden;text-overflow: ellipsis;display: inline-block;'><span style='white-space: nowrap;overflow:hidden;text-overflow: ellipsis;display: inline-block;'>".$Departamento->getNombredepartamento()."/".$Cargo->getNombrecargo()."</span></td>
+				</tr>
+
+			";
+		}
+		mysqli_close($cnx);
+		return number_format((float)$totAPagar, 2, '.', '');
+
+	}
+	function getRowPagoHorasExtrasN($NitEmpresa,$FechaInicio,$FechaFin,$PeriodoPago,$FormaPago){
+		$cnx = cnx();
+		//Sacar datos de la RENTA
+			$TipoPago=str_split($PeriodoPago);
+		  //Tipo de Pago para tomar en consideracion para la RENTA
+		  if($TipoPago[0]==1){//mensual
+		    $tipoRenta=1;
+		  }elseif(($TipoPago[0]==2) || ($TipoPago[0]==3)){
+		    # code...
+		    $tipoRenta=2;
+		  }elseif(($TipoPago[0]==2) || ($TipoPago[0]==3)){
+		    # code...
+		    $tipoRenta=3;
+		  }
+		  $TRAMO1= array();
+		  $TRAMO2= array();
+		  $TRAMO3= array();
+		  $TRAMO4= array();
+			$query=sprintf("SELECT * FROM renta WHERE tipo_pago='%s' ",mysqli_real_escape_string($cnx,$tipoRenta));
+		  $result=mysqli_query($cnx,$query);
+		  while($row=mysqli_fetch_array($result)) {
+		    if(strcmp($row["nombre_tramo"],"I Tramo")==0){
+		      $TRAMO1=array("Desde" => $row["Desde"],"Hasta" => $row["Hasta"],"porcentaje_aplicar" => $row["porcentaje_aplicar"],"sobre_exceso" => $row["sobre_exceso"],"Cuota_fija" => $row["Cuota_fija"]);
+		    }
+		    elseif(strcmp($row["nombre_tramo"],"II Tramo")==0){
+		      $TRAMO2=array("Desde" => $row["Desde"],"Hasta" => $row["Hasta"],"porcentaje_aplicar" => $row["porcentaje_aplicar"],"sobre_exceso" => $row["sobre_exceso"],"Cuota_fija" => $row["Cuota_fija"]);
+		    }
+		    elseif(strcmp($row["nombre_tramo"],"III Tramo")==0){
+		      $TRAMO3=array("Desde" => $row["Desde"],"Hasta" => $row["Hasta"],"porcentaje_aplicar" => $row["porcentaje_aplicar"],"sobre_exceso" => $row["sobre_exceso"],"Cuota_fija" => $row["Cuota_fija"]);
+		    }
+		    elseif(strcmp($row["nombre_tramo"],"IV Tramo")==0){
+		      $TRAMO4=array("Desde" => $row["Desde"],"Hasta" => $row["Hasta"],"porcentaje_aplicar" => $row["porcentaje_aplicar"],"sobre_exceso" => $row["sobre_exceso"],"Cuota_fija" => $row["Cuota_fija"]);
+		    }else{
+		      $RENTA=99999999;
+		    }
+		  }
+			$TipoPago=$TipoPago[0]."0";
+		//FIN
+		$query=sprintf("SELECT col_horas_extras.NumeroDocumentoPara, empleado.SalarioNominal FROM horas_extras INNER JOIN col_horas_extras INNER JOIN empleado INNER JOIN htrabajo INNER JOIN turno WHERE col_horas_extras.NumeroDocumentoPara=htrabajo.NumeroDocumento AND htrabajo.idTurno=turno.idTurno AND turno.Periodo_Pago='%s' AND horas_extras.idHorasExtras=col_horas_extras.idHorasExtras AND horas_extras.EstadoHorasExternas=1 AND horas_extras.NitEmpresa='%s' AND empleado.NumeroDocumento=col_horas_extras.NumeroDocumentoPara AND horas_extras.Fecha BETWEEN '%s' AND '%s' GROUP BY col_horas_extras.NumeroDocumentoPara",mysqli_real_escape_string($cnx,$PeriodoPago),mysqli_real_escape_string($cnx,$NitEmpresa),mysqli_real_escape_string($cnx,$FechaInicio),mysqli_real_escape_string($cnx,$FechaFin));
+	  $result=mysqli_query($cnx,$query);
+		$totAPagar=0.00;
+	  while($row=mysqli_fetch_array($result)) {
+			//Revisar el tipo de Banco o forma de pago
+			$isFPagoCorrecto=checkCuentaBanco($row["NumeroDocumentoPara"],$FormaPago);
+			if((($isFPagoCorrecto)||($FormaPago==0))&&(checkIsTheyPayExtraHours($row["NumeroDocumentoPara"],$NitEmpresa,$FechaInicio,$FechaFin)==0)){
+				$isFPagoCorrecto=getCuentaBanco($row["NumeroDocumentoPara"],$FormaPago);
+				if((($isFPagoCorrecto[0]!="")&&($FormaPago!=0)) || (($FormaPago==0)&&($isFPagoCorrecto[0]==""))){
+					//ahora que tenemos todos los numero de documento vamos a ver los totales de horas trabajadas
+					$SalarioNominal=$row["SalarioNominal"];
+					$NumeroDocumento=$row["NumeroDocumentoPara"];
+					$queryTotCalSinVaca=sprintf("SELECT col_horas_extras.NumeroDocumentoPara ,SEC_TO_TIME(SUM(TIME_TO_SEC(col_horas_extras.NHorasDiurnas))) AS SHD,SEC_TO_TIME(SUM(TIME_TO_SEC(col_horas_extras.NHorasNocturnas)))AS SHN FROM col_horas_extras INNER JOIN horas_extras WHERE col_horas_extras.NumeroDocumentoPara='%s' AND horas_extras.idHorasExtras=col_horas_extras.idHorasExtras AND  col_horas_extras.DiaVacacion='0' AND horas_extras.Fecha BETWEEN '%s' AND '%s' GROUP BY col_horas_extras.NumeroDocumentoPara",mysqli_real_escape_string($cnx,$NumeroDocumento),mysqli_real_escape_string($cnx,$FechaInicio),mysqli_real_escape_string($cnx,$FechaFin));
+					$resultTotCalSinVaca=mysqli_query($cnx,$queryTotCalSinVaca);
+					$rowTotCalSinVaca=mysqli_fetch_array($resultTotCalSinVaca);
+					if($rowTotCalSinVaca[0]!=""){
+						$TotSinVacaD=$rowTotCalSinVaca["SHD"];
+						$TotSinVacaN=$rowTotCalSinVaca["SHN"];
+					}else {
+						$TotSinVacaD="00:00:00";
+						$TotSinVacaN="00:00:00";
+					}
+					$queryTotCalSinVaca=sprintf("SELECT col_horas_extras.NumeroDocumentoPara ,SEC_TO_TIME(SUM(TIME_TO_SEC(col_horas_extras.NHorasDiurnas))) AS SHD,SEC_TO_TIME(SUM(TIME_TO_SEC(col_horas_extras.NHorasNocturnas)))AS SHN FROM col_horas_extras INNER JOIN horas_extras INNER JOIN htrabajo INNER JOIN turno WHERE col_horas_extras.NumeroDocumentoPara='%s' AND horas_extras.idHorasExtras=col_horas_extras.idHorasExtras AND col_horas_extras.NumeroDocumentoPara=htrabajo.NumeroDocumento AND htrabajo.idTurno=turno.idTurno AND turno.Periodo_Pago='%s' AND col_horas_extras.DiaVacacion='1' AND horas_extras.Fecha BETWEEN '%s' AND '%s' GROUP BY col_horas_extras.NumeroDocumentoPara",mysqli_real_escape_string($cnx,$NumeroDocumento),mysqli_real_escape_string($cnx,$PeriodoPago),mysqli_real_escape_string($cnx,$FechaInicio),mysqli_real_escape_string($cnx,$FechaFin));
+					$resultTotCalSinVaca=mysqli_query($cnx,$queryTotCalSinVaca);
+					$rowTotCalSinVaca=mysqli_fetch_array($resultTotCalSinVaca);
+					if($rowTotCalSinVaca[0]!=""){
+						$TotConVacaD=$rowTotCalSinVaca["SHD"];
+						$TotConVacaN=$rowTotCalSinVaca["SHN"];
+					}else {
+						$TotConVacaD="00:00:00";
+						$TotConVacaN="00:00:00";
+					}
+					//Ya tenemos las horas del empleado a CALCULAR
+						$TMD=0;
+						$TMN=0;
+						$TVMD=0;
+						$TVMN=0;
+						$VTMD=0.00;
+						$VTMN=0.00;
+						$VTVMD=0.00;
+						$VTVMN=0.00;
+						$VTG=0.00;
+						$TISS=0.00;
+						$TAFP=0.00;
+						$TTDD=0.00;
+						$TLRC=0.00;
+						$iAUX=0;
+						$MD=TimeToMinut($TotSinVacaD);
+						$MN=TimeToMinut($TotSinVacaN);
+						$MVD=TimeToMinut($TotConVacaD);
+						$MVN=TimeToMinut($TotConVacaN);
+						$SalarioN=number_format((float)$SalarioNominal, 2, '.', '');
+						$ValorMinuto=number_format(((float)$SalarioNominal)/30/8/60, 4, '.', '');
+						$ValorMD=number_format($ValorMinuto*2*$MD, 2, '.', '');
+						$ValorMN=number_format($ValorMinuto*2.25*$MN, 2, '.', '');
+						$ValorMVD=number_format($ValorMinuto*4*$MVD, 2, '.', '');
+						$ValorMVN=number_format($ValorMinuto*4.5*$MVN, 2, '.', '');
+						$TG=$ValorMD+$ValorMN+$ValorMVD+$ValorMVN;
+						$ISS=number_format($TG*0.03, 2, '.', '');
+						$AFP=number_format($TG*0.0625, 2, '.', '');
+						$RENTA=calculoDeRentaHE($TG,$TRAMO1,$TRAMO2,$TRAMO3,$TRAMO4);
+						$TOTD=$ISS+$AFP+$RENTA;
+						$LR=$TG-$TOTD;
+						$totAPagar=$totAPagar+$LR;
+						$empleado=getInfoUser($NumeroDocumento);
+						$NombreCompleto="".$empleado->getPrimernombre()." ".$empleado->getSegundonombre()." ".$empleado->getPrimerapellido()." ".$empleado->getSegundoapellido();
+						$Cargo= getInfoCargos($empleado->getIdcargos());
+						$Departamento = getInfoDepartamentos($Cargo->getIddepartamento());
+					//FIN CALCULAR
+					//IMPRIMAMOS
+						echo "
+							<tr>
+							 <td>".$empleado->getNit()."</td>
+							 <td>".$empleado->getNumeroDocumento()."</td>
+							 <td>".$NombreCompleto."</td>
+							 <td class='rowDataSd'>".$LR."</td>
+							 <td>".$Departamento->getNombredepartamento()."/".$Cargo->getNombrecargo()."</td>
+							 <td class='text-right'>
+								 <a href='#' class='btn btn-simple btn-danger btn-icon remove'><i class='material-icons'>close</i></a>
+						 </td>
+							</tr>
+
+
+						";
+					//FIN IMPRIMIR
+				}
+			}
+
+
+
+		}
+		mysqli_close($cnx);
+		return $totAPagar;
 	}
 
 ?>

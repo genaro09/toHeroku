@@ -167,7 +167,7 @@
 														</select>
 													</div>
 											</div>
-											<div class="col-md-4">
+											<div class="col-md-6">
 												<div class="form-group">
 													<label for="exampleInputEmail1">Semana</label>
 													<br>

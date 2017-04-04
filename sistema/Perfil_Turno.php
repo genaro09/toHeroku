@@ -26,16 +26,6 @@
     <link rel="stylesheet" type="text/css" href="../css/icons.css" />
     <link href="../css/font-awesome.min.css" rel="stylesheet">
     <script src="../js/jquery-3.1.1.min.js" type="text/javascript"></script>
-	<script>
-    $(function() {
-        $('#descanso').change(function(){
-            $('.opcion').hide();
-            if($(this).val()==1){
-            	$('#' + $(this).val()).show();
-            }
-        });
-    });
-	</script>
 
 </head>
 
@@ -58,11 +48,15 @@
 	            <div class="container-fluid">
 	            	<div class="row">
 	            		<div class="col-md-12">
-	            			<div class="card" style="padding:10px;">
-											<div class="header">
-												<h4 class="title">ModificarTurno</h4>
+	            			<div class="card" >
+											<div class="card-header card-header-icon" data-background-color="purple">
+													<i class="material-icons">gavel</i>
 											</div>
-											<div class="content">
+											<div class="card-content">
+													<h4 class="card-title">Modificar Turno</h4>
+													<div class="toolbar">
+															<!--        Here you can write extra buttons/actions for the toolbar              -->
+													</div>
 												<form id="form_actualizarUser" role="form">
 													<div class="row">
 														<div class="col-md-4">
@@ -82,50 +76,6 @@
 																<label for="exampleInputEmail1">Hasta<star>*</star></label>
 																	<input id="hasta" type="text" class="form-control timepicker" placeholder="14:00" value="<?php echo $turno->getHasta(); ?>"  required/>
 																</div>
-														</div>
-														<div class="col-md-4">
-															<div class="form-group">
-																<label for="exampleInputEmail1">Descanso<star>*</star></label>
-																<br>
-																	<select id="descanso" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
-																		<?php
-																			if($turno->getDescanso()==1){
-																				echo "
-																				<option value='1' selected>SI</option>
-																				<option value='0' >NO</option>
-																				";
-																			}else{
-																				echo "
-																				<option value='1'>SI</option>
-																				<option value='0' selected>NO</option>
-																				";
-																			}
-
-																		?>
-
-																	</select>
-																</div>
-														</div>
-
-													    <?php
-															if($turno->getDescanso()==1){
-																echo "
-																<div class='col-md-4 opcion' id='1'>
-																	<div class='form-group'>
-																		<label for='exampleInputEmail1'>Tiempo de Descanso<star>'</star></label>
-																		<input id='H_Descanso' type='text' class='form-control timepicker' placeholder='14:00' value=".$turno->getHDescanso()." required/>
-																	</div>
-																</div>
-
-																";
-
-															}
-														?>
-														<div class="col-md-4 opcion" id="1" style="display:none">
-															<div class="form-group">
-																<label for="exampleInputEmail1">Tiempo de Descanso<star>*</star></label>
-																<input id="H_Descanso" type="text" class="form-control timepicker" placeholder="01:00" value="<?php echo $turno->getHDescanso(); ?>" required/>
-															</div>
 														</div>
 														<div class="col-md-4">
 															<div class="form-group">

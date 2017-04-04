@@ -41,6 +41,17 @@
                 <?php
                   $Nombre= $_SESSION['usuario_sesion']->getPrimernombre()." ".$_SESSION['usuario_sesion']->getPrimerapellido();
                  ?>
+								 <div class="row">
+									 <div class="col-md-12">
+
+												 <div class="row">
+														<div class="header text-center">
+															<h3 class="title">Horas Extras</h3>
+													</div>
+												</div>
+
+									 </div>
+								 </div>
 	            	<div class="row">
 								<form>
 					        <div class="col-md-6">

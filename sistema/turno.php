@@ -22,16 +22,7 @@
     <link rel="stylesheet" type="text/css" href="../css/icons.css" />
     <link href="../css/font-awesome.min.css" rel="stylesheet">
     <script src="../js/jquery-3.1.1.min.js" type="text/javascript"></script>
-	<script>
-    $(function() {
-        $('#descanso').change(function(){
-            $('.opcion').hide();
-            if($(this).val()==1){
-            	$('#' + $(this).val()).show();
-            }
-        });
-    });
-	</script>
+
 
 </head>
 
@@ -72,22 +63,6 @@
 													<label for="exampleInputEmail1">Hasta<star>*</star></label>
 														<input id="hasta" type="text" class="form-control timepicker" maxlength="5" value="17:00" required/>
 													</div>
-											</div>
-											<div class="col-md-4">
-												<div class="form-group">
-													<label for="exampleInputEmail1">Descanso<star>*</star></label>
-													<br>
-														<select id="descanso" class="form-control selectpicker" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
-															<option value="1" >SI</option>
-															<option value="0" selected>NO</option>
-														</select>
-													</div>
-											</div>
-											<div class="col-md-4 opcion" id="1" style="display:none">
-												<div class="form-group">
-													<label for="exampleInputEmail1">Tiempo de Descanso<star>*</star></label>
-													<input id="H_Descanso" type="text" class="form-control timepicker" maxlength="5" value="01:00" required/>
-												</div>
 											</div>
 											<div class="col-md-4">
 												<div class="form-group">
@@ -150,8 +125,6 @@
 				                                    <th>Nombre del Turno</th>
 				                                    <th>Desde</th>
 				                                    <th>Hasta</th>
-				                                    <th>Descanso(Si/No)</th>
-				                                    <th>Tiempo de Descanso</th>
 																						<th>Periodo de Pago</th>
 				                                    <th class="disabled-sorting text-right">Acciones</th>
 				                                </tr>
@@ -161,8 +134,6 @@
 				                                    <th>Nombre del Turno</th>
 				                                    <th>Desde</th>
 				                                    <th>Hasta</th>
-				                                    <th>Descanso(Si/No)</th>
-				                                    <th>Tiempo de Descanso</th>
 																						<th>Periodo de Pago</th>
 				                                    <th class="text-right">Acciones</th>
 				                                </tr>

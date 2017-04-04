@@ -418,25 +418,5 @@ exit;
 //==============================================================
 //==============================================================
 }//FIN IMPRIMIR DOC
-function TimeToMinut($Time){
-  $Time=(string)$Time;
-  $Time= explode(":",$Time);
-  $Second=((float)$Time[0]*60)+((float)$Time[1])+(round((float)$Time[2]/60));
-  return floor((float)$Second);
-}
-function calculoDeRentaHE($TG,$TRAMO1,$TRAMO2,$TRAMO3,$TRAMO4){
-  //$TRAMO1=array("Desde" => $row["Desde"],"Hasta" => $row["Hasta"],"porcentaje_aplicar" => $row["porcentaje_aplicar"],"sobre_exceso" => $row["sobre_exceso"],"Cuota_fija" => $row["Cuota_fija"]);
-  if(((float)$TG>(float)$TRAMO1["Desde"])&&((float)$TG<(float)$TRAMO1["Hasta"])){
-    $RENTA=(($TG-$TRAMO1["sobre_exceso"])*$TRAMO1["porcentaje_aplicar"])+$TRAMO1["Cuota_fija"];
-  }elseif(((float)$TG>(float)$TRAMO2["Desde"])&&((float)$TG<(float)$TRAMO2["Hasta"])) {
-    # code...
-    $RENTA=(($TG-$TRAMO2["sobre_exceso"])*$TRAMO2["porcentaje_aplicar"])+$TRAMO2["Cuota_fija"];
-  }elseif(((float)$TG>(float)$TRAMO3["Desde"])&&((float)$TG<(float)$TRAMO3["Hasta"])) {
-    # code...
-    $RENTA=(($TG-$TRAMO3["sobre_exceso"])*$TRAMO3["porcentaje_aplicar"])+$TRAMO3["Cuota_fija"];
-  }else{
-    $RENTA=(($TG-$TRAMO4["sobre_exceso"])*$TRAMO4["porcentaje_aplicar"])+$TRAMO4["Cuota_fija"];
-  }
-  return number_format($RENTA, 2, '.', '');
-}
+
 ?>

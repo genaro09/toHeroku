@@ -14,7 +14,7 @@
 			while ($row3=mysqli_fetch_array($result3)) {
 				 echo "<tr>
 						<td>".$row3["NumeroDocumento"]."</td>
-						<td>".$row3["PrimerNombre"]." ".$row3["PrimerApellido"]."</td>
+						<td>".$row3["PrimerNombre"]." ".$row3["SegundoNombre"]." ".$row3["PrimerApellido"]." ".$row3["SegundoApellido"]."</td>
 						<td>".$row3["SalarioNominal"]."</td>
 						<td>".$row3["Activo"]."</td>
 						<td>".$row["NombreDepartamento"]."</td>
@@ -25,7 +25,11 @@
       							<input type='hidden' name='numDoc' value='".$row3["NumeroDocumento"]."'>
       							<input type='hidden' name='idcargo' value='".$row2["idCargos"]."'>
       							<input type='hidden' name='iddepartamento' value='".$row["idDepartamento"]."'>
-      							<input type='submit' style='background: url(../img/icons/note.png);border: 0;' value='   '>
+                    <button name='' id=''  style='background: transparent;border: none;'>
+                     <div class='icon'>
+                          <i class='material-icons'>note_add</i>
+                     </div>
+                    </button>
       					  </form>
                   </div>
                   <div class='col-md-4'>
@@ -33,7 +37,11 @@
       							<input type='hidden' name='numDoc' value='".$row3["NumeroDocumento"]."'>
       							<input type='hidden' name='idcargo' value='".$row2["idCargos"]."'>
       							<input type='hidden' name='iddepartamento' value='".$row["idDepartamento"]."'>
-      							<input type='submit' style='background: url(../img/icons/assignment.png);border: 0;' value='   '>
+                    <button name='' id=''  style='background: transparent;border: none;'>
+                     <div class='icon'>
+                          <i class='material-icons'>assignment_ind</i>
+                     </div>
+                    </button>
       					  </form>
                   </div>
                 </div>
