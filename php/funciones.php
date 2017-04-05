@@ -121,32 +121,14 @@
 		mysqli_close($cnx);
 		return $estado;
 	}
-	function GuardarArchivoHorasExtrasPDF($idHorasExtras,$rutaDocumento){
-		$cnx=cnx();
-		$query=sprintf("INSERT INTO horas_extras_documentos( idHorasExtras, tipoDocumento, rutaDocumento) VALUES ('%s','%s','%s')",
-		mysqli_real_escape_string($cnx,$idHorasExtras),
-		mysqli_real_escape_string($cnx,"PDF"),
-		mysqli_real_escape_string($cnx,$rutaDocumento)
-		);
-		$estado = mysqli_query($cnx,$query);
-
-		if($estado==1){
-			$query = sprintf("UPDATE horas_extras SET  EstadoHorasExternas = '%s' WHERE idHorasExtras = '%s'",
-			mysqli_real_escape_string($cnx,"1"),
-			mysqli_real_escape_string($cnx,$idHorasExtras)
-			);
-			$estado = mysqli_query($cnx,$query);
-		}
-		mysqli_close($cnx);
-		return $estado;
-	}
+	
 	function getFileHorasExtras($idHorasExtras){
 		$cnx=cnx();
-		$query=sprintf("SELECT rutaDocumento  FROM horas_extras_documentos where idHorasExtras='%s' ",mysqli_real_escape_string($cnx,$idHorasExtras));
+		$query=sprintf("SELECT *  FROM horas_extras_documentos where idHorasExtras='%s' ",mysqli_real_escape_string($cnx,$idHorasExtras));
 		$resul=mysqli_query($cnx,$query);
 		$row=mysqli_fetch_array($resul);
 		mysqli_close($cnx);
-		return $row["rutaDocumento"];
+		return [$row["tipoDocumento"],$row["rutaDocumento"]];
 	}
 	function getFileAusencias($idAusencia){
 		$cnx=cnx();
@@ -1242,6 +1224,25 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 		mysqli_close($cnx);
 	}
 
+	function GuardarArchivoHorasExtrasPDF($idHorasExtras,$name,$extension){
+		$cnx=cnx();
+		$query=sprintf("INSERT INTO horas_extras_documentos(idHorasExtras, rutaDocumento, tipoDocumento) VALUES ('%s','%s','%s')",
+		mysqli_real_escape_string($cnx,$idHorasExtras),
+		mysqli_real_escape_string($cnx,$name),
+		mysqli_real_escape_string($cnx,$extension)
+		);
+		$estado = mysqli_query($cnx,$query);
+
+		if($estado==1){
+			$query = sprintf("UPDATE horas_extras SET  EstadoHorasExternas = '%s' WHERE idHorasExtras = '%s'",
+			mysqli_real_escape_string($cnx,"1"),
+			mysqli_real_escape_string($cnx,$idHorasExtras)
+			);
+			$estado = mysqli_query($cnx,$query);
+		}
+		mysqli_close($cnx);
+		return $estado;
+	}
 	function insertarDocumentoIncapacidades($idIncapacidad,$name,$extension){
 		$cnx=cnx();
 		$query = sprintf("INSERT INTO incapacidad_documentos(idIncapacidad,rutaDocumento,tipoDocumento) VALUES ('%s','%s','%s')",

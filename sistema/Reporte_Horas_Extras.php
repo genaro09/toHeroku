@@ -188,7 +188,14 @@
 					                </div><!-- end content-->
 					            </div><!--  end card  -->
 					        </div> <!-- end col-md-12 -->
-
+					        <?php
+								if(isset($_POST['isUpload'])){
+									//Si viene
+									echo '<input type="hidden" id="isUpload" value="'.$_POST["isUpload"].'">';
+								}else{
+									echo '<input type="hidden" id="isUpload" value="5">';
+								}
+							?>
                   <!--  Otra tabla  -->
                     <div class="col-md-6">
 											<div class="card">
@@ -293,7 +300,14 @@
     <!-- Main js -->
     <script src="../js/main.js"></script>
 
+	<script>
+		if(document.getElementById("isUpload").value==0){
+			swal("No se pudo subir su archivo, solo se permiten JPG, PNG y PDF");
+		}else if (document.getElementById("isUpload").value==1) {
+			swal("Su archivo se subio correctamente");
+		}
 
+	</script>
 
 
 

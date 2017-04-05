@@ -32,6 +32,16 @@ if(isset($_POST["idupload"])){
       die();
     }
     # code...
+  }elseif ($cod[0]==3) {
+    //Part 3 is 1=idHorasExtras
+    $datosHE=DatosHorasExtras($cod[1]);
+    if($datosHE["exist"]==1){
+      define("UPLOAD_DIR", "../upload/Horas_Extras/");
+    }else{
+      header("Location: menu.php");
+      die();
+    }
+    # code...
   }else{
     header("Location: menu.php");
     die();
@@ -125,6 +135,21 @@ if (!empty($_FILES["myFile"])) {
         insertarDocumentoAusencia($cod[1],$name,$extension);
         echo '
           <form action="Descuentos.php" id="loginForm" name="loginForm" method="post">
+            <input type="hidden" id="isUpload" name="isUpload" value="'.$flag.'">
+          </form>
+        ';
+
+        echo '
+          <script>
+            window.onload = function() {
+              document.getElementById("loginForm").submit();
+            };
+          </script>
+          ';
+      }elseif ($cod[0]==3) {
+        GuardarArchivoHorasExtrasPDF($cod[1],$name,$extension);
+        echo '
+          <form action="Reporte_Horas_Extras.php" id="loginForm" name="loginForm" method="post">
             <input type="hidden" id="isUpload" name="isUpload" value="'.$flag.'">
           </form>
         ';

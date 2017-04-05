@@ -143,75 +143,45 @@
 					                        <!--        Here you can write extra buttons/actions for the toolbar              -->
 					                    </div>
 					                    <div class="row">
-																<form enctype="multipart/form-data" action="<?php print $_SERVER['PHP_SELF']?>" method="post">
+																
 																<?php
 																	$data=DatosHorasExtras($idHorasExtras);
 																	if($data["exist"]==1){
 																		if($data["EstadoHorasExternas"]==0){
 																			echo '
-																					<p>
-																						<input type="hidden" id="idHorasExtras" name="idHorasExtras" value="'.$idHorasExtras.'">
-																						<input type="hidden" name="MAX_FILE_SIZE" value="200000" />
-																						<div class="col-md-6">
-																							<label class="btn btn-block btn-primary">
-																							Cargar Archivo&hellip; <input id="uploadPDF" name="pdfFile" type="file" style="display: none;">
-																							</label>
-																						</div>
-																						<div class="col-md-6">
-																							<label style="display:none;" id="labelBtnCargar" class="btn btn-block btn-primary">
-																								Subir<input disabled id="btnCargar" type="submit" style="display: none;" />
-																							</label>
-																					</div>
-																					</p>
-																					<script>
-																						window.onload = function() {
-																							flagInput=document.getElementById("flaginput").value;
-																							if(flagInput==1){
-																								swal({
-																									title: "Documento Cargado",
-                                                  text: "Su documento ha sido cargado correctamente",
-                                                  type: "success",
-                                                  confirmButtonClass: "btn-success",
-                                                  confirmButtonText: "OK",
-																									allowOutsideClick: false,
-																								  showLoaderOnConfirm: true,
-																								  preConfirm: function() {
-																								    window.setTimeout(function(){ window.location = "Reporte_Horas_Extras.php"; },500);
-																								  }
-																								})
-																							}else if(flagInput==2) {
-																								swal("Se subio el PDF, pero no se establecio la ruta, contacte a su proveedor");
-																							}else{
-																								swal("Solo puede subir archivos formato PDF");
-																							}
-																						};
-																					</script>
+																	            <form action="upload.php" method="post" enctype="multipart/form-data">
+																	              <p>
+																	                <input type="hidden" id="idupload" name="idupload" value="3%'.$_POST["idHorasExtras"].'">
+																	                <input type="hidden" name="MAX_FILE_SIZE" value="30000000" />
+																	                <div class="col-md-6">
+																	                  <label class="btn btn-block btn-primary">
+																	                  Cargar Archivo&hellip; <input id="uploadPDF" name="myFile" type="file" style="display: none;">
+																	                  </label>
+																	                </div>
+																	                <div class="col-md-6">
+																	                  <label style="display:none;" id="labelBtnCargar" class="btn btn-block btn-primary">
+																	                    Subir<input disabled id="btnCargar" value="Upload" type="submit" style="display: none;" />
+																	                  </label>
+																	                </div>
+																	              </p>
+																	            </form>
 																			';
 																		}else if($data["EstadoHorasExternas"]==1){
-																			$Documento="../upload/Horas_Extras/".getFileHorasExtras($idHorasExtras);
-																			// url: "str"+'.$Documento.',
-																			echo "
-																			<object data='".$Documento."#search=location'
-																						type='application/pdf'
-																						width='100%'
-																						height='600'>
-
-																			<p>It appears your Web browser is not configured to display PDF files.
-																			No worries, just <a href='".$Documento."'>click here to download the PDF file.</a></p>
-
-																			</object>
-																			";
+																	        $getFile=getFileHorasExtras($idHorasExtras);
+																	        $Documento="../upload/Horas_Extras/".$getFile[1];
+																	        if(strtolower($getFile[0])=="pdf"){
+																	          echo "
+																	          <iframe src='".$Documento."' style='width:100%;height:600px;' frameborder='0'></iframe>
+																	          ";
+																	        }else{
+																	          echo '
+																	          <img src="'.$Documento.'"  style="width="100%";height:600;">';
+																	        }
 																		}
 																	}
-																?>
-															   </form>
 
-					                    </div>
-                              <div class="row">
-																<div id="example1"></div>
-                                <div id="CuadroPDF" style="display: none;" style="clear:both">
-                                   <iframe id="viewer" frameborder="0" scrolling="no" width="100%" height="600"></iframe>
-                                </div>
+																?>
+
 					                    </div>
 					                </div><!-- end content-->
 					            </div><!--  end card  -->
@@ -284,7 +254,38 @@
     }
     </script>
     <script type="text/javascript">
+    	
+                         $(function() {
 
+                           // We can attach the `fileselect` event to all file inputs on the page
+                           $(document).on('change', ':file', function() {
+                             var input = $(this),
+                                 numFiles = input.get(0).files ? input.get(0).files.length : 1,
+                                 label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+                             input.trigger('fileselect', [numFiles, label]);
+                           });
+
+                           // We can watch for our custom `fileselect` event like this
+                           $(document).ready( function() {
+                               $(':file').on('fileselect', function(event, numFiles, label) {
+
+                                   var input = $(this).parents('.input-group').find(':text'),
+                                       log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+                                   if( input.length ) {
+                                       input.val(log);
+                                   } else {
+                                       if( log ){
+                                         document.getElementById('btnCargar').disabled = false;
+                                         document.getElementById("labelBtnCargar").style.display = 'block';
+                                         PreviewImage();
+                                       }
+                                   }
+
+                               });
+                           });
+
+                         });
 
 		$(document).ready(function() {
 			$('#datatables').DataTable({
@@ -339,105 +340,11 @@
 
 				var table = $('#datatables2').DataTable();
 
-				// Edit record
-				table.on( 'click', '.edit', function () {
-					$tr = $(this).closest('tr');
 
-					var data = table.row($tr).data();
-					//alert( 'You press on Row: ' + data[0] + ' ' + data[1] + ' ' + data[2] + '\'s row.' );
-				} );
-
-				// Delete a record
-				table.on( 'click', '.remove', function (e) {
-					$tr = $(this).closest('tr');
-					table.row($tr).remove().draw();
-					e.preventDefault();
-				} );
-
-				//Like record
-				table.on( 'click', '.like', function () {
-					alert('You clicked on Like button');
-				});
 
 				$('.card .material-datatables label').addClass('form-group');
 				});
 
 	</script>
-	<script>
-	$(function() {
-
-	  // We can attach the `fileselect` event to all file inputs on the page
-	  $(document).on('change', ':file', function() {
-	    var input = $(this),
-	        numFiles = input.get(0).files ? input.get(0).files.length : 1,
-	        label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-	    input.trigger('fileselect', [numFiles, label]);
-	  });
-
-	  // We can watch for our custom `fileselect` event like this
-	  $(document).ready( function() {
-	      $(':file').on('fileselect', function(event, numFiles, label) {
-
-	          var input = $(this).parents('.input-group').find(':text'),
-	              log = numFiles > 1 ? numFiles + ' files selected' : label;
-
-	          if( input.length ) {
-	              input.val(log);
-	          } else {
-	              if( log ){
-									document.getElementById('btnCargar').disabled = false;
-									document.getElementById("labelBtnCargar").style.display = 'block';
-									PreviewImage();
-								}
-	          }
-
-	      });
-	  });
-
-	});
-	</script>
-	<?php
-	if ( isset( $_FILES['pdfFile'] ) ) {
-		if ($_FILES['pdfFile']['type'] == "application/pdf") {
-			$source_file = $_FILES['pdfFile']['tmp_name'];
-			$nombreAux=$data["Fecha"]."-".$_SESSION['empresa'];
-			$filename  = basename($_FILES['pdfFile']['name']);
-			$extension = pathinfo($filename, PATHINFO_EXTENSION);
-			$new       = $nombreAux.'.'.$extension;
-
-			$dest_file = "../upload/Horas_Extras/".$new;
-
-			if (file_exists($dest_file)) {
-				print "The file name already exists!!";
-			}
-			else {
-				move_uploaded_file( $source_file, $dest_file )
-				or die ("Error!!");
-				if($_FILES['pdfFile']['error'] == 0) {
-					$sePudo=GuardarArchivoHorasExtrasPDF($idHorasExtras,$new);
-					if($sePudo==1){
-						echo '<input type="hidden" id="flaginput" name="flaginput" value="1" />';
-					}else {
-						echo '<input type="hidden" id="flaginput" name="flaginput" value="2" />';
-					}
-
-					//print "Pdf file uploaded successfully!";
-					//print "<b><u>Details : </u></b><br/>";
-					//print "File Name : ".$_FILES['pdfFile']['name']."<br.>"."<br/>";
-					//print "File Size : ".$_FILES['pdfFile']['size']." bytes"."<br/>";
-					//print "File location : upload/".$_FILES['pdfFile']['name']."<br/>";
-				}
-			}
-		}
-		else {
-			if ( $_FILES['pdfFile']['type'] != "application/pdf") {
-				echo '<input type="hidden" id="flaginput" name="flaginput" value="0" />';
-				//print "Error occured while uploading file : ".$_FILES['pdfFile']['name']."<br/>";
-				//print "Invalid  file extension, should be pdf !!"."<br/>";
-				//print "Error Code : ".$_FILES['pdfFile']['error']."<br/>";
-			}
-		}
-	}
-	?>
 
 </html>
