@@ -1,7 +1,71 @@
 $(document).ready(function() {
 
     //Agregar una suspension
+    $("#btnAgregarSuspension").click(function(){
+      var NumeroDocumento = document.getElementById("NDocumento").value;
+      var NombreEmpleado = document.getElementById("NEmpleado").value;
+      var TipoSuspension = $("#TipoSuspension").val();
+      var Descripcion = document.getElementById("Observacion").value;
+      var Fecha = document.getElementById("Fecha").value;
+      swal({
+        title: 'Desea Confirmar',
+        text: "Desea suspender a "+NombreEmpleado,
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si, suspender',
+        cancelButtonText: 'No, cancelar!',
+        confirmButtonClass: 'btn btn-success',
+        cancelButtonClass: 'btn btn-danger',
+        buttonsStyling: false
+      }).then(function () {
+        $.ajax({
+          url: '../sistema/agregar.php',
+          type: 'POST',
+          data: {
+            opc:12,
+            NumeroDocumento: NumeroDocumento,
+            TipoSuspension: TipoSuspension,
+            Descripcion: Descripcion,
+            Fecha: Fecha
+          },
+          beforeSend: function(){
+            respAlert("info","Comprobando..")
+          },
+          success: function(data){
+            data = data.split(",");
+            switch (data[0]) {
+              case '0':
+                respAlert("danger","No se pudo conectar con la base de datos");
+                break;
+              case '1':
+                respAlert("success", "Usuario Suspendido, redireccionando..");
+                setTimeout(function() {
+                    redireccionar("Suspension.php");
+                }, 3000);
+                break;
+              case '2':
+                respAlert("warning",""+data[1]);
+                break;
+              default:
 
+            }
+          }
+        })
+
+      }, function (dismiss) {
+        // dismiss can be 'cancel', 'overlay',
+        // 'close', and 'timer'
+        if (dismiss === 'cancel') {
+          swal(
+            'Cancelado',
+            '',
+            'error'
+          )
+        }
+      })
+    });
     //confirmar Reporte llegadas tarde
     $("#btnConfirmarReporteLlegadasTarde").click(function(){
       var idReporteLlegadasTarde = document.getElementById("idLlegadasTarde").value;
@@ -1313,6 +1377,66 @@ $(document).ready(function() {
             }
         });//Fin Ajax
     });
+
+    //Generar Reporte Suspension
+    $("#btnReporteSuspension").click(function() {
+        var DiaInicio = document.getElementById("FechaIni").value;
+        var DiaFin = document.getElementById("FechaFin").value;
+        var opc=document.getElementById("opc").value;;
+        //alert("Aqui voy");
+        $.ajax({
+            url: 'PDF_Reporte_Suspension.php',
+            type: 'POST',
+            data: {
+                opc:0,
+                DiaInicio: DiaInicio,
+                DiaFin: DiaFin
+            },
+            beforeSend: function() {
+                respAlert("info", "Verificando datos...");
+            },
+            success: function(data) {
+                var data = data.split(",");
+                alert(data);
+                switch (data[0]) {
+                    case "0":
+                        respAlert("warning", ""+data[1]);
+                        break;
+                    case "1":
+                        respAlert("success", "Pronto se descargara su documento");
+                        document.getElementById('FechaInicio').value = DiaInicio;
+                        document.getElementById('FechaFinal').value = DiaFin;
+                        document.getElementById('opc').value = 1;
+                        document.getElementById("PDFUserForm").submit();
+                        break;
+                        case "2":
+                          respAlert("danger", ""+data[1]);
+                          setTimeout(function() {
+                              redireccionar("../php/logout.php");
+                          }, 3000);
+                          break;
+                          default:
+                              respAlert("danger", "ERROR");
+                              break;
+                          break;
+                  }
+                //respAlert("success",data[0]);
+                /*
+                confirmButtonText: 'Si, guardar!'
+              }).then(function () {
+
+                setTimeout(function(){
+                  redireccionar("sistema/home.php");
+                },1000);*/
+            },
+            error: function(data) {
+                console.log(data);
+                respAlert("danger", "Error...");
+            }
+        });//Fin Ajax
+    });
+
+
     //Generar Reporte Horas Extras
     $("#btnReporteHorasExtrasGeneral").click(function() {
         var FechaInicio = $("#FInicio").val();

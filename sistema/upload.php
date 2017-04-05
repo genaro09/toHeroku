@@ -4,13 +4,17 @@
   <link rel="stylesheet" href="../dist/sweetalert.css">
 </head>
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+ini_set('max_execution_time', 300);
 require '../upload/phpmussel/loader.php';
 include '../php/funciones.php';
 include '../php/verificar_sesion.php';
 //ver si es un codigo correcto y de donde viene el codigo
 if(isset($_POST["idupload"])){
   $cod=$_POST["idupload"];
-  $cod=split("%", $cod);
+  $cod=explode("%", $cod);
   if($cod[0]==1){
     //Part 1 is 1=idIncapacidad
     if(isIncapExist($cod[1])){
@@ -58,11 +62,16 @@ if (!empty($_FILES["myFile"])) {
       $flag=0;
     }
     if ($flag==0) {
-      $mime = "application/pdf; charset=binary";
-      exec("file -bi " . $_FILES["myFile"]["tmp_name"], $out);
-      if ($out[0] != $mime) {
+      $finfo = finfo_open(FILEINFO_MIME_TYPE);
+      $mime = finfo_file($finfo, $_FILES['myFile']['tmp_name']);
+      switch ($mime) {
+         case 'application/pdf':
+          $flag=1;
+         break;
+         default:
           $flag=0;
-      }else $flag=1;
+          break;
+      }
     }
 
 

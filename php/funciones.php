@@ -265,6 +265,18 @@
 		return $data;
 
 	}
+	function isAlredySuspended($NumeroDocumento,$Fecha){
+		$cnx=cnx();
+		$flag=FALSE;
+		$query=sprintf("SELECT * FROM suspension where NumeroDocumento='%s' AND Fecha='%s'",mysqli_real_escape_string($cnx,$NumeroDocumento),mysqli_real_escape_string($cnx,$Fecha));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!="")
+			$flag=TRUE;
+		mysqli_close($cnx);
+		return $flag;
+
+	}
 	function isEmpresaExist($NitEmpresa){
 		$cnx=cnx();
 		$flag=FALSE;
@@ -1313,6 +1325,21 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 		mysqli_close($cnx);
 		return $estado;
 	}
+
+	function AgregarSuspensionEmpleado($NumeroDocumento,$NumeroDocumentoPor,$tipoSuspension,$Fecha,$Descripcion){
+		$cnx = cnx();
+		$query=sprintf("INSERT INTO suspension(NumeroDocumento,NumeroDocumentoPor,Fecha,TipoSuspension,EstadoSuspension,Descripcion) VALUES ('%s','%s','%s','%s','%s','%s')",
+			mysqli_real_escape_string($cnx,$NumeroDocumento),
+			mysqli_real_escape_string($cnx,$NumeroDocumentoPor),
+			mysqli_real_escape_string($cnx,$Fecha),
+			mysqli_real_escape_string($cnx,$tipoSuspension),
+			mysqli_real_escape_string($cnx,0),
+			mysqli_real_escape_string($cnx,$Descripcion)
+		);
+		$estado = mysqli_query($cnx, $query);
+		mysqli_close($cnx);
+		return $estado;
+	}
 	function AgregarAusencia($TipoAusencia,$NumeroDocumentoPor,$EstadoAusencia,$FechaAusencia,$Observacion,$NumeroDocumento){
 		date_default_timezone_set('America/El_Salvador');
 		$dateTime = date("Y-m-d H:i:s");
@@ -1530,6 +1557,15 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 
 	function verify_date_format($date) {
 		//format YY-MM-DD
+		if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$date))
+    {
+        return true;
+    }else{
+        return false;
+    }
+  }
+	function verify_date_old_format($date) {
+		//format DD/MM/YY
 		if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$date))
     {
         return true;

@@ -49,6 +49,25 @@
 
                   </div>
                 </div>
+								<div class="row">
+									<div class="col-md-12">
+										<div class="card">
+											<div class="card-content">
+												<div class="row">
+													<div class="col-md-1">
+														<button id="btnIrARSuspension" class="btn btn-just-icon  btn-primary" style="float: right;">
+						                        <i class="material-icons">description</i>
+						                    <div class="ripple-container"></div>
+														</button>
+													</div>
+													<div class="col-md-8">
+														<h4 style="padding-top:8px;">Reporte Suspension</h4>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
                 <div class="row">
                   <form>
                     <div class="col-md-6">
@@ -112,7 +131,7 @@
                                         <?php
                                           echo "<input  disabled type='text' class='form-control' placeholder=".date("d")."/".date("m")."/".date("Y")." name='date' id='Fecha' data-select='datepicker'/>";
                                         ?>
-                                    </div>
+                                    	</div>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -211,7 +230,11 @@
     <!-- Main js -->
     <script src="../js/main.js"></script>
 
-
+		<script type="text/javascript">
+		    document.getElementById("btnIrARSuspension").onclick = function () {
+		        location.href = "Reporte_Suspension.php";
+		    };
+		</script>
 
 
 

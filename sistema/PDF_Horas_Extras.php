@@ -15,7 +15,7 @@ $row=mysqli_fetch_array($result);
 $NombreEmpresa=$row["NombreEmpresa"];
 //FIN N EMpresa
 
-$query=sprintf("SELECT col_horas_extras.*,emp1.PrimerNombre AS PrimerNombre1,emp1.PrimerApellido AS PrimerApellido1,emp1.SegundoApellido AS SegundoApellido1,emp2.PrimerNombre AS PrimerNombre2,emp2.PrimerApellido AS PrimerApellido2,emp2.SegundoApellido AS SegundoApellido2 FROM col_horas_extras INNER JOIN horas_extras INNER JOIN empleado emp1 INNER JOIN empleado emp2 WHERE col_horas_extras.idHorasExtras=horas_extras.idHorasExtras AND col_horas_extras.NumeroDocumentoPor=emp2.NumeroDocumento AND col_horas_extras.NumeroDocumentoPara=emp1.NumeroDocumento AND horas_extras.idHorasExtras='%s' ORDER BY col_horas_extras.Desde ASC",mysqli_real_escape_string($cnx,$idHorasExtras));
+$query=sprintf("SELECT col_horas_extras.*,emp1.PrimerNombre AS PrimerNombre1,emp1.SegundoNombre AS SegundoNombre1,emp1.PrimerApellido AS PrimerApellido1,emp1.SegundoApellido AS SegundoApellido1,emp2.PrimerNombre AS PrimerNombre2,emp2.PrimerApellido AS PrimerApellido2,emp2.SegundoApellido AS SegundoApellido2 FROM col_horas_extras INNER JOIN horas_extras INNER JOIN empleado emp1 INNER JOIN empleado emp2 WHERE col_horas_extras.idHorasExtras=horas_extras.idHorasExtras AND col_horas_extras.NumeroDocumentoPor=emp2.NumeroDocumento AND col_horas_extras.NumeroDocumentoPara=emp1.NumeroDocumento AND horas_extras.idHorasExtras='%s' ORDER BY col_horas_extras.Desde ASC",mysqli_real_escape_string($cnx,$idHorasExtras));
 $result=mysqli_query($cnx,$query);
 $NumeroDeS=0;//Cambio de Supervisor??
 $NumeroColAux=0;
@@ -36,7 +36,7 @@ do{
     $data[$NumeroDeS][$NumeroColAux]=array("Nombre" => $nombreAux, "NHD" => 0, "NHN" => 0,"D" =>0,"H"=>0);
     $NumeroColAux++;
   }
-  $nombreAux=$row["PrimerNombre1"]." ".$row["PrimerApellido1"]." ".$row["SegundoApellido1"];
+  $nombreAux=$row["PrimerNombre1"]." ".$row["SegundoNombre1"]." ".$row["PrimerApellido1"]." ".$row["SegundoApellido1"];
   $data[$NumeroDeS][$NumeroColAux]=array("Nombre" => $nombreAux, "NHD" => $row["NHorasDiurnas"], "NHN" => $row["NHorasNocturnas"],"D" =>$row["Desde"],"H"=>$row["Hasta"]);
   $NumeroColAux++;
 } while($row=mysqli_fetch_array($result));
@@ -60,28 +60,28 @@ for($i=0;$i<sizeof($data);$i++){
     $nAUX=$n+1;
     $str=$str.'
      <tr>
-       <td style="width:5%"><font size="3">'.$nAUX.'</font></td>
-       <td style="width:27%"><font size="2">'.$data[$i][$j]["Nombre"].'</font></td>
-       <td style="width:11%"><font size="3">'.$data[$i][$j]["NHD"].'</font></td>
-       <td style="width:11%"><font size="3">'.$data[$i][$j]["NHN"].'</font></td>
-       <td style="width:10%"><font size="3">'.$data[$i][$j]["D"].'</font></td>
-       <td style="width:10%"><font size="3">'.$data[$i][$j]["H"].'</font></td>
-       <td style="width:24%"><font size="3"></font></td>
+       <td style="width:5%";height:25px;><font size="3">'.$nAUX.'</font></td>
+       <td style="width:27%;height:25px;"><p style="font-size:9px;overflow-x: scroll;white-space: nowrap;width:100%;">'.$data[$i][$j]["Nombre"].'</p></td>
+       <td style="width:11%;height:25px;"><font size="3">'.$data[$i][$j]["NHD"].'</font></td>
+       <td style="width:11%;height:25px;"><font size="3">'.$data[$i][$j]["NHN"].'</font></td>
+       <td style="width:10%;height:25px;"><font size="3">'.$data[$i][$j]["D"].'</font></td>
+       <td style="width:10%;height:25px;"><font size="3">'.$data[$i][$j]["H"].'</font></td>
+       <td style="width:24%;height:25px;"><font size="3"></font></td>
      </tr>
     ';
     $tiempoTotalD += toSeconds($data[$i][$j]["NHD"]);
     $tiempoTotalN += toSeconds($data[$i][$j]["NHN"]);
     $n++;
-    if(($n % 35 == 0)&&$n!=0){
+    if(($n % 25 == 0)&&$n!=0){
       $str=$str.'
       <tr>
-        <td style="width:5%"><font size="3"></font></td>
-        <td style="width:27%"><font size="2">Total</font></td>
-        <td style="width:11%"><font size="3">'.toTime($tiempoTotalD).'</font></td>
-        <td style="width:11%"><font size="3">'.toTime($tiempoTotalN).'</font></td>
-        <td style="width:10%"><font size="3"></font></td>
-        <td style="width:10%"><font size="3"></font></td>
-        <td style="width:24%"><font size="3"></font></td>
+        <td style="width:5%;height:25px;"><font size="3"></font></td>
+        <td style="width:27%;height:25px;"><font size="2">Total</font></td>
+        <td style="width:11%;height:25px;"><font size="3">'.toTime($tiempoTotalD).'</font></td>
+        <td style="width:11%;height:25px;"><font size="3">'.toTime($tiempoTotalN).'</font></td>
+        <td style="width:10%;height:25px;"><font size="3"></font></td>
+        <td style="width:10%;height:25px;"><font size="3"></font></td>
+        <td style="width:24%;height:25px;"><font size="3"></font></td>
       </tr>
       ';
       $bloque=$bloque.$encabezado.$str.'</table></div><div style="margin-top: 70px;">Pagina: '.$NumeroDePagina.' de '.$numeroPaginas.'</div></div>';
@@ -92,17 +92,17 @@ for($i=0;$i<sizeof($data);$i++){
     }
   }
   //LLenar el cuadro
-  if(!($n % 35 == 0)&&$n!=0){
-    for($k=0;$k<36-$n;$k++){
+  if(!($n % 25 == 0)&&$n!=0){
+    for($k=0;$k<26-$n;$k++){
       $str=$str.'
       <tr>
-        <td style="width:5%"><font size="3"><br></font></td>
-        <td style="width:27%"><font size="2"></font></td>
-        <td style="width:11%"><font size="3"></font></td>
-        <td style="width:11%"><font size="3"></font></td>
-        <td style="width:10%"><font size="3"></font></td>
-        <td style="width:10%"><font size="3"></font></td>
-        <td style="width:24%"><font size="3"></font></td>
+        <td style="width:5%;height:25px;"><font size="3"><br></font></td>
+        <td style="width:27%height:25px;"><font size="2"></font></td>
+        <td style="width:11%height:25px;"><font size="3"></font></td>
+        <td style="width:11%height:25px;"><font size="3"></font></td>
+        <td style="width:10%height:25px;"><font size="3"></font></td>
+        <td style="width:10%height:25px;"><font size="3"></font></td>
+        <td style="width:24%height:25px;"><font size="3"></font></td>
       </tr>
       ';
     }
@@ -241,16 +241,14 @@ function toTime($seconds) {
 }
 
  function contarCuantasPaginas($data){
-   $numeroPaginas=0;
+   $numeroPaginas=1;
    for($i=0;$i<sizeof($data);$i++){
     $j=1;
-    $n=0;
     for($j;$j<sizeof($data[$i]);$j++){
-      if(($n % 35 == 0)&&$n!=0){
-        $numeroPaginas++;
+      if(($j % 25 == 0)&&$j!=0){
+        $numeroPaginas=$numeroPaginas+1;
       }
     }
-    $numeroPaginas++;
   }
   return $numeroPaginas;
  }

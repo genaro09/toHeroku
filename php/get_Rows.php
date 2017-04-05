@@ -164,9 +164,12 @@ function get_Row_Fecha_Reporte_Semana_Llegadas_Tarde($NitEmpresa){
 	mysqli_close($cnx);
 
 }
+
+
+
 function get_Row_Fecha_Reporte_Semana($NitEmpresa){
  	$cnx=cnx();
- 	$query=sprintf("select * from horas_extras WHERE NitEmpresa='%s' GROUP BY Fecha ORDER BY Fecha ASC",mysqli_real_escape_string($cnx,$NitEmpresa));
+ 	$query=sprintf("select * from horas_extras WHERE NitEmpresa='%s' GROUP BY Fecha ORDER BY horas_extras.Fecha DESC",mysqli_real_escape_string($cnx,$NitEmpresa));
  	$result=mysqli_query($cnx,$query);
 	while ($row=mysqli_fetch_array($result)) {
       $str="";

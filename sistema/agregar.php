@@ -355,6 +355,33 @@
 						}
 					}
 				break;
+		case '12':
+					if(!(empty($_POST["Fecha"])||(empty($_POST["TipoSuspension"]))||(empty($_POST["NumeroDocumento"])))){
+						if(isUserExist($_POST["NumeroDocumento"])){
+							$fecha=$_POST["Fecha"];
+							list($dd,$mm,$yyyy) = explode('/',$fecha);
+							if (checkdate($mm,$dd,$yyyy)) {
+								$fecha = str_replace('/', '-', $fecha);
+								$fecha  = date('Y-m-d', strtotime($fecha));
+								if(verify_date_format($fecha)){
+									if($_POST["TipoSuspension"]!=1){
+										echo "2, El tipo de suspension que intenta ingresar es incorrecto";
+									}else{
+										if(!isAlredySuspended($_POST["NumeroDocumento"],$fecha)){
+											$estado=AgregarSuspensionEmpleado($_POST["NumeroDocumento"],$_SESSION["usuario_sesion"]->getNumeroDocumento(),$_POST["TipoSuspension"],$fecha,$_POST["Descripcion"]);
+											if($estado){
+												echo "1, ";
+											}else echo "0, ";
+											break;
+										}else echo "2, El usuario ya se encuentra suspendido";
+										break;
+									}
+									break;
+								}echo "2, La fecha no tiene el format correcto";
+							}else echo "2, La fecha no existe";
+						}else echo "2, El usuario que intenta ingresar no existe";
+					}else echo "2, Ingrese todos los datos";
+			break;
 		default:
 			# code...
 			echo "nada";

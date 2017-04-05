@@ -1,4 +1,5 @@
 <?php
+	ini_set('max_execution_time', 300);
 	include '../php/funciones.php';
 	include '../php/verificar_sesion.php';
 	if(trim($_POST['idHorasExtras']) == ""){
@@ -252,6 +253,7 @@
                                     <!-- Desde aqui include Empleados_grid_table.php-->
                                     <?php include '../php/get_Rows.php';
                                     get_Row_Comprobacion_Horas_Extras($idHorasExtras);
+																		echo '<input type="hidden" id="flaginput" name="flaginput" value="0" />';
                                     ?>
                                     </tbody>
                                 </table>
