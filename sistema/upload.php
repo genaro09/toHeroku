@@ -4,9 +4,6 @@
   <link rel="stylesheet" href="../dist/sweetalert.css">
 </head>
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 ini_set('max_execution_time', 300);
 require '../upload/phpmussel/loader.php';
 include '../php/funciones.php';
