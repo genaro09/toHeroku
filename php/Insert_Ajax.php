@@ -1740,7 +1740,7 @@ switch ($opc){
               <h4>Fecha de Fin</h4>
               <p style="padding-left:15px"> '.$infoPermiso["DiaFin"].'</p>
             ';
-          }elseif ($infoPermiso["TipoAusencia"]==2) {
+          }elseif ($infoPermiso["TipoPermiso"]==2) {
             //horas
             $tipPermiso='
               <h4>Fecha</h4>
@@ -1837,6 +1837,474 @@ switch ($opc){
         }
       }
       break;
+      case '20':
+        # code...
+        if(!empty($_POST["firstCell"])){
+          if(isUserExist($_POST["firstCell"])){
+            //ya sabemos que entro bien
+            $empleado=getInfoUser($_POST["firstCell"]);
+            $NombreEmpleado=" ".$empleado->getPrimernombre()." ".$empleado->getSegundonombre()." ".$empleado->getPrimerapellido()." ".$empleado->getSegundoapellido();
+            $str='
+              <div class="row">
+               <h5 style="padding-left:10px;">Empleado:</h5>
+               <h6 style="padding-left:15px;">'.$NombreEmpleado.'</h6>
+               <br>
+            	 <div class="col-lg-10 col-lg-offset-1">
+               <input type="hidden" name="NumeroDocumento" id="NumeroDocumento" value="'.$_POST["firstCell"].'">
+                 <div class="col-sm-1">
+                 </div>
+            	  <div class="col-sm-4">
+            		  <div class="choice" data-toggle="wizard-checkbox">
+            			   <button name="agregarPermisoSeccional" id="agregarPermisoSeccional"  style="background: transparent;border: none;">
+              				 <div class="icon">
+                           <i class="material-icons">add</i>
+              				 </div>
+            				 <h6>Agregar</h6>
+                    </button>
+            			</div>
+            		</div>
+                <div class="col-sm-2">
+                </div>
+            		<div class="col-sm-4">
+            		  <div class="choice" data-toggle="wizard-checkbox">
+            			   <button id="verPermisoSeccional" name="verPermisoSeccional" style="background: transparent;border: none;">
+              				 <div class="icon">
+                           <i class="material-icons">playlist_add_check</i>
+              				 </div>
+                     </button>
+            			   <h6>Ver</h6>
+            			</div>
+            	 </div>
+               <div class="col-sm-1">
+               </div>
+             </div>
+           </div>
+            ';
+            echo "0,".$str;//el html que vamos a enviar sin comas
+          }else{
+            echo "1,Envio un valor errado";
+          }
+        }else {
+          echo "1,Envio un valor vacio";
+        }
+        break;
+        case '21':
+           # code...
+           if(!empty($_POST["firstCell"])){
+             if(isUserExist($_POST["firstCell"])){
+               //ya sabemos que entro bien
+               $empleado=getInfoUser($_POST["firstCell"]);
+               $NombreEmpleado=" ".$empleado->getPrimernombre()." ".$empleado->getSegundonombre()." ".$empleado->getPrimerapellido()." ".$empleado->getSegundoapellido();
+               $str="";
+               $str='
+                 <div class="row">
+                   <div class="col-md-12">
+                     <h5 style="padding-left:10px;">Permiso-Seccional-Empleado:</h5>
+                     <h6 style="padding-left:15px;">'.$NombreEmpleado.'</h6>
+                     <br>
+                     <form>
+                       <div class="form-group col-md-4">
+                         <label>Permiso Seccional</label>
+                         <br>
+                         <select id="TPermiso" name="TPermiso" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
+                           <option selected value="1">Dia completo</option>
+                           <option value="2">Parcial</option>
+                         </select>
+                       </div>
+                       <div class="form-group col-md-3" id="DfehaIni">
+                         <label>Fecha</label>
+                         <div class="input-group date" id="datetimepicker1">
+                            <input style="width:100%;" type="text" class="form-control" placeholder='.date('d').'/'.date('m').'/'.date('Y').' name="date" id="FechaInicio" data-select="datepicker"/>
+                         </div>
+                       </div>
+                       <div class="form-group col-md-4" style="display: none;" id="Dfecha">
+                         <label>Fecha</label>
+                         <div class="input-group date" id="datetimepicker1">
+                            <input style="width:100%;" type="text" class="form-control" placeholder='.date('d').'/'.date('m').'/'.date('Y').' name="date" id="Fecha" data-select="datepicker"/>
+                         </div>
+                       </div>
+                       <div class="form-group col-md-4" style="display: none;" id="DhoraIni">
+                         <label>Hora Inicio</label>
+                         <input type="text" id="hInicio" class="form-control" maxlength="5" size="5" placeholder="06:00">
+                       </div>
+                       <div class="form-group col-md-4" style="display: none;" id="DhoraFin">
+                         <label>Hora Fin</label>
+                         <input type="text" id="hFin" class="form-control" maxlength="5" size="5" placeholder="08:00">
+                       </div>
+                       <div class="form-group col-md-4">
+                         <label>Observación</label>
+                         <textarea id="Observacion" name="Observacion" class="form-control" required="true" rows="3"></textarea>
+                         <span class="material-input"></span>
+                       </div>
+                       <div class="form-group col-md-4">
+                         <input type="hidden" id="numDoc" name="numDoc" value="'.$_POST["firstCell"].'">
+                         <input type="button"  class="btn btn-previous btn-fill btn-primary btn-wd" id="btnAgregarPermisoSeccional" name="btnAgregarPermisoSeccional" value="Agregar" />
+                       </div>
+                     </form>
+                   </div>
+                 </div>
+               ';
+               /*
+               <div class="form-group col-md-4">
+                 <input type="hidden" id="numDoc" name="numDoc" value="'.$_POST["firstCell"].'">
+                 <input type="button"  class="btn btn-previous btn-fill btn-primary btn-wd" id="btnAgregarPermiso" name="btnAgregarPermiso" value="Agregar" />
+               </div>
+               */
+               echo "0,".$str;//el html que vamos a enviar sin comas
+             }else{
+               echo "1,Envio un valor errado";
+             }
+           }else {
+             echo "1,Envio un valor vacio";
+           }
+           break;
+  case '22':
+  //ver Permiso Seccional
+      if(!empty($_POST["firstCell"])){
+        if(isUserExist($_POST["firstCell"])){
+          //ya sabemos que entro bien
+          $empleado=getInfoUser($_POST["firstCell"]);
+          $NombreEmpleado=" ".$empleado->getPrimernombre()." ".$empleado->getSegundonombre()." ".$empleado->getPrimerapellido()." ".$empleado->getSegundoapellido();
+          $NitEmpresa=$_SESSION['empresa'];//Empresa
+          $str='
+          <h5 style="padding-left:10px;">Permiso-Seccional-Empleado:</h5>
+          <h6 style="padding-left:15px;">'.$NombreEmpleado.'</h6>
+          <br>
+          <div class="material-datatables">
+              <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                  <thead>
+                      <tr>
+                          <th>Fecha Elaborado</th>
+                          <th>Elaborado Por</th>
+                          <th>Dias/Horas Inicio</th>
+                          <th class="disabled-sorting text-right">Acciones</th>
+                      </tr>
+                  </thead>
+                  <tfoot>
+                      <tr>
+                          <th>Fecha Elaborado</th>
+                          <th>Elaborado Por</th>
+                          <th>Dias/Horas</th>
+                          <th class="text-right">Acciones</th>
+                      </tr>
+                  </tfoot>
+
+                  <tbody>
+                  <!-- Desde aqui include Empleados_grid_table.php-->
+          ';
+          $cnx=cnx();
+          $query=sprintf("SELECT permiso_seccional.*,EMPor.PrimerNombre,EMPor.SegundoNombre,EMPor.PrimerApellido,EMPor.SegundoApellido from permiso_seccional INNER JOIN empleado AS EMPor WHERE permiso_seccional.NumeroDocumento='%s' AND permiso_seccional.NumeroDocumentoPor=EMPor.NumeroDocumento ORDER BY permiso_seccional.FechaCreacion DESC ",mysqli_real_escape_string($cnx,$_POST["firstCell"]));
+          $result=mysqli_query($cnx,$query);
+          while ($row=mysqli_fetch_array($result)) {
+            $NombrePor=$row["PrimerNombre"]." ".$row["SegundoNombre"]." ".$row["PrimerApellido"]." ".$row["SegundoApellido"];
+            if($row["TipoPermisoSeccional"]==1){
+              //Dias completo
+              $dates=$row["Dia"];
+            }elseif($row["TipoPermisoSeccional"]==2) {
+              //Horas
+              $dates=$row["Dia"].": ".$row["HoraInicio"]." ".$row["HoraFin"];
+            }else{
+              $dates="error";
+            }
+            //si ya esta revisado
+            if($row["EstadoPermisoSeccional"]==0){
+              $comp='<i class="material-icons">warning</i>';
+              $setting='
+              <button name="modificarPermisoSeccional" id="modificarPermisoSeccional"  style="background: transparent;border: none;">
+               <div class="icon">
+                    <i class="material-icons">build</i>
+               </div>
+              </button>
+              ';
+            }elseif ($row["EstadoPermisoSeccional"]==1) {
+              $comp='<i class="material-icons">check_circle</i>';
+              $setting='
+                ';
+
+            }else{
+              $comp='<i class="material-icons">ERROR</i>';
+              $setting='ERROR';
+              $justificacion="ERROR";
+            }
+
+
+            $str=$str.'
+              <tr data-id="'.$row["idPermisoSeccional"].'">
+                 <td>'.$row["FechaCreacion"].'</td>
+                 <td>'.$NombrePor.'</td>
+                 <td>'.$dates.'</td>
+                 <td class="text-right">
+                   <div class="row">
+                     <div class="col-md-12">
+                      <input type="hidden" class="idPermisoSeccional" id="idPermisoSeccional" name="idPermisoSeccional" value="'.$row["idPermisoSeccional"].'">
+                      <div class="col-md-6">
+                        <button name="verificarPermisoSeccional" id="verificarPermisoSeccional"  style="background: transparent;border: none;">
+                         <div class="icon">
+                              '.$comp.'
+                         </div>
+                       </button>
+                      </div>
+                      <div class="col-md-6">
+                        '.$setting.'
+                     </div>
+                    </div>
+                   </div>
+                 </td>
+              </tr>
+            ';
+
+          }
+          mysqli_close($cnx);
+          $str=$str.'
+                    </tbody>
+                </table>
+            </div>
+          ';
+          echo "0,".$str;//el html que vamos a enviar sin comas
+        }else{
+          echo "1,Envio un valor errado";
+        }
+      }else {
+        echo "1,Envio un valor vacio";
+      }
+    break;
+    case '23':
+        if(!empty($_POST["idPermisoSeccional"])){
+          if(isPermisoSeccionalExist($_POST["idPermisoSeccional"])){
+            //ya sabemos que entro bien
+            $permiso=getPermisoSeccional($_POST["idPermisoSeccional"]);
+            if($permiso["exist"]==1){
+              $empleado=getInfoUser($permiso["NumeroDocumento"]);
+              $NombreEmpleado=" ".$empleado->getPrimernombre()." ".$empleado->getSegundonombre()." ".$empleado->getPrimerapellido()." ".$empleado->getSegundoapellido();
+              $str="";
+              $TipoPermiso="ERROR";
+              if($permiso["TipoPermisoSeccional"]==1){
+                $DiaInicio = new DateTime($permiso["Dia"]); //$DiaInicio->format('d/m/Y')
+                $TipoPermiso='
+                  <div class="form-group col-md-4">
+                    <label>Permiso Seccional </label>
+                    <br>
+                    <select id="TPermiso" name="TPermiso" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
+                           <option selected value="1">Dia completo</option>
+                           <option value="2">Parcial</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-md-3" id="DfehaIni">
+                         <label>Fecha</label>
+                         <div class="input-group date" id="datetimepicker1">
+                            <input style="width:100%;" type="text" class="form-control" placeholder='.date('d').'/'.date('m').'/'.date('Y').' value="'.$DiaInicio->format('d/m/Y').'" name="date" id="FechaInicio" data-select="datepicker"/>
+                         </div>
+                  </div>
+                  <div class="form-group col-md-4" style="display: none;" id="Dfecha">
+                         <label>Fecha</label>
+                         <div class="input-group date" id="datetimepicker1">
+                            <input style="width:100%;" type="text" class="form-control" placeholder='.date('d').'/'.date('m').'/'.date('Y').' name="date" id="Fecha" data-select="datepicker"/>
+                         </div>
+                  </div>
+                  <div class="form-group col-md-4" style="display: none;" id="DhoraIni">
+                         <label>Hora Inicio</label>
+                         <input type="text" id="hInicio" class="form-control" maxlength="5" size="5" placeholder="06:00">
+                  </div>
+                  <div class="form-group col-md-4" style="display: none;" id="DhoraFin">
+                         <label>Hora Fin</label>
+                         <input type="text" id="hFin" class="form-control" maxlength="5" size="5" placeholder="08:00">
+                  </div>
+                ';
+              }elseif ($permiso["TipoPermisoSeccional"]==2) {
+                $DiaInicio = new DateTime($permiso["Dia"]); //$DiaInicio->format('d/m/Y')
+
+                $HoraIni=$permiso["HoraInicio"];
+                $HoraIni=explode(":",$HoraIni);
+                $HoraIni=$HoraIni[0].":".$HoraIni[1];
+
+                $HoraFin=$permiso["HoraFin"];
+                $HoraFin=explode(":",$HoraFin);
+                $HoraFin=$HoraFin[0].":".$HoraFin[1];
+                $TipoPermiso='
+                <div class="form-group col-md-4">
+                  <label>Permiso Seccional </label>
+                  <br>
+                  <select id="TPermiso" name="TPermiso" class="form-control selectpicker" data-title="Seleccione una Opcion" data-style="btn-default btn-block" data-menu-style="dropdown-blue" required>
+                         <option value="1">Dia completo</option>
+                         <option selected value="2">Parcial</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-3" style="display: none;" style="display: none;" id="DfehaIni">
+                       <label>Fecha</label>
+                       <div class="input-group date" id="datetimepicker1">
+                          <input style="width:100%;" type="text" class="form-control" placeholder='.date('d').'/'.date('m').'/'.date('Y').' name="date" id="FechaInicio" data-select="datepicker"/>
+                       </div>
+                </div>
+                <div class="form-group col-md-4"  id="Dfecha">
+                       <label>Fecha</label>
+                       <div class="input-group date" id="datetimepicker1">
+                          <input style="width:100%;" type="text" class="form-control" placeholder='.date('d').'/'.date('m').'/'.date('Y').' name="date" id="Fecha" value="'.$DiaInicio->format('d/m/Y').'" data-select="datepicker"/>
+                       </div>
+                </div>
+                <div class="form-group col-md-4"  id="DhoraIni">
+                       <label>Hora Inicio</label>
+                       <input type="text" id="hInicio" class="form-control" maxlength="5" value="'.$HoraIni.'" size="5" placeholder="06:00">
+                </div>
+                <div class="form-group col-md-4"  id="DhoraFin">
+                       <label>Hora Fin</label>
+                       <input type="text" id="hFin" class="form-control" maxlength="5" value="'.$HoraFin.'" size="5" placeholder="08:00">
+                </div>
+                ';
+
+              }
+              $botones="";
+              if (strcmp($TipoPermiso,"ERROR")!=0){
+                  $botones='
+                  <div class="form-group col-md-4">
+                    <label>Observación</label>
+                    <textarea id="Observacion" name="Observacion" class="form-control" required="true" rows="3">'.$permiso["Observacion"].'</textarea>
+                    <span class="material-input"></span>
+                  </div>
+                  <br>
+                  <div class="row">
+                    <div class="form-group col-md-2">
+                      <input type="hidden" id="idPermisoSeccional" name="idPermisoSeccional" value="'.$_POST["idPermisoSeccional"].'">
+                      <input type="button"  class="btn btn-previous btn-fill btn-primary btn-wd" id="btnModificarPermisoSeccional" name="btnModificarPermisoSeccional" value="Modificar" />
+                    </div>
+                    <div class="form-group col-md-2">
+                      <input type="hidden" id="idPermisoSeccional" name="idPermisoSeccional" value="'.$_POST["idPermisoSeccional"].'">
+                      <input type="button"  class="btn btn-previous btn-fill btn-danger btn-wd" id="btnEliminarPermisoSeccional" name="btnEliminarPermisoSeccional" value="Eliminar" />
+                    </div>
+                  </div>
+                ';
+              }
+              $str='
+                <div class="row">
+                  <div class="col-md-12">
+                    <h5 style="padding-left:10px;">Permiso-Seccional-Empleado:</h5>
+                    <h6 style="padding-left:15px;">'.$NombreEmpleado.'</h6>
+                    <br>
+                    <form>
+                      '.$TipoPermiso.'
+                      '.$botones.'
+                    </form>
+                  </div>
+                </div>
+              ';
+              echo "0,".$str;//el html que vamos a enviar sin comas
+            }else {
+              echo "1,No se encontro el permiso seccional recargue la pagina";
+            }
+
+          }else{
+            echo "1,Envio un valor errado";
+          }
+        }else {
+          echo "1,Envio un valor vacio";
+        }
+  break;
+
+  case '24':
+    if(!empty($_POST["idPermisoSeccional"])){
+      if(isPermisoSeccionalExist($_POST["idPermisoSeccional"])){
+        //ya sabemos que entro bien
+        $infoPermisoSeccional=getPermisoSeccional($_POST["idPermisoSeccional"]);
+        $str='
+        <div class="row">
+          <div class="col-md-6">
+              <div class="card">
+                  <div class="card-header card-header-icon" data-background-color="purple">
+                      <i class="material-icons">contacts</i>
+                  </div>
+                  <div class="card-content">
+                      <h4 class="card-title">Unicamente Imagen o PDF</h4>
+                      <div class="toolbar">
+                          <!--        Here you can write extra buttons/actions for the toolbar              -->
+                      </div>
+                      <div class="row">
+
+
+        ';
+        if($infoPermisoSeccional["EstadoPermisoSeccional"]==0){
+          $str=$str.'
+            <form action="upload.php" method="post" enctype="multipart/form-data">
+              <p>
+                <input type="hidden" id="idupload" name="idupload" value="4%'.$_POST["idPermisoSeccional"].'">
+                <input type="hidden" name="MAX_FILE_SIZE" value="30000000" />
+                <div class="col-md-6">
+                  <label class="btn btn-block btn-primary">
+                  Cargar Archivo&hellip; <input id="uploadPDF" name="myFile" type="file" style="display: none;">
+                  </label>
+                </div>
+                <div class="col-md-6">
+                  <label style="display:none;" id="labelBtnCargar" class="btn btn-block btn-primary">
+                    Subir<input disabled id="btnCargar" value="Upload" type="submit" style="display: none;" />
+                  </label>
+                </div>
+              </p>
+            </form>
+          ';
+        }elseif ($infoPermisoSeccional["EstadoPermisoSeccional"]==1) {
+          # code...
+          $getFile=getFilePermisoSeccional($_POST["idPermisoSeccional"]);
+          $Documento="../upload/Permiso_Seccional/".$getFile[1];
+          if($getFile[0]=="pdf"){
+            $str=$str."
+            <iframe src='".$Documento."' style='width:100%;height:600px;' frameborder='0'></iframe>
+            ";
+          }else{
+            $str=$str.'
+            <img src="'.$Documento.'"  style="width="100%";height:600;">';
+          }
+        };
+        if($infoPermisoSeccional["TipoPermisoSeccional"]==1){
+          //ISS
+          $tipoIN='
+          <h4>Dia</h4>
+          <p style="padding-left:15px">'.$infoPermisoSeccional["Dia"].'</p>
+          ';
+        }elseif ($infoPermisoSeccional["TipoPermisoSeccional"]==2) {
+          //CLINICA
+          $tipoIN='
+          <h4>Dia</h4>
+          <p style="padding-left:15px">'.$infoPermisoSeccional["Dia"].'</p>
+          <h4>Horas</h4>
+          <p style="padding-left:15px">Desde:'.$infoPermisoSeccional["HoraInicio"].' Hasta:'.$infoPermisoSeccional["HoraFin"].'</p>
+          ';
+        }else{
+          $tipoIN='ERROR recargue la pagina';
+        }
+          $str=$str.'
+                   </div>
+
+                  </div><!-- end content-->
+               </div><!--  end card  -->
+            </div> <!-- end col-md-6 -->
+
+            <div class="col-md-6">
+              <div class="card">
+                  <div class="card-header card-header-icon" data-background-color="purple">
+                      <i class="material-icons">card_travel</i>
+                  </div>
+                  <div class="card-content">
+                    <h3 class="card-title">Reporte Permiso Seccional</h3>
+                    <div class="toolbar">
+                    </div>
+                    <h4>Fecha de Creacion</h4>
+                    <p style="padding-left:15px"> '.$infoPermisoSeccional["FechaCreacion"].'</p>
+                    '.$tipoIN.'
+                    <h4>Observacion</h4>
+                    <p style="padding-left:15px"> '.$infoPermisoSeccional["Observacion"].'</p>
+                    </div><!-- end content-->
+                </div><!--  end card  -->
+            </div>
+
+            <!-- FIN -->
+      </div> <!-- end row -->
+          ';
+        echo "0,".$str;//el html que vamos a enviar sin comas
+      }else{
+        echo "1,Envio un valor errado";
+      }
+    }else {
+      echo "1,Envio un valor vacio";
+    }
+    break;
 
   default:
 

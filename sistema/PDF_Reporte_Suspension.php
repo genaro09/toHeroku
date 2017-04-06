@@ -50,10 +50,14 @@ if($_POST["opc"]==0){
   $empresa=getInfoEmpresa($NitEmpresa);
   $FechaIni=$_POST["FechaInicio"];
   $FechaFin=$_POST["FechaFinal"];
+  $FechaIni = str_replace('/', '-', $FechaIni);
+  $FechaIni  = date('Y-m-d', strtotime($FechaIni));
+  $FechaFin = str_replace('/', '-', $FechaFin);
+  $FechaFin  = date('Y-m-d', strtotime($FechaFin));
   //Sacar datos
-  /*
-  $query=sprintf("SELECT suspension.*,empleado.PrimerNombre, empleado.SegundoNombre, empleado.PrimerApellido, empleado.SegundoApellido FROM suspension INNER JOIN departamento INNER JOIN cargos INNER JOIN empleado WHERE departamento.NitEmpresa='%s' AND cargos.idDepartamento=departamento.idDepartamento AND cargos.idCargos=empleado.idCargos AND empleado.NumeroDocumento=suspension.NumeroDocumento AND suspension.Fecha BETWEEN '%s' AND '%s' ORDER BY suspension.Fecha ASC",mysqli_real_escape_string($cnx,$NitEmpresa),mysqli_real_escape_string($cnx,$FechaIni),mysqli_real_escape_string($cnx,$FechaFin));
-  */
+
+  $query=sprintf("SELECT suspension.*,empleado.PrimerNombre, empleado.SegundoNombre, empleado.PrimerApellido, empleado.SegundoApellido FROM suspension INNER JOIN departamento INNER JOIN cargos INNER JOIN empleado WHERE departamento.NitEmpresa='%s' AND cargos.idDepartamento=departamento.idDepartamento AND cargos.idCargos=empleado.idCargos AND empleado.NumeroDocumento=suspension.NumeroDocumento AND suspension.EstadoSuspension!=0 AND suspension.Fecha BETWEEN '%s' AND '%s' ORDER BY suspension.Fecha ASC",mysqli_real_escape_string($cnx,(string)$NitEmpresa),mysqli_real_escape_string($cnx,(string)$FechaIni),mysqli_real_escape_string($cnx,(string)$FechaFin));
+
   $result=mysqli_query($cnx,$query);
   $count=0;
   $data = array('');
@@ -70,55 +74,53 @@ if($_POST["opc"]==0){
   $encabezado="";
   $bloque="";
   $user = $_SESSION['usuario_sesion'];
-  $user= getInfoUser($user);
-  for($i=0;$i<sizeof($data);$i++){
-    $j=0;
-    $encabezado=generarEncabezado($data[$i][$j]["Nombre"],$FechaHotasExtras,$NombreEmpresa);
-    $str="";
-    $n=0;
-    $j++;
-    for($j;$j<sizeof($data[$i]);$j++){
-      $nAUX=$n+1;
+  $NombreGenerdoPor=$user->getPrimernombre()." ".$user->getSegundonombre()." ".$user->getPrimerapellido()." ".$user->getSegundoapellido();
+  $empresa=getInfoEmpresa($NitEmpresa);
+  $NombreEmpresa=$empresa->getNombreempresa();
+  $encabezado=generarEncabezado($NombreGenerdoPor,$FechaIni,$FechaFin,$NombreEmpresa);
+  $NumeroDePagina=1;
+  $str="";
+  $nAUX=0;
+  $i=0;
+  if($count>0){
+    for($i=0;$i<sizeof($data);$i++){
+      $nAUX++;
       $str=$str.'
-       <tr>
-         <td style="width:5%";height:25px;><font size="3">'.$nAUX.'</font></td>
-         <td style="width:27%;height:25px;"><p style="font-size:9px;overflow-x: scroll;white-space: nowrap;width:100%;">'.$data[$i][$j]["Nombre"].'</p></td>
-         <td style="width:11%;height:25px;"><font size="3">'.$data[$i][$j]["NHD"].'</font></td>
-         <td style="width:11%;height:25px;"><font size="3">'.$data[$i][$j]["NHN"].'</font></td>
-         <td style="width:10%;height:25px;"><font size="3">'.$data[$i][$j]["D"].'</font></td>
-         <td style="width:10%;height:25px;"><font size="3">'.$data[$i][$j]["H"].'</font></td>
-         <td style="width:24%;height:25px;"><font size="3"></font></td>
-       </tr>
-      ';
-      $n++;
-      if(($n % 25 == 0)&&$n!=0){
+         <tr>
+           <td style="width:5%";height:25px;><font size="3">'.$nAUX.'</font></td>
+           <td style="width:35%;height:25px;"><p style="font-size:10px;overflow-x: scroll;white-space: nowrap;width:100%;">'.$data[$i]["Nombre"].'</p></td>
+           <td style="width:10%;height:25px;"><font size="3">'.$data[$i]["Fecha"].'</font></td>
+           <td style="width:20%;height:25px;"><font size="3">'.$data[$i]["TipoSuspension"].'</font></td>
+           <td style="width:30%;height:25px;"><p style="font-size:9px;overflow-x: scroll;white-space: nowrap;width:100%;">'.$data[$i]["Descripcion"].'</p></td>
+         </tr>
+        ';
+      if(($i % 25 == 0)&&$i!=0){
         $bloque=$bloque.$encabezado.$str.'</table></div><div style="margin-top: 70px;">Pagina: '.$NumeroDePagina.' de '.$numeroPaginas.'</div></div>';
         $str="";
         $NumeroDePagina++;
+        $encabezado=generarEncabezado($NombreGenerdoPor,$FechaIni,$FechaFin,$NombreEmpresa);
       }
     }
-    //LLenar el cuadro
-    if(!($n % 25 == 0)&&$n!=0){
-      for($k=0;$k<26-$n;$k++){
-        $str=$str.'
-        <tr>
-          <td style="width:5%;height:25px;"><font size="3"><br></font></td>
-          <td style="width:27%height:25px;"><font size="2"></font></td>
-          <td style="width:11%height:25px;"><font size="3"></font></td>
-          <td style="width:11%height:25px;"><font size="3"></font></td>
-          <td style="width:10%height:25px;"><font size="3"></font></td>
-          <td style="width:10%height:25px;"><font size="3"></font></td>
-          <td style="width:24%height:25px;"><font size="3"></font></td>
-        </tr>
-        ';
-      }
-    }
-    //Fin de llenado del cuadro
-    $bloque=$bloque.$encabezado.$str.'</table></div><div style="margin-top: 70px;">Pagina: '.$NumeroDePagina.' de '.$numeroPaginas.'</div></div>';
-    $NumeroDePagina++;
-    $tiempoTotalD=0;//tiempo total Diurno
-    $tiempoTotalN=0;//Tiempo total Nocturno
+  }else{
+    $i=1;
   }
+  //LLenar el cuadro
+  if(!($i % 25 == 0)&&$i!=0){
+    for($k=0;$k<26-$i;$k++){
+      $str=$str.'
+      <tr>
+        <td style="width:5%;height:25px;"><font size="3"><br></font></td>
+        <td style="width:35%height:25px;"><font size="2"></font></td>
+        <td style="width:10%height:25px;"><font size="3"></font></td>
+        <td style="width:20%height:25px;"><font size="3"></font></td>
+        <td style="width:30%height:25px;"><font size="3"></font></td>
+      </tr>
+      ';
+    }
+  }
+  //Fin de llenado del cuadro
+  $bloque=$bloque.$encabezado.$str.'</table></div><div style="margin-top: 70px;">Pagina: '.$NumeroDePagina.' de '.$numeroPaginas.'</div></div>';
+
   //FIN
   $html = '
   <!DOCTYPE html>
@@ -177,16 +179,13 @@ if($_POST["opc"]==0){
 function contarCuantasPaginas($data){
   $numeroPaginas=1;
   for($i=0;$i<sizeof($data);$i++){
-   $j=1;
-   for($j;$j<sizeof($data[$i]);$j++){
-     if(($j % 25 == 0)&&$j!=0){
+     if(($i % 25 == 0)&&$i!=0){
        $numeroPaginas=$numeroPaginas+1;
      }
-   }
  }
  return $numeroPaginas;
 }
-function generarEncabezado($Nombre,$FechaHotasExtras,$NombreEmpresa){
+function generarEncabezado($Nombre,$FechaIni,$FechaFin,$NombreEmpresa){
   $encabezado='
   <div id="cuerpo">
     <div id="encabezado">
@@ -196,25 +195,23 @@ function generarEncabezado($Nombre,$FechaHotasExtras,$NombreEmpresa){
     </div>
     <div id="texCuadro">
     <font size="4">
-    Documento para el control de horas en jornadas extraordinaria laboradas por los trabajadores de manera voluntaria
+    Empleados suspendidos
     </font>
     </div>
     <div id="SaF_Cuadro"><font size="4">
-    Supervisor: '. $Nombre.'
+    Generado Por: '. $Nombre.'
     </font></div>
     <div id="SaF_Cuadro"><font size="4">
-    Fecha:'. $FechaHotasExtras.'
+    Desde:'. $FechaIni.' Hasta:'.$FechaFin.'
     </font></div>
     <div>
       <table>
         <tr>
           <td style="width:5%"><font size="3">#</font></td>
-          <td style="width:27%"><font size="3">Nombre del trabajador</font></td>
-          <td style="width:11%"><font size="3">Numero de horas diurnas</font></td>
-          <td style="width:11%"><font size="3">Numero de horas nocturnas</font></td>
-          <td style="width:10%"><font size="3">Desde</font></td>
-          <td style="width:10%"><font size="3">Hasta</font></td>
-          <td style="width:24%"><font size="3">Firma</font></td>
+          <td style="width:35%"><font size="3">Nombre del trabajador</font></td>
+          <td style="width:10%"><font size="3">Fecha</font></td>
+          <td style="width:20%"><font size="3">Suspension</font></td>
+          <td style="width:30%"><font size="3">Descripcion</font></td>
         </tr>
   ';
   return $encabezado;

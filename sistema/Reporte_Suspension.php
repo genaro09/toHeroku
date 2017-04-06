@@ -84,7 +84,7 @@
 
 					                            <tbody>
 					                            <!-- Desde aqui include Empleados_grid_table.php-->
-					                                <?php getReporteLlegadasTardeEmpleado(getNitEmpresa($_SESSION['usuario_sesion'])) ?>
+					                                <?php getReporteSuspensionEmpleado(getNitEmpresa($_SESSION['usuario_sesion'])) ?>
 					                            </tbody>
 					                        </table>
 					                    </div>
@@ -128,6 +128,11 @@
                               <div class="col-md-8">
                                 <div class="form-group">
                                   <a href="#" id="btnReporteSuspension" class="btn btn-primary btn-fill pull-right">Generar Reporte</a>
+                                </div>
+                              </div>
+															<div class="col-md-12">
+                                <div class="form-group">
+                                  <a>Solo se mostraran los confirmados</a>
                                 </div>
                               </div>
                               <div class="row">

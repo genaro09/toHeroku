@@ -95,22 +95,35 @@ function get_Row_Empleados_incapacidad(){
             </td>
           </tr>";
   }
-  /*
-  <div class='col-md-3'>
-      <input type='hidden' id='numDoc' name='numDoc' value='".$row["NumeroDocumento"]."'>
-      <input type='button' class='btn btn-primary btn-sm' id='agregar' name='agregar' value='agregar' />
-  </div>
-  <div class='col-md-3'>
-      <input type='hidden' name='numDoc' value='".$row["NumeroDocumento"]."'>
-      <input type='button' class='btn btn-info btn-sm' id='Ver' name='Ver' value='Ver' />
-  </div>
-  <div class='col-md-3'>
-      <input type='hidden' name='numDoc' value='".$row["NumeroDocumento"]."'>
-      <input type='button' class='btn btn-warning btn-sm' id='Validar' name='Validar' value='Validar' />
-  </div>
-  */
   mysqli_close($cnx);
 }
+
+function get_Row_Empleados_permiso_seccional(){
+  $NitEmpresa=getNitEmpresa($_SESSION['usuario_sesion']);
+  $cnx=cnx();
+  $query=sprintf("SELECT empleado.* from empleado INNER JOIN cargos INNER JOIN departamento inner JOIN empresa WHERE empresa.NitEmpresa='%s' AND departamento.NitEmpresa=empresa.NitEmpresa and cargos.idDepartamento=departamento.idDepartamento and empleado.idCargos=cargos.idCargos and empleado.Activo='1'",mysqli_real_escape_string($cnx,$NitEmpresa));
+  $result=mysqli_query($cnx,$query);
+  while ($row=mysqli_fetch_array($result)) {
+         echo "
+         <tr data-id='".$row['NumeroDocumento']."'>
+            <td>".$row["NumeroDocumento"]."</td>
+            <td>".$row["PrimerNombre"]." ".$row["SegundoNombre"]." ".$row["PrimerApellido"]." ".$row["SegundoApellido"]."</td>
+            <td>".number_format((float)$row["SalarioNominal"], 2, '.', '')."</td>
+            <td class='text-right'>
+              <div class='row'>
+                <div class='col-md-12' style='margin-top:5px;'>
+                  <div class='col-md-10'>
+                      <input type='hidden' class='NumeroDocumento' id='numDoc' name='numDoc' value='".$row["NumeroDocumento"]."'>
+                      <input type='button' class='btn btn-primary btn-sm' id='btnPermisoSeccional' name='btnPermisoSeccional' value='Permiso Seccional' style='width:100%;overflow:hidden;font-size: 75%;margin-top:0px;height:100%;'/>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>";
+  }
+  mysqli_close($cnx);
+}
+
 function get_Row_Fecha_Reporte_Semana_Llegadas_Tarde($NitEmpresa){
  	$cnx=cnx();
  	$query=sprintf("select * from llegadas_tarde WHERE NitEmpresa='%s' GROUP BY Fecha ORDER BY Fecha ASC",mysqli_real_escape_string($cnx,$NitEmpresa));
@@ -330,6 +343,67 @@ function get_Row_Empleado_Llegadas_Tarde_Semana($NumeroDocumento){
 	}
 	mysqli_close($cnx);
 }
+function get_Row_Empleado_Suspension($NumeroDocumento){
+  $cnx=cnx();
+ 	$query=sprintf("SELECT suspension.*,empleado.PrimerNombre,empleado.SegundoNombre,empleado.PrimerApellido,empleado.SegundoApellido FROM suspension INNER JOIN empleado WHERE suspension.NumeroDocumentoPor=empleado.NumeroDocumento AND suspension.NumeroDocumento='%s' ORDER BY suspension.Fecha DESC",mysqli_real_escape_string($cnx,$NumeroDocumento));
+  $result=mysqli_query($cnx,$query);
+	while ($row=mysqli_fetch_array($result)) {
+      $POR=$row["PrimerNombre"]." ".$row["SegundoNombre"]." ".$row["PrimerApellido"]." ".$row["SegundoApellido"];
+      if($row["EstadoSuspension"]==0){
+        $strAux="
+        <div class='col-md-12'>
+            <input type='hidden' name='idSuspension' value='".$row["idSuspension"]."'>
+            <button name='' id='".$row["idSuspension"]."' onClick='imprimirHE(this.id)' style='background: transparent;border: none;'>
+             <div class='icon'>
+                  <i class='material-icons'>delete</i>
+             </div>
+            </button>
+        </div>
+        ";
+        $strConf="
+          <div class='col-md-12'>
+              <input type='hidden' name='idSuspension' value='".$row["idSuspension"]."'>
+              <button name='' id='".$row["idSuspension"]."' onClick='confirmarHE(this.id)' style='background: transparent;border: none;'>
+               <div class='icon'>
+                    <i class='material-icons'>assignment_late</i>
+               </div>
+              </button>
+          </div>
+          ";
+      }else{
+        $strConf="
+        <div class='col-md-12'>
+            <input type='hidden' name='idSuspension' value='".$row["idSuspension"]."'>
+            <button name='' style='background: transparent;border: none;'>
+             <div class='icon'>
+                  <i class='material-icons'>assignment_turned_in</i>
+             </div>
+            </button>
+        </div>
+        ";
+        $strAux="";
+      }
+      if($row["TipoSuspension"]==1){
+        $tipoS="Descontar 1 dia";
+      }else{
+        $tipoS="Error";
+      }
+      echo "<tr>
+           <td>".$POR."</td>
+           <td>".$row["Fecha"]."</td>
+           <td>".$tipoS."</td>
+           <td>".$row["Descripcion"]."</td>
 
+           <td class='text-right'>
+             ".$strConf."
+           </td>
+
+           <td class='text-right'>
+             ".$strAux."
+           </td>
+       </tr>";
+	}
+	mysqli_close($cnx);
+}
 
  ?>

@@ -162,8 +162,6 @@
                            </a>
                            <div class='collapse' id='componentsExamples2'>
                              <ul class='nav'>
-                               <li><a href='departamento.php'>Departamentos</a></li>
-                               <li><a href='cargos.php'>Cargos</a></li>
                                <li><a href='Descuentos.php'>Descuentos</a></li>
                                <li><a href='Suspension.php'>Suspension</a></li>
                                <li><a href='#'>Constancias de Salarios</a></li>
@@ -178,9 +176,24 @@
                                    <li><a href='Reporte_Llegadas_Tarde.php'><span style='font-size:14px;margin-left:10%;'>Reporte Lleg. Tarde</span></a></li>
                                  </ul>
                                </li>
+                               <li><a href='Permiso_seccional.php'>Permiso Seccional</a></li>
                              </ul>
                            </div>
                          </li>
+                         <li>
+                            <a data-toggle='collapse' href='#componentsExamples7'>
+                             <i class='material-icons'>settings</i>
+                             <p>CONFIGURACION <b class='caret'></b> </p>
+                            </a>
+                            <div class='collapse' id='componentsExamples7'>
+                              <ul class='nav'>
+                                <li><a href='departamento.php'>Departamentos</a></li>
+                                <li><a href='cargos.php'>Cargos</a></li>
+                                <li><a href=''>Ver T.Renta</a></li>
+                                <li><a href=''>Ver T.AFP</a></li>
+                              </ul>
+                            </div>
+                          </li>
                       ";
                     }
                     ?>

@@ -89,6 +89,27 @@
 	        echo "0";
 				}
 			break;
+			case "9":
+	      $result=eliminarSuspension($_POST["id"]);
+				if($result){
+					echo "1";
+				}else{
+	        echo "0";
+				}
+			break;
+	case '10':
+					# code...
+					if(!isPermisoSeccionalExist($_POST["idPermisoSeccional"])){
+						echo "3";
+					}else{
+						$result=eliminarPermisosSeccional($_POST["idPermisoSeccional"]);
+						if($result==1){
+							echo "1";
+						}else{
+							echo "0";
+						}
+					}
+				break;
 		default:
 			# code...
 			echo "nada";

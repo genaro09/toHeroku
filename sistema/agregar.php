@@ -382,6 +382,46 @@
 						}else echo "2, El usuario que intenta ingresar no existe";
 					}else echo "2, Ingrese todos los datos";
 			break;
+			case '13':
+			//agregar permiso seccional
+					//Cargos
+					if(empty($_POST["TipoPermiso"])||empty($_POST["DiaInicio"])||empty($_POST["NumeroDocumento"])){
+						echo "0, Ingrese todos los datos";
+					}else {
+						if ($_POST["TipoPermiso"]==1) {
+							//Dias
+							$DiaInicio = str_replace('/', '-', $_POST["DiaInicio"]);
+							$DiaInicio  = date('Y-m-d', strtotime($DiaInicio));
+							$HoraInicio = "00:00:00";
+							$HoraFin = "00:00:00";
+						}elseif ($_POST["TipoPermiso"]==2) {
+							//Horas
+							$DiaInicio = str_replace('/', '-', $_POST["DiaInicio"]);
+							$DiaInicio  = date('Y-m-d', strtotime($DiaInicio));
+							$HoraInicio = $_POST["HoraInicio"].":00";
+							$HoraFin = $_POST["HoraFin"].":00";
+						}else{
+							echo "3,";
+							die();
+						}
+						if(!isUserExist($_POST["NumeroDocumento"])){
+							echo "0, El usuario no existe";
+						}elseif(!((verify_date_format($DiaInicio)))){
+							echo "0, El Formato de las fechas es incorrecto ejm: 01/01/2000";
+						}elseif (!((verify_time_format($HoraInicio))&&(verify_time_format($HoraFin)))) {
+							echo "0, El Formato de las Horas es incorrecto ejm: 21:00";
+						}elseif (($_POST["TipoPermiso"]==2)&&($HoraInicio>$HoraFin)) {
+							//Horas
+							echo "0, La Hora de inicio no puede ser mayor";
+						}else {
+							$estadoPermiso=0;
+							$estado=AgregarPermisoSeccional($_POST["TipoPermiso"],$_SESSION["usuario_sesion"]->getNumeroDocumento(),$estadoPermiso,$DiaInicio,$HoraInicio,$HoraFin,$_POST["Observacion"],$_POST["NumeroDocumento"]);
+							if($estado){
+								echo "1, ";
+							}else echo "2, ";
+						}
+					}
+				break;
 		default:
 			# code...
 			echo "nada";

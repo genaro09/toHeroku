@@ -143,6 +143,55 @@
 				}
 
 			break;
+			case '8':
+				//Confirmar Suspension
+				if(!empty($_POST["id"])){
+					if(isSuspensionExist($_POST["id"])){
+						$estado=ConfirmarSuspension($_POST["id"]);
+						if($estado){
+							echo "1, ";
+						}else echo "0, ";
+					}else echo "2";
+				}else{
+					echo "2";
+				}
+				break;
+			case '9':
+						if(empty($_POST["TipoPermisoSeccional"])||empty($_POST["Fecha"])||empty($_POST["idPermisoSeccional"])){
+							echo "0, Ingrese todos los datos";
+						}else if (isPermisoSeccionalExist($_POST["idPermisoSeccional"])){
+							if ($_POST["TipoPermisoSeccional"]==1) {
+								//Dias
+								$DiaInicio = str_replace('/', '-', $_POST["Fecha"]);
+								$DiaInicio  = date('Y-m-d', strtotime($DiaInicio));
+								$HoraInicio = "00:00:00";
+								$HoraFin = "00:00:00";
+							}elseif ($_POST["TipoPermisoSeccional"]==2) {
+								//Horas
+								$DiaInicio = str_replace('/', '-', $_POST["Fecha"]);
+								$DiaInicio  = date('Y-m-d', strtotime($DiaInicio));
+								$HoraInicio = $_POST["HoraInicio"].":00";
+								$HoraFin = $_POST["HoraFin"].":00";
+							}else{
+								echo "3,";
+								die();
+							}
+							if(!((verify_date_format($DiaInicio)))){
+								echo "0, El Formato de las fechas es incorrecto ejm: 01/01/2000";
+							}elseif (!((verify_time_format($HoraInicio))&&(verify_time_format($HoraFin)))) {
+								echo "0, El Formato de las Horas es incorrecto ejm: 21:00";
+							}elseif (($_POST["TipoPermisoSeccional"]==2)&&($HoraInicio>$HoraFin)) {
+								//Horas
+								echo "0, La Hora de inicio no puede ser mayor";
+							}else {
+								// orden $idPermisoSeccional,$TipoPermisoSeccional,$Dia,$HoraInicio,$HoraFin,$Observacion)
+								$estado=UpdatePermisoSeccional($_POST["idPermisoSeccional"],$_POST["TipoPermisoSeccional"],$DiaInicio,$HoraInicio,$HoraFin,$_POST["Observacion"]);
+								if($estado){
+									echo "1, ";
+								}else echo "0, No fue posible conectar con la base de datos ";
+							}
+						}
+		break;
 		default:
 			# code...
 			echo "nada";

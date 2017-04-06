@@ -12,6 +12,7 @@ require '../upload/phpmussel/loader.php';
 include '../php/funciones.php';
 include '../php/verificar_sesion.php';
 //ver si es un codigo correcto y de donde viene el codigo
+$retornarA="menu.php";
 if(isset($_POST["idupload"])){
   $cod=$_POST["idupload"];
   $cod=explode("%", $cod);
@@ -19,6 +20,7 @@ if(isset($_POST["idupload"])){
     //Part 1 is 1=idIncapacidad
     if(isIncapExist($cod[1])){
       define("UPLOAD_DIR", "../upload/Incapacidades/");
+      $retornarA="Descuentos.php";
     }else{
       header("Location: menu.php");
       die();
@@ -27,6 +29,7 @@ if(isset($_POST["idupload"])){
     //Part 2 is 1=idAusencia
     if(isAusenExist($cod[1])){
       define("UPLOAD_DIR", "../upload/Ausencias/");
+      $retornarA="Descuentos.php";
     }else{
       header("Location: menu.php");
       die();
@@ -37,6 +40,17 @@ if(isset($_POST["idupload"])){
     $datosHE=DatosHorasExtras($cod[1]);
     if($datosHE["exist"]==1){
       define("UPLOAD_DIR", "../upload/Horas_Extras/");
+      $retornarA="Reporte_Horas_Extras.php";
+    }else{
+      header("Location: menu.php");
+      die();
+    }
+    # code...
+  }elseif ($cod[0]==4) {
+    //Part 4 is 1=idPermisoSeccional
+    if(isPermisoSeccionalExist($cod[1])){
+      define("UPLOAD_DIR", "../upload/Permiso_Seccional/");
+      $retornarA="Permiso_seccional.php";
     }else{
       header("Location: menu.php");
       die();
@@ -83,6 +97,7 @@ if (!empty($_FILES["myFile"])) {
           break;
       }
     }
+
 
 
 
@@ -161,8 +176,38 @@ if (!empty($_FILES["myFile"])) {
             };
           </script>
           ';
-      }
+    }elseif ($cod[0]==4) {
+      insertarDocumentoPermisoSeccionado($cod[1],$name,$extension);
+      echo '
+        <form action="Permiso_seccional.php" id="loginForm" name="loginForm" method="post">
+          <input type="hidden" id="isUpload" name="isUpload" value="'.$flag.'">
+        </form>
+      ';
+
+      echo '
+        <script>
+          window.onload = function() {
+            document.getElementById("loginForm").submit();
+          };
+        </script>
+        ';
+    }else{
+      echo '
+        <form action="'.$retornarA.'" id="loginForm" name="loginForm" method="post">
+          <input type="hidden" id="isUpload" name="isUpload" value="0">
+        </form>
+      ';
+
+      echo '
+        <script>
+          window.onload = function() {
+            document.getElementById("loginForm").submit();
+          };
+        </script>
+        ';
     }
+
+  }
 
 }
 ?>

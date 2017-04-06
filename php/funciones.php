@@ -38,6 +38,28 @@
 		return $flag;
 
 	}
+	function getReporteSuspensionEmpleado($NitEmpresa){
+		$cnx=cnx();
+		$query=sprintf("SELECT empleado.NumeroDocumento, empleado.PrimerNombre, empleado.SegundoNombre, empleado.PrimerApellido, empleado.SegundoApellido FROM empleado INNER JOIN cargos INNER JOIN departamento INNER JOIN empresa WHERE empresa.NitEmpresa=departamento.NitEmpresa AND departamento.idDepartamento= cargos.idDepartamento AND cargos.idCargos=empleado.idCargos and empresa.NitEmpresa='%s'",mysqli_real_escape_string($cnx,$NitEmpresa));
+		$result=mysqli_query($cnx,$query);
+		while ($row=mysqli_fetch_array($result)) {
+			$NombreCompleto="".$row["PrimerNombre"]." ".$row["SegundoNombre"]." ".$row["PrimerApellido"]." ".$row["SegundoApellido"];
+				echo "<tr>
+					 <td>".$row["NumeroDocumento"]."</td>
+					 <td>".$NombreCompleto."</td>
+					 <td class='text-right'>
+						 <div class='col-md-12'>
+							 <form method='post' action='Reporte_Suspension_Empleados.php'>
+								 <input type='hidden' name='numDoc' value='".$row["NumeroDocumento"]."'>
+								 <input type='submit' style='background: url(../img/icons/assignment.png);border: 0;' value='   '>
+							 </form>
+						 </div>
+					 </td>
+				 </tr>";
+
+		}
+		mysqli_close($cnx);
+	}
 	function getReporteLlegadasTardeEmpleado($NitEmpresa){
 		$cnx=cnx();
 		$query=sprintf("SELECT empleado.NumeroDocumento, empleado.PrimerNombre, empleado.SegundoNombre, empleado.PrimerApellido, empleado.SegundoApellido FROM empleado INNER JOIN cargos INNER JOIN departamento INNER JOIN empresa WHERE empresa.NitEmpresa=departamento.NitEmpresa AND departamento.idDepartamento= cargos.idDepartamento AND cargos.idCargos=empleado.idCargos and empresa.NitEmpresa='%s'",mysqli_real_escape_string($cnx,$NitEmpresa));
@@ -121,7 +143,7 @@
 		mysqli_close($cnx);
 		return $estado;
 	}
-	
+
 	function getFileHorasExtras($idHorasExtras){
 		$cnx=cnx();
 		$query=sprintf("SELECT *  FROM horas_extras_documentos where idHorasExtras='%s' ",mysqli_real_escape_string($cnx,$idHorasExtras));
@@ -141,6 +163,14 @@
 	function getFileIncapacidades($idIncapacidad){
 		$cnx=cnx();
 		$query=sprintf("SELECT *  FROM incapacidad_documentos where idIncapacidad='%s' ",mysqli_real_escape_string($cnx,$idIncapacidad));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		mysqli_close($cnx);
+		return [$row["tipoDocumento"],$row["rutaDocumento"]];
+	}
+	function getFilePermisoSeccional($idPermisoSeccional){
+		$cnx=cnx();
+		$query=sprintf("SELECT *  FROM permiso_seccional_documentos where idPermisoSeccional='%s' ",mysqli_real_escape_string($cnx,$idPermisoSeccional));
 		$resul=mysqli_query($cnx,$query);
 		$row=mysqli_fetch_array($resul);
 		mysqli_close($cnx);
@@ -230,6 +260,28 @@
 		mysqli_close($cnx);
 		return $data;
 	}
+	function getPermisoSeccional($idPermisoSeccional){
+		$cnx=cnx();
+		$data = array();
+		$data['exist']="0";
+		$query=sprintf("SELECT * FROM permiso_seccional  where idPermisoSeccional='%s'",mysqli_real_escape_string($cnx,$idPermisoSeccional));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!=""){
+			$data['exist']="1";
+			$data['FechaCreacion']=$row["FechaCreacion"];
+			$data['NumeroDocumento']=$row["NumeroDocumento"];
+			$data['NumeroDocumentoPor']=$row["NumeroDocumentoPor"];
+			$data['TipoPermisoSeccional']=$row["TipoPermisoSeccional"];
+			$data['Dia']=$row["Dia"];
+			$data['HoraInicio']=$row["HoraInicio"];
+			$data['HoraFin']=$row["HoraFin"];
+			$data['EstadoPermisoSeccional']=$row["EstadoPermisoSeccional"];
+			$data['Observacion']=$row["Observacion"];
+		}
+		mysqli_close($cnx);
+		return $data;
+	}
 	function DatosHorasExtras($idHorasExtras){
 		$cnx=cnx();
 		$data['exist']="0";
@@ -258,6 +310,17 @@
 		mysqli_close($cnx);
 		return $flag;
 
+	}
+	function isSuspensionExist($idSuspension){
+		$cnx=cnx();
+		$flag=FALSE;
+		$query=sprintf("SELECT * FROM suspension where idSuspension='%s'",mysqli_real_escape_string($cnx,$idSuspension));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!="")
+			$flag=TRUE;
+		mysqli_close($cnx);
+		return $flag;
 	}
 	function isEmpresaExist($NitEmpresa){
 		$cnx=cnx();
@@ -906,6 +969,30 @@
 		mysqli_close($cnx);
 		return $estado;
 	}
+	function UpdatePermisoSeccional($idPermisoSeccional,$TipoPermisoSeccional,$Dia,$HoraInicio,$HoraFin,$Observacion){
+		$cnx=cnx();
+		$query = sprintf("UPDATE permiso_seccional SET  TipoPermisoSeccional = '%s',Dia	 = '%s',HoraInicio = '%s',HoraFin = '%s',Observacion = '%s' WHERE idPermisoSeccional = '%s'",
+		mysqli_real_escape_string($cnx,$TipoPermisoSeccional),
+		mysqli_real_escape_string($cnx,$Dia),
+		mysqli_real_escape_string($cnx,$HoraInicio),
+		mysqli_real_escape_string($cnx,$HoraFin),
+		mysqli_real_escape_string($cnx,$Observacion),
+		mysqli_real_escape_string($cnx,$idPermisoSeccional)
+		);
+		$estado = mysqli_query($cnx,$query);
+		mysqli_close($cnx);
+		return $estado;
+	}
+	function ConfirmarSuspension($idSuspension){
+		$cnx=cnx();
+		$query = sprintf("UPDATE suspension SET  EstadoSuspension = '%s' WHERE idSuspension = '%s'",
+		mysqli_real_escape_string($cnx,1),
+		mysqli_real_escape_string($cnx,$idSuspension)
+		);
+		$estado = mysqli_query($cnx,$query);
+		mysqli_close($cnx);
+		return $estado;
+	}
 	function ConfirmarPermiso($idPermiso){
 		$cnx=cnx();
 		$query = sprintf("UPDATE permiso SET  EstadoPermiso = '%s' WHERE idPermiso = '%s'",
@@ -1039,7 +1126,16 @@ function eliminarPermisos($idPermiso){
 	mysqli_close($cnx);
 	return $estado;
 }
+//eliminarPermisosSeccional
+function eliminarPermisosSeccional($idPermisoSeccional){
+		$cnx=cnx();
+		$estado=1;
+		$query=sprintf("DELETE FROM permiso_seccional WHERE idPermisoSeccional='%s'",mysqli_real_escape_string($cnx,$idPermisoSeccional));
+		$estado = mysqli_query($cnx, $query);
 
+	mysqli_close($cnx);
+	return $estado;
+}
 //eliminarAusencia
 function eliminarAusencia($idAusencia){
 		$cnx=cnx();
@@ -1065,6 +1161,16 @@ function eliminarHoras_extras($IdColHorasExtras){
 		$cnx=cnx();
 		$estado=1;
 		$query=sprintf("DELETE FROM col_horas_extras WHERE IdColHorasExtras='%s'",mysqli_real_escape_string($cnx,$IdColHorasExtras));
+		$estado = mysqli_query($cnx, $query);
+
+	mysqli_close($cnx);
+	return $estado;
+}
+//eliminarSuspension
+function eliminarSuspension($idSuspension){
+		$cnx=cnx();
+		$estado=1;
+		$query=sprintf("DELETE FROM suspension WHERE idSuspension='%s'",mysqli_real_escape_string($cnx,$idSuspension));
 		$estado = mysqli_query($cnx, $query);
 
 	mysqli_close($cnx);
@@ -1223,7 +1329,23 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 		$estado = mysqli_query($cnx, $query);
 		mysqli_close($cnx);
 	}
-
+	function insertarDocumentoPermisoSeccionado($idPermisoSeccional,$name,$extension){
+		$cnx=cnx();
+		$query = sprintf("INSERT INTO permiso_seccional_documentos(idPermisoSeccional,rutaDocumento,tipoDocumento) VALUES ('%s','%s','%s')",
+			mysqli_real_escape_string($cnx,$idPermisoSeccional),
+			mysqli_real_escape_string($cnx,$name),
+			mysqli_real_escape_string($cnx,$extension)
+		);
+		$estado = mysqli_query($cnx, $query);
+		if($estado==1){
+			$query = sprintf("UPDATE permiso_seccional SET  EstadoPermisoSeccional = '%s' WHERE idPermisoSeccional = '%s'",
+			mysqli_real_escape_string($cnx,"1"),
+			mysqli_real_escape_string($cnx,$idPermisoSeccional)
+			);
+			$estado = mysqli_query($cnx,$query);
+		}
+		mysqli_close($cnx);
+	}
 	function GuardarArchivoHorasExtrasPDF($idHorasExtras,$name,$extension){
 		$cnx=cnx();
 		$query=sprintf("INSERT INTO horas_extras_documentos(idHorasExtras, rutaDocumento, tipoDocumento) VALUES ('%s','%s','%s')",
@@ -1283,6 +1405,18 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 		return $flag;
 
 	}
+	function isPermisoSeccionalExist($idPermisoSeccional){
+		$cnx=cnx();
+		$flag=FALSE;
+		$query=sprintf("SELECT * FROM permiso_seccional where idPermisoSeccional='%s'",mysqli_real_escape_string($cnx,$idPermisoSeccional));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!="")
+			$flag=TRUE;
+		mysqli_close($cnx);
+		return $flag;
+
+	}
 	function isAusenExist($idAusencia){
 		$cnx=cnx();
 		$flag=FALSE;
@@ -1305,7 +1439,7 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 		mysqli_close($cnx);
 		return $flag;
 	}
-		function AgregarPermiso($TipoPermiso,$NumeroDocumentoPor,$estadoPermiso,$DiaInicio,$DiaFin,$HoraInicio,$HoraFin,$Observacion,$NumeroDocumento){
+	function AgregarPermiso($TipoPermiso,$NumeroDocumentoPor,$estadoPermiso,$DiaInicio,$DiaFin,$HoraInicio,$HoraFin,$Observacion,$NumeroDocumento){
 		date_default_timezone_set('America/El_Salvador');
 		$dateTime = date("Y-m-d H:i:s");
 		$cnx = cnx();
@@ -1316,6 +1450,24 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 			mysqli_real_escape_string($cnx,$TipoPermiso),
 			mysqli_real_escape_string($cnx,$DiaInicio),
 			mysqli_real_escape_string($cnx,$DiaFin),
+			mysqli_real_escape_string($cnx,$HoraInicio),
+			mysqli_real_escape_string($cnx,$HoraFin),
+			mysqli_real_escape_string($cnx,$estadoPermiso),
+			mysqli_real_escape_string($cnx,$Observacion)
+
+		);
+		$estado = mysqli_query($cnx, $query);
+		mysqli_close($cnx);
+		return $estado;
+	}
+
+	function AgregarPermisoSeccional($TipoPermiso,$NumeroDocumentoPor,$estadoPermiso,$DiaInicio,$HoraInicio,$HoraFin,$Observacion,$NumeroDocumento){
+		$cnx = cnx();
+		$query = sprintf("INSERT INTO permiso_seccional(NumeroDocumentoPor,NumeroDocumento,TipoPermisoSeccional,Dia,HoraInicio,HoraFin,EstadoPermisoSeccional,Observacion) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s')",
+			mysqli_real_escape_string($cnx,$NumeroDocumentoPor),
+			mysqli_real_escape_string($cnx,$NumeroDocumento),
+			mysqli_real_escape_string($cnx,$TipoPermiso),
+			mysqli_real_escape_string($cnx,$DiaInicio),
 			mysqli_real_escape_string($cnx,$HoraInicio),
 			mysqli_real_escape_string($cnx,$HoraFin),
 			mysqli_real_escape_string($cnx,$estadoPermiso),

@@ -518,6 +518,74 @@ $(document).ready(function() {
         });
     });
 
+    //Modificar Permiso Seccional btnModificarPermisoSeccional
+    $("#btnModificarPermisoSeccional").click(function() {
+      var idPermisoSeccional = document.getElementById("idPermisoSeccional").value;
+      var TipoPermisoSeccional = $("#TPermiso").val();
+      if(TipoPermisoSeccional==1){
+        var Fecha =document.getElementById("FechaInicio").value;
+        var HoraInicio = "00:00";
+        var HoraFin = "00:00";
+      }else if (TipoPermisoSeccional==2) {
+        var Fecha = document.getElementById("Fecha").value;
+        var HoraInicio = document.getElementById("hInicio").value;
+        var HoraFin = document.getElementById("hFin").value;
+      }
+      var Observacion= document.getElementById("Observacion").value;
+      var opc=6;
+        //alert("user: "+user+" - pass: "+contra);
+        $.ajax({
+            url: '../php/Modificar.php',
+            type: 'POST',
+            data: {
+              opc: 9,
+              idPermisoSeccional: idPermisoSeccional,
+              TipoPermisoSeccional: TipoPermisoSeccional,
+              Fecha: Fecha,
+              HoraInicio: HoraInicio,
+              HoraFin: HoraFin,
+              Observacion: Observacion
+          },
+          beforeSend: function() {
+              respAlert("info", "Verificando datos...");
+          },
+          success: function(data) {
+              console.log(data);
+              var stringL = data.split(",");
+              data=stringL[0];
+              str=stringL[1];
+              switch (data[0]) {
+                  case "0":
+                      respAlert("warning", str);
+                      break;
+                  case "1":
+                      respAlert("success", "Moficacion correctamente, redireccionando..");
+                      setTimeout(function(){
+                        redireccionar("../sistema/Permiso_seccional.php");
+                      },1000);
+                      break;
+                  case "2":
+                      respAlert("warning", "Error en la base de datos, contacte a soporte");
+                      break;
+                  case "3":
+                      respAlert("warning", "ERROR!!!, redireccionando..");
+                      setTimeout(function(){
+                        redireccionar("../sistema/Permiso_seccional.php");
+                      },1000);
+                      break;
+                }
+                //respAlert("success",data[0]);
+                /*setTimeout(function(){
+                  redireccionar("sistema/home.php");
+                },1000);*/
+            },
+            error: function(data) {
+                console.log(data);
+                respAlert("danger", "Error...");
+            }
+        });
+    });
+
     //Modificar Permiso btnModificarPermiso
     $("#btnModificarPermiso").click(function() {
       var idPermiso = document.getElementById("idPermiso").value;
@@ -875,6 +943,50 @@ $(document).ready(function() {
             }
         });
     });
+    //Eliminar Permisos Seccional btnEliminarPermisoSeccional
+    $("#btnEliminarPermisoSeccional").click(function() {
+          var idPermisoSeccional = document.getElementById("idPermisoSeccional").value;
+        //alert("user: "+user+" - pass: "+contra);
+        $.ajax({
+            url: '../php/Eliminar.php',
+            type: 'POST',
+            data: {
+                opc: 10,
+                idPermisoSeccional: idPermisoSeccional
+            },
+            beforeSend: function() {
+                respAlert("info", "Verificando datos...");
+            },
+            success: function(data) {
+                console.log(data);
+                switch (data[0]) {
+                    case "0":
+                        respAlert("warning", "Error en base de datos");
+                        break;
+                    case "1":
+                        setTimeout(function() {
+                            respAlert("success", "Eliminando...");
+                            redireccionar("Permiso_seccional.php");
+                        }, 1000);
+                        break;
+                    case "2":
+                        setTimeout(function() {
+                            respAlert("danger", "ERROR!!!!!");
+                            redireccionar("Permiso_seccional.php");
+                        }, 1000);
+                        break;
+                }
+                //respAlert("success",data[0]);
+                /*setTimeout(function(){
+                  redireccionar("sistema/home.php");
+                },1000);*/
+            },
+            error: function(data) {
+                console.log(data);
+                respAlert("danger", "Error...");
+            }
+        });
+    });
     //Eliminar incapacidad btnEliminarIncap
     $("#btnEliminarAusencia").click(function() {
           var idAusencia = document.getElementById("idAusencia").value;
@@ -1210,6 +1322,83 @@ $(document).ready(function() {
                         break;
                     case "2":
                         respAlert("warning", "Error en la base de datos, contacte a soporte");
+                        break;
+                  }
+                //respAlert("success",data[0]);
+                /*
+                confirmButtonText: 'Si, guardar!'
+              }).then(function () {
+
+                setTimeout(function(){
+                  redireccionar("sistema/home.php");
+                },1000);*/
+            },
+            error: function(data) {
+                console.log(data);
+                respAlert("danger", "Error...");
+            }
+        });//Fin Ajax
+    });
+
+    //Agregar Permiso Seccional btnAgregarPermisoSeccional
+    $("#btnAgregarPermisoSeccional").click(function() {
+        var TipoPermiso = $("#TPermiso").val();
+        if(TipoPermiso==1){
+          //Dias
+          var DiaInicio = document.getElementById("FechaInicio").value;
+          var HoraInicio = "00:00:00";
+          var HoraFin = "00:00:00";
+
+        }else {
+          //Horas
+          var DiaInicio = document.getElementById("Fecha").value;
+          var HoraInicio = document.getElementById("hInicio").value;
+          var HoraFin = document.getElementById("hFin").value;
+        }
+        var Observacion= $("#Observacion").val();
+
+        //NumeroDocumento
+        var NumeroDocumento = document.getElementById("numDoc").value;
+        var opc=10;
+        //alert("Aqui voy");
+        $.ajax({
+            url: '../sistema/agregar.php',
+            type: 'POST',
+            data: {
+                opc: 13,
+                TipoPermiso: TipoPermiso,
+                DiaInicio: DiaInicio,
+                HoraInicio: HoraInicio,
+                HoraFin: HoraFin,
+                Observacion: Observacion,
+                NumeroDocumento:NumeroDocumento
+            },
+            beforeSend: function() {
+                respAlert("info", "Verificando datos...");
+            },
+            success: function(data) {
+                console.log(data);
+                var stringL = data.split(",");
+                data=stringL[0];
+                str=stringL[1];
+                switch (data[0]) {
+                    case "0":
+                        respAlert("warning", str);
+                        break;
+                    case "1":
+                        respAlert("success", "Agregado correctamente, redireccionando..");
+                        setTimeout(function(){
+                          redireccionar("../sistema/Permiso_seccional.php");
+                        },1000);
+                        break;
+                    case "2":
+                        respAlert("warning", "Error en la base de datos, contacte a soporte");
+                        break;
+                    case "3":
+                        respAlert("warning", "ERROR INTENTO DE INGRESO DE DATO INCORRECTO, redireccionando..");
+                        setTimeout(function(){
+                        redireccionar("../sistema/menu.php");
+                        },1000);
                         break;
                   }
                 //respAlert("success",data[0]);
