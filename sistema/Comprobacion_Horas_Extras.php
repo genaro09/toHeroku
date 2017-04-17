@@ -1,4 +1,4 @@
-<?php
+ <?php
 	ini_set('max_execution_time', 300);
 	include '../php/funciones.php';
 	include '../php/verificar_sesion.php';
@@ -143,7 +143,7 @@
 					                        <!--        Here you can write extra buttons/actions for the toolbar              -->
 					                    </div>
 					                    <div class="row">
-																
+
 																<?php
 																	$data=DatosHorasExtras($idHorasExtras);
 																	if($data["exist"]==1){
@@ -167,16 +167,20 @@
 																	            </form>
 																			';
 																		}else if($data["EstadoHorasExternas"]==1){
-																	        $getFile=getFileHorasExtras($idHorasExtras);
-																	        $Documento="../upload/Horas_Extras/".$getFile[1];
-																	        if(strtolower($getFile[0])=="pdf"){
-																	          echo "
-																	          <iframe src='".$Documento."' style='width:100%;height:600px;' frameborder='0'></iframe>
-																	          ";
-																	        }else{
-																	          echo '
-																	          <img src="'.$Documento.'"  style="width="100%";height:600;">';
-																	        }
+																					if (!isDocumentoHorasExtrasExist($idHorasExtras)) {
+																						echo "Estas Horas Extras Fueron cerradas";
+																					}else{
+																						$getFile=getFileHorasExtras($idHorasExtras);
+																		        $Documento="../upload/Horas_Extras/".$getFile[1];
+																		        if(strtolower($getFile[0])=="pdf"){
+																		          echo "
+																		          <iframe src='".$Documento."' style='width:100%;height:600px;' frameborder='0'></iframe>
+																		          ";
+																		        }else{
+																		          echo '
+																		          <img src="'.$Documento.'"  style="width="100%";height:600;">';
+																		        }
+																					}
 																		}
 																	}
 
@@ -254,7 +258,7 @@
     }
     </script>
     <script type="text/javascript">
-    	
+
                          $(function() {
 
                            // We can attach the `fileselect` event to all file inputs on the page

@@ -89,6 +89,7 @@
                             <ul class='nav'>
                               <li><a href='Horas_Extras.php'><span style='font-size:14px;margin-left:10%;'>Crear Horas Extras</span></a></li>
                               <li><a href='Reporte_Horas_Extras.php'><span style='font-size:14px;margin-left:10%;'>Reporte Horas Extras</span></a></li>
+                              <li><a href='Cierre_Horas_Extras.php'><span style='font-size:14px;margin-left:10%;'>Cierre Horas Extras</span></a></li>
                               <li><a href='Pagos_Horas_Extras.php'><span style='font-size:14px;margin-left:10%;'>Pago Horas Extras</span></a></li>
                             </ul>
                           </li>

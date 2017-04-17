@@ -81,7 +81,11 @@
 	function ckeckCierreHorasExtras($mes,$annio,$NitEmpresa,$tipoPago){
 		$cnx=cnx();
 		$flag=FALSE;
-		$query=sprintf("SELECT * FROM cierre_horas_extras where Mes='%s' AND  tipoPago='%s' AND NitEmpresa	='%s'",mysqli_real_escape_string($cnx,$FechaIni),mysqli_real_escape_string($cnx,$FechaFin),mysqli_real_escape_string($cnx,$tipoPago),mysqli_real_escape_string($cnx,$formaPago),mysqli_real_escape_string($cnx,$NitEmpresa));
+		$query=sprintf("SELECT * FROM cierre_horas_extras where Mes='%s' AND annio='%s' AND  tipoPago='%s' AND NitEmpresa='%s'",
+		mysqli_real_escape_string($cnx,$mes),
+		mysqli_real_escape_string($cnx,$annio),
+		mysqli_real_escape_string($cnx,$tipoPago),
+		mysqli_real_escape_string($cnx,$NitEmpresa));
 		$resul=mysqli_query($cnx,$query);
 		$row=mysqli_fetch_array($resul);
 		if($row[0]!="")
@@ -119,7 +123,34 @@
 			mysqli_close($cnx);
 			return [$row["Desde"],$row["Hasta"],$row["H_Descanso"]];
 	}
-
+	function splitTime($time,$ToDivid){
+		//dividimos el tiempo entre un numero especifico
+		$time_array = explode(':',$time);
+		$hours = (int)$time_array[0];
+		$minutes = (int)$time_array[1];
+		$seconds = (int)$time_array[2];
+		$total_seconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+		$average = floor($total_seconds/$ToDivid);
+		$hours = floor($average / 3600);
+		$mins = floor($average / 60 % 60);
+		$secs = floor($average % 60);
+		$timeFormat = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
+		return $timeFormat;
+	}
+	function MultiplyTime($time,$ToMultiply){
+		//dividimos el tiempo entre un numero especifico
+		$time_array = explode(':',$time);
+		$hours = (int)$time_array[0];
+		$minutes = (int)$time_array[1];
+		$seconds = (int)$time_array[2];
+		$total_seconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+		$average = floor($total_seconds*$ToMultiply);
+		$hours = floor($average / 3600);
+		$mins = floor($average / 60 % 60);
+		$secs = floor($average % 60);
+		$timeFormat = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
+		return $timeFormat;
+	}
 	function HalfTime($time){
 		$time_array = explode(':',$time);
 		$hours = (int)$time_array[0];
@@ -132,6 +163,22 @@
 		$secs = floor($average % 60);
 		$timeFormat = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
 		return $timeFormat;
+	}
+	function getNumberDocumentArray($NitEmpresa,$TipoReporte){
+		//getNombreEmpleado($NumeroDocumento);
+		$cnx=cnx();
+		$arrayNumeroDocumento = array();
+		$count=0;
+		$query=sprintf("SELECT htrabajo.* FROM turno INNER JOIN htrabajo WHERE turno.Periodo_Pago='%s' AND turno.NitEmpresa='%s' AND turno.idTurno=htrabajo.idTurno",
+		mysqli_real_escape_string($cnx,$TipoReporte."0"),
+		mysqli_real_escape_string($cnx,$NitEmpresa));
+		$resul=mysqli_query($cnx,$query);
+		while ($row=mysqli_fetch_array($resul)) {
+			$arrayNumeroDocumento[$count]=$row["NumeroDocumento"];
+			$count++;
+		}
+		mysqli_close($cnx);
+		return $arrayNumeroDocumento;
 	}
 
 	function DiscountsTimeEmploy($Desde,$Hasta,$NumeroDocumento){
@@ -736,6 +783,26 @@
 		mysqli_close($cnx);
 		return $data;
 	}
+
+	function getHorasExtras($Fecha,$empresa){
+		$cnx=cnx();
+		$data['exist']="0";
+		$query=sprintf("SELECT * FROM horas_extras where Fecha='%s' AND NitEmpresa='%s'",
+		mysqli_real_escape_string($cnx,$Fecha),
+		mysqli_real_escape_string($cnx,$empresa));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!=""){
+			$flag=TRUE;
+			$data['exist']="1";
+			$data['idHorasExtras']=$row["idHorasExtras"];
+			$data['EstadoHorasExternas']=$row["EstadoHorasExternas"];
+		}
+
+		mysqli_close($cnx);
+		return $data;
+
+	}
 	function DatosHorasExtras($idHorasExtras){
 		$cnx=cnx();
 		$data['exist']="0";
@@ -769,6 +836,17 @@
 		$cnx=cnx();
 		$flag=FALSE;
 		$query=sprintf("SELECT * FROM suspension where idSuspension='%s'",mysqli_real_escape_string($cnx,$idSuspension));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!="")
+			$flag=TRUE;
+		mysqli_close($cnx);
+		return $flag;
+	}
+	function isDocumentoHorasExtrasExist($idHorasExtras){
+		$cnx=cnx();
+		$flag=FALSE;
+		$query=sprintf("SELECT * FROM horas_extras_documentos where idHorasExtras='%s'",mysqli_real_escape_string($cnx,$idHorasExtras));
 		$resul=mysqli_query($cnx,$query);
 		$row=mysqli_fetch_array($resul);
 		if($row[0]!="")
@@ -1463,6 +1541,16 @@
 	  return abs($EndTimeSeconds-$FirstTimeSeconds);
 	}
 
+	function subsTwoTimesWithSeconds($First,$End){
+		$str_time = (string)$First;
+		sscanf($str_time, "%d:%d:%d", $hours, $minutes, $seconds);
+		$FirstTimeSeconds = isset($seconds) ? $hours * 3600 + $minutes * 60 + $seconds : $hours * 60 + $minutes;
+		$str_time = (string)$End;
+		sscanf($str_time, "%d:%d:%d", $hours, $minutes, $seconds);
+		$EndTimeSeconds = isset($seconds) ? $hours * 3600 + $minutes * 60 + $seconds : $hours * 60 + $minutes;
+		return abs($EndTimeSeconds-$FirstTimeSeconds);
+	}
+
 	function HourToNum($Hour){
 	  $Hour=(string)$Hour;
 	  $Hour= explode(":",$Hour);
@@ -1858,6 +1946,26 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 		$estado = mysqli_query($cnx, $query);
 		mysqli_close($cnx);
 	}
+
+	function insertarColHoraExtra($idHorasExtras,$NumeroDocumentoPor,$NumeroDocumentoPara,$NHorasDiurnas,$NHorasNocturnas,$Desde,$Hasta,$FechaCreada,$TipoJornada,$DiaVacacion,$HEAutoGenerada){
+		$cnx=cnx();
+		$query = sprintf("INSERT INTO col_horas_extras(idHorasExtras,NumeroDocumentoPor,NumeroDocumentoPara,NHorasDiurnas,NHorasNocturnas,Desde,Hasta,FechaCreada,TipoJornada,DiaVacacion,HEAutoGenerada) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+			mysqli_real_escape_string($cnx,$idHorasExtras),
+			mysqli_real_escape_string($cnx,$NumeroDocumentoPor),
+			mysqli_real_escape_string($cnx,$NumeroDocumentoPara),
+			mysqli_real_escape_string($cnx,$NHorasDiurnas),
+			mysqli_real_escape_string($cnx,$NHorasNocturnas),
+			mysqli_real_escape_string($cnx,$Desde),
+			mysqli_real_escape_string($cnx,$Hasta),
+			mysqli_real_escape_string($cnx,$FechaCreada),
+			mysqli_real_escape_string($cnx,$TipoJornada),
+			mysqli_real_escape_string($cnx,$DiaVacacion),
+			mysqli_real_escape_string($cnx,$HEAutoGenerada)
+		);
+		$estado = mysqli_query($cnx, $query);
+		mysqli_close($cnx);
+		return $estado;
+	}
 	function insertarDocumentoPermisoSeccionado($idPermisoSeccional,$name,$extension){
 		$cnx=cnx();
 		$query = sprintf("INSERT INTO permiso_seccional_documentos(idPermisoSeccional,rutaDocumento,tipoDocumento) VALUES ('%s','%s','%s')",
@@ -1967,6 +2075,17 @@ function checkCuentaBanco($NumeroDocuento,$idBanco){
 			$flag=TRUE;
 		mysqli_close($cnx);
 		return $flag;
+	}
+	function AgregarHorasExtras($NitEmpresa,$Fecha,$EstadoHorasExternas){
+		$cnx = cnx();
+		$query = sprintf("INSERT INTO horas_extras(NitEmpresa,Fecha,EstadoHorasExternas) VALUES ('%s','%s','%s')",
+			mysqli_real_escape_string($cnx,$NitEmpresa),
+			mysqli_real_escape_string($cnx,$Fecha),
+			mysqli_real_escape_string($cnx,$EstadoHorasExternas)
+		);
+		$estado = mysqli_query($cnx, $query);
+		mysqli_close($cnx);
+		return $estado;
 	}
 	function AgregarPermiso($TipoPermiso,$NumeroDocumentoPor,$estadoPermiso,$DiaInicio,$DiaFin,$HoraInicio,$HoraFin,$Observacion,$NumeroDocumento){
 		date_default_timezone_set('America/El_Salvador');
@@ -2382,6 +2501,182 @@ function checkIsTheyPayExtraHours($NumeroDocumento,$NitEmpresa,$FechaIni,$FechaF
 		return number_format((float)$totAPagar, 2, '.', '');
 
 	}
+
+	//bprrar todas las col_horas_extras de un horas_extras
+	function deleteInsideHoraExtra($idHorasExtras){
+		$cnx=cnx();
+		$estado=1;
+		$query=sprintf("DELETE FROM col_horas_extras WHERE idHorasExtras='%s'",mysqli_real_escape_string($cnx,$idHorasExtras));
+		$estado = mysqli_query($cnx, $query);
+		mysqli_close($cnx);
+		return $estado;
+	}
+	//Pondremos todas las horas extras al cierre en 1
+	function CheckCloseAllExtraTime($FechaIni,$FechaFin,$NitEmpresa){
+		$cnx=cnx();
+		$Fin= new DateTime($FechaFin);
+		$Fin =$Fin->modify( '+1 day' );
+		$daterange = new DatePeriod(
+		 new DateTime($FechaIni),
+		 new DateInterval('P1D'),
+		 $Fin
+		);
+		foreach($daterange as $date){
+			// para obtener el dia echo $date->format("Y-m-d")."<br>";
+			$idHorasExtras=getHorasExtras($date->format("Y-m-d"),$NitEmpresa);
+			if($idHorasExtras["exist"]==1){
+					$query = sprintf("UPDATE horas_extras SET  EstadoHorasExternas = '%s' WHERE idHorasExtras = '%s'",
+					mysqli_real_escape_string($cnx,"1"),
+					mysqli_real_escape_string($cnx,$idHorasExtras["idHorasExtras"])
+					);
+					$estado = mysqli_query($cnx,$query);
+		 }
+	 }
+	mysqli_close($cnx);
+}
+
+	//cerrar las horas extras
+	function CloseAllExtraTime($FechaIni,$FechaFin,$NitEmpresa){
+		$Fin= new DateTime($FechaFin);
+		$Fin =$Fin->modify( '+1 day' );
+		$daterange = new DatePeriod(
+     new DateTime($FechaIni),
+     new DateInterval('P1D'),
+     $Fin
+	 	);
+		foreach($daterange as $date){
+			// para obtener el dia echo $date->format("Y-m-d")."<br>";
+			$idHorasExtras=getHorasExtras($date->format("Y-m-d"),$NitEmpresa);
+			if($idHorasExtras["exist"]==1){
+				//echo "Existe <br>";
+				if($idHorasExtras["EstadoHorasExternas"]==1){
+					//si existe hay que ver si ya esta validada
+					$estado=1;
+				}elseif ($idHorasExtras["EstadoHorasExternas"]==0) {
+					//no esta validado eliminar lo que esta adentro
+					$estado=deleteInsideHoraExtra($idHorasExtras["idHorasExtras"]);
+				}else {
+					$estado=0;
+				}
+			}else {
+				//echo "No existe <br>"; crear y cerrar
+				$estado=AgregarHorasExtras($NitEmpresa,$date->format("Y-m-d"),1);//Nit,Fecha,Estado
+			}
+			if($estado!=1){
+				return [0,"Error No se pudo terminar de revisar las semanas quedo en el dia:".$date->format("Y-m-d")];
+			}
+		}
+		return [1,"se dio correctamente"];
+	}
+
+	//Cierre de horas extras
+	function insertarCierreHorasExtras($NitEmpresa,$mes,$annio,$NumeroDocumentoPor,$TipoReporteVal){
+		$cnx=cnx();
+		$query=sprintf("INSERT INTO cierre_horas_extras(NitEmpresa, Mes, annio,GeneradoPorNumeroDocumento,tipoPago) VALUES ('%s','%s','%s','%s','%s')",
+		mysqli_real_escape_string($cnx,$NitEmpresa),
+		mysqli_real_escape_string($cnx,$mes),
+		mysqli_real_escape_string($cnx,$annio),
+		mysqli_real_escape_string($cnx,$NumeroDocumentoPor),
+		mysqli_real_escape_string($cnx,$TipoReporteVal)
+		);
+		$estado = mysqli_query($cnx,$query);
+		mysqli_close($cnx);
+		return $estado;
+	}
+	//agregar las nuevas horas extras
+	function setIfExtraTimePayMore($FechaIni,$FechaFin,$SalarioNominal,$NumeroDocumento,$NumeroDocumentoPor,$NitEmpresa,$dateTime){
+		$NombreEmpleado=getNombreEmpleado($NumeroDocumento);
+		$flagIsGonnaPaySomething=0;//se le pagara algo si o no
+		$strData=array();//Informacion que vamos a enviar para presentarla en pantalla
+		$countData=0;
+		$startTime = strtotime($FechaIni);
+		$endTime = strtotime($FechaFin);
+		$lastWeek = new DateTime($FechaFin);
+		$lastWeek = $lastWeek->format("W");
+		do {
+			$weeks[] = date('W', $startTime);
+			$startTime += strtotime('+1 week', 0);
+		} while (date('W', $startTime) <= $lastWeek);
+		//Tenemos todas las semanas que toca el lapso de tiempo dado
+		$PassIniFecha=0;
+		$PassFinFecha=0;
+		$ValorMinuto=number_format(((float)$SalarioNominal)/30/8/60, 4, '.', '');
+		foreach($weeks as $key => $value){
+			$DiasDeLaSemana = array();
+		  $ValorMD=0;
+			$year = DateTime::createFromFormat("Y-m-d", $FechaIni);
+			$year=$year->format("Y");
+			//hay que ver
+			if($value==52 &&  1==date("m",strtotime($FechaIni))){
+				$year=$year-1;
+			}
+		  $daysOfTheWeek=getStartAndEndDate($value,$year);
+		  //echo  "Semana:".$value."<br>";
+		  $ExistSemanal=getSemanal($value,$year,$NumeroDocumento);
+		  if($ExistSemanal["exist"]==1){
+				$TotTimeToDiscount="00:00:00";
+				$TimResul="00:00:00";
+		    //tiene semanal
+		    $cod1=giveSemanalTimeAndIfDiurnOrNoctu($NumeroDocumento,$value,$year);
+		    $cod1=explode(",",$cod1);
+		    if($cod1[0]==1){
+		      //Si hay tiempo extra en el semanal
+		      $TotTimeToDiscount=DiscountsTimeEmploy($daysOfTheWeek["Lunes"],$daysOfTheWeek["Domingo"],$NumeroDocumento);
+		    }
+		    if ($cod1[1]>$TotTimeToDiscount) {
+		      //Si hay mas en el exedente que en los descuentos
+		      $TimResul=gmdate("H:i:s", (int)subsTwoTimes($TotTimeToDiscount,$cod1[1]));
+		      $MD=TimeToMinut($TimResul);
+		      $ValorMD=number_format($ValorMinuto*2*$MD, 2, '.', '');
+					$flagIsGonnaPaySomething=1;
+		    }
+		    $CountdaysOfTheWeek=0;
+		    foreach($daysOfTheWeek as $keyDOW => $valueDOW){
+		      if(strtotime($valueDOW)==strtotime($FechaIni)){
+		        $PassIniFecha=1;
+		      }
+		      if((strtotime($valueDOW)>=strtotime($FechaIni)) && (strtotime($valueDOW)<=strtotime($FechaFin))){
+		        //Tenemos los dias validos, la fecha en $valueDow y el numero de la semana en $value
+							$DiasDeLaSemana[$CountdaysOfTheWeek]=$valueDOW;//dias a los que se les pondra las horas extras de forma parcial
+		          $CountdaysOfTheWeek++;
+		      }
+		      if(strtotime($valueDOW)==strtotime($FechaFin)) {
+		        $PassFinFecha=1;
+		      }
+		    }
+		    //Cuanto Extra se le pagara
+		    //echo "Del Tot semanal a pagar:".$ValorMD." por  ".$CountdaysOfTheWeek."  dias  solo se le dara:".number_format((double)$ValorMD*($CountdaysOfTheWeek/7), 2, '.', '')."<br>";
+				if (number_format((double)$ValorMD*($CountdaysOfTheWeek/7), 2, '.', '')>0) {
+					$strData[$countData]= array('NombreEmpleado' => $NombreEmpleado,'TiempoExtra' => $TimResul,'TotaPagar' => number_format((double)$ValorMD*($CountdaysOfTheWeek/7), 2, '.', ''), 'NumeroDocumento' => $NumeroDocumento, "Semana" =>$value, "annio" => $year );
+					for($k=0;$k<sizeof($DiasDeLaSemana);$k++){
+						$tiempoAgregarAlDia=splitTime($TimResul,$CountdaysOfTheWeek);
+						if($k==0){
+							if(MultiplyTime($tiempoAgregarAlDia,$CountdaysOfTheWeek)<$TimResul){
+								//Si no da lo mismo se le agregara lo que le falta al primer dia
+								$tiempoAgregarAlDia=AddArrTime([gmdate("H:i:s", (int)subsTwoTimesWithSeconds(MultiplyTime($tiempoAgregarAlDia,$CountdaysOfTheWeek),$TimResul)),$tiempoAgregarAlDia]);
+							}
+						}
+						$semanal=getSemanal($value,$year,$NumeroDocumento);//Semana,annio,doc
+						$idHorasExtras=getHorasExtras($DiasDeLaSemana[$k],$NitEmpresa);
+						if($idHorasExtras["exist"]){
+							$idHorasExtras=$idHorasExtras["idHorasExtras"];
+							$estado=insertarColHoraExtra($idHorasExtras,$NumeroDocumentoPor,$NumeroDocumento,$tiempoAgregarAlDia,"00:00:00","06:00:00",AddArrTime(["06:00:00",$tiempoAgregarAlDia]),$dateTime,"1","0","1");
+							if($estado!=1){
+								return [0,"Se produjo un error. Solo ingreso desde ".getNombreEmpleado($NumeroDocumento)." en la semana ".$value];
+								break;
+							}
+						}
+					}
+					$countData++;
+				}
+			}
+		}
+		//Si no dio error llegaremos a este punto
+		return [1,"Ingresado correctamente"];
+	}
+
+
+
 	function getIfExtraTimePayMore($FechaIni,$FechaFin,$SalarioNominal,$NumeroDocumento){
 		$NombreEmpleado=getNombreEmpleado($NumeroDocumento);
 		$flagIsGonnaPaySomething=0;//se le pagara algo si o no
@@ -2412,6 +2707,7 @@ function checkIsTheyPayExtraHours($NumeroDocumento,$NitEmpresa,$FechaIni,$FechaF
 		  $ExistSemanal=getSemanal($value,$year,$NumeroDocumento);
 		  if($ExistSemanal["exist"]==1){
 				$TotTimeToDiscount="00:00:00";
+				$TimResul="00:00:00";
 		    //tiene semanal
 		    $cod1=giveSemanalTimeAndIfDiurnOrNoctu($NumeroDocumento,$value,$year);
 		    $cod1=explode(",",$cod1);
@@ -2442,7 +2738,7 @@ function checkIsTheyPayExtraHours($NumeroDocumento,$NitEmpresa,$FechaIni,$FechaF
 		    //Cuanto Extra se le pagara
 		    //echo "Del Tot semanal a pagar:".$ValorMD." por  ".$CountdaysOfTheWeek."  dias  solo se le dara:".number_format((double)$ValorMD*($CountdaysOfTheWeek/7), 2, '.', '')."<br>";
 				if (number_format((double)$ValorMD*($CountdaysOfTheWeek/7), 2, '.', '')>0) {
-					$strData[$countData]= array('NombreEmpleado' => $NombreEmpleado,'TotaPagar' => number_format((double)$ValorMD*($CountdaysOfTheWeek/7), 2, '.', ''), 'NumeroDocumento' => $NumeroDocumento, "Semana" =>$value, "annio" => $year );
+					$strData[$countData]= array('NombreEmpleado' => $NombreEmpleado,'TiempoExtra' => $TimResul,'TotaPagar' => number_format((double)$ValorMD*($CountdaysOfTheWeek/7), 2, '.', ''), 'NumeroDocumento' => $NumeroDocumento, "Semana" =>$value, "annio" => $year );
 					$countData++;
 				}
 			}
@@ -2450,10 +2746,32 @@ function checkIsTheyPayExtraHours($NumeroDocumento,$NitEmpresa,$FechaIni,$FechaF
 
 		return [$flagIsGonnaPaySomething,$strData];
 	}
+
 	function getNombreEmpleado($NumeroDocumento){
 		$empleado=getInfoUser($NumeroDocumento);
 		$NombreCompleto="".$empleado->getPrimernombre()." ".$empleado->getSegundonombre()." ".$empleado->getPrimerapellido()." ".$empleado->getSegundoapellido();
 		return $NombreCompleto;
+	}
+	function getCierreHorasExtras($mes,$annio,$NitEmpresa,$tipoPago){
+		$cnx=cnx();
+		$data["exist"]=FALSE;
+		$query=sprintf("SELECT * FROM cierre_horas_extras where Mes='%s' AND annio='%s' AND  tipoPago='%s' AND NitEmpresa='%s'",
+		mysqli_real_escape_string($cnx,$mes),
+		mysqli_real_escape_string($cnx,$annio),
+		mysqli_real_escape_string($cnx,$tipoPago),
+		mysqli_real_escape_string($cnx,$NitEmpresa));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!=""){
+			$data["exist"]=TRUE;
+			$data["idCierreHorasExtras"]=$row["idCierreHorasExtras"];
+			$data["NumeroDocumentoPor"]=$row["GeneradoPorNumeroDocumento"];
+			$data["NombrePor"]=getNombreEmpleado($row["GeneradoPorNumeroDocumento"]);
+			$data["FechaGenerado"]=$row["FechaGenerado"];
+			$data["tipoPago"]=$row["tipoPago"];
+		}
+		mysqli_close($cnx);
+		return $data;
 	}
 	function getRowPagoHorasExtrasN($NitEmpresa,$FechaInicio,$FechaFin,$PeriodoPago,$FormaPago){
 		$cnx = cnx();

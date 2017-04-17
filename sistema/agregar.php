@@ -495,6 +495,94 @@
 					}
 					echo $AreSomething." %&$ ".$str;
 				break;
+
+				case '15':
+				if(!empty($_POST["mes"]) && !empty($_POST["annio"]) && !empty($_POST["TipoReporte"])){
+					$NombrePor=$_SESSION['usuario_sesion']->getPrimernombre()." ".$_SESSION['usuario_sesion']->getSegundonombre()." ".$_SESSION['usuario_sesion']->getPrimerapellido();
+					$NumeroDocumentoPor=$_SESSION['usuario_sesion']->getNumerodocumento();
+					$NitEmpresa=$_SESSION["empresa"];
+					$mes=$_POST["mes"];
+					$annio=$_POST["annio"];
+					$days=cal_days_in_month(CAL_GREGORIAN,$mes,$annio);
+					$TipoReporteVal = $_POST['TipoReporte'];
+					$TipoReporte = str_split($TipoReporteVal);
+					$flag=1;
+						if($TipoReporte[0]==1){
+							$FechaInicio=$annio."-".$mes."-"."1";//Y-M-D
+							$FechaFin=$annio."-".$mes."-".$days;//Y-M-D
+						}elseif ($TipoReporte[0]==2) {
+							//Catorcenal
+							$dayI=($TipoReporte[1]-1)*14;
+							$dayF=($TipoReporte[1])*14;
+							if($dayI==0){
+								$dayI=1;
+							}else $dayI=$dayI+1;
+							if($dayF>$days){
+								$dayF=$days;
+							}
+							$FechaInicio=$annio."-".$mes."-".$dayI;//Y-M-D
+							$FechaFin=$annio."-".$mes."-".$dayF;//Y-M-D
+						}elseif ($TipoReporte[0]==3) {
+							//quincenal
+							$dayI=($TipoReporte[1]-1)*15;
+							$dayF=($TipoReporte[1])*15;
+							if($dayI==0){
+								$dayI=1;
+							}else $dayI=$dayI+1;
+							if($dayF>16){
+								$dayF=$days;
+							}
+							$FechaInicio=$annio."-".$mes."-".$dayI;//Y-M-D
+							$FechaFin=$annio."-".$mes."-".$dayF;//Y-M-D
+						}elseif ($TipoReporte[0]==4) {
+							//Semanal
+							$dayI=($TipoReporte[1]-1)*7;
+							$dayF=($TipoReporte[1])*7;
+							if($dayI==0){
+								$dayI=1;
+							}else $dayI=$dayI+1;
+							if($dayF>$days){
+								$dayF=$days;
+							}
+							$FechaInicio=$annio."-".$mes."-".$dayI;//Y-M-D
+							$FechaFin=$annio."-".$mes."-".$dayF;//Y-M-D
+						}else{
+							echo "0,ERROR se envio un Tipo de Pago invalido";
+							$flag=0;
+						}
+						//cuadro
+						if($flag==1){
+							  $AreSomething=0;//Si vamos a mostrar la alerta de que alguien se paso
+								$NDocumentoArray=getNumberDocumentArray($NitEmpresa,$TipoReporte[0]);
+								date_default_timezone_set('America/El_Salvador');
+								$dateTime = date("Y-m-d H:i:s");
+								//Primero Cerremos los dias
+								$data=CloseAllExtraTime($FechaInicio,$FechaFin,$_SESSION["empresa"]);
+								if($data[0]==1){
+									for($i=0;$i<count($NDocumentoArray);$i++){
+										//el valor de los DUI's esta en $NDocumentoArray[$i]
+										$empleado=getInfoEmpleado($NDocumentoArray[$i]);
+										//Agreguemos los dias y esto se da que se cierre ya el semanal
+											$data=setIfExtraTimePayMore($FechaInicio,$FechaFin,$empleado->getSalarionominal(),$NDocumentoArray[$i],$_SESSION["usuario_sesion"]->getNumerodocumento(),$_SESSION["empresa"],$dateTime);
+									}
+								}
+								if($data[0]==1){
+									$estado=insertarCierreHorasExtras($_SESSION["empresa"],date("m", strtotime($FechaInicio)),date("Y", strtotime($FechaInicio)),$_SESSION["usuario_sesion"]->getNumerodocumento(),$TipoReporteVal);
+									CheckCloseAllExtraTime($FechaInicio,$FechaFin,$_SESSION["empresa"]);
+									if($estado!=1){
+										return "0,Se produjo un error al final. Unicamente no se coloco que eta cerrado";
+										break;
+									}
+								}
+								echo $data[0]." , ".$data[1];
+							}
+						}else {
+							echo "0,ERROR No se pudieron enviar los datos correctamente";
+						}
+					break;
+					case '16':
+						echo "1, NADA :V";
+						break;
 		default:
 			# code...
 			echo "nada";

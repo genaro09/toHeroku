@@ -3,11 +3,14 @@
     header('Content-type: text/plain');
     header('Content-Disposition: attachment; filename="banco.txt"');
     $idPagos_Horas_Extras=$_POST["idPagos_Horas_Extras"];
+    $Banco=$_POST["formaDePago"];
     $cnx = cnx();
 		$query=sprintf("SELECT * FROM col_pago_horas_extras  WHERE idPago_HorasExtras='%s'",mysqli_real_escape_string($cnx,$idPagos_Horas_Extras));
 		$result=mysqli_query($cnx,$query);
 		$totAPagar=0.00;
     $arrayName = array();
+    $arrayCuentaBanco = array();
+    $MAXCuentaBanco=0;
     $MAXName=0;
     $arrayNit = array();
     $MAXNit=0;
@@ -21,6 +24,18 @@
 			$empleado= getInfoEmpleado($row["NumeroDocumento"]);
 			$Cargo= getInfoCargos($empleado->getIdcargos());
 			$Departamento = getInfoDepartamentos($Cargo->getIddepartamento());
+      if($Banco==4){
+        //Hipotecario
+        $cuentabanco=getCuentaBanco($row["NumeroDocumento"],$Banco);
+        if($cuentabanco[1]!=0){
+          $arrayCuentaBanco[$i] = $cuentabanco[0];
+          if(strlen($cuentabanco[1])>$MAXCuentaBanco) $MAXCuentaBanco=strlen($cuentabanco[1]);
+        }else{
+          $arrayCuentaBanco[$i] = "";
+        }
+      }else {
+        $arrayCuentaBanco[$i] = "";
+      }
       //Valores
       $arrayName[$i] = $row["Nombre"];
       if(strlen($arrayName[$i])>$MAXName) $MAXName=strlen($arrayName[$i]);
@@ -32,8 +47,15 @@
       if(strlen($arrayMontoL[$i])>$MAXMontoL) $MAXMontoL=strlen($arrayMontoL[$i]);
       $i++;
 		}
-    for($j=0;$j<$i;$j++){
-      echo " ".Tabular((string)$arrayName[$j],$MAXName)." ".Tabular((string)$arrayNit[$j],$MAXNit)." ".Tabular((string)$arrayNDocument[$j],$MAXNDocument)." $".Tabular((string)$arrayMontoL[$j],$MAXMontoL)."\n";
+    if($Banco==4){
+      //Hipotecario
+      for($j=0;$j<$i;$j++){
+        echo " ".Tabular((string)$arrayCuentaBanco[$j],$MAXCuentaBanco)." ".Tabular((string)$arrayMontoL[$j],$MAXMontoL)." ".Tabular((string)$arrayName[$j],$MAXName)."\n";
+      }
+    }else {
+      for($j=0;$j<$i;$j++){
+        echo " ".Tabular((string)$arrayName[$j],$MAXName)." ".Tabular((string)$arrayNit[$j],$MAXNit)." ".Tabular((string)$arrayNDocument[$j],$MAXNDocument)." $".Tabular((string)$arrayMontoL[$j],$MAXMontoL)."\n";
+      }
     }
 		mysqli_close($cnx);
 

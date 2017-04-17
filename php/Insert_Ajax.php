@@ -71,60 +71,72 @@ switch ($opc){
               }
               $generarTabla=0;
               if($flag==1){
-                $checkPagoHorasExtras=checkPagoHorasExtras($FechaInicio,$FechaFin,$TipoReporteVal,$formaPago,$_SESSION["empresa"]);
-                if ($checkPagoHorasExtras[0]) {
-                  if($checkPagoHorasExtras[1]==0){
+                //$checkPagoHorasExtras=checkPagoHorasExtras($FechaInicio,$FechaFin,$TipoReporteVal,$formaPago,$_SESSION["empresa"]);
+                $annio=$Fecha[1];
+                $mes=$Fecha[0];
+                if (ckeckCierreHorasExtras($mes,$annio,$_SESSION["empresa"],$TipoReporteVal)) {
+                  //primero revisar si existe un cierre de ser esto verdad revisar si ya se pago o no
+                  if(!checkPagoHorasExtras($FechaInicio,$FechaFin,$TipoReporteVal,$formaPago,$_SESSION["empresa"])){
                     //Si aun no se ha insertado el cierre de las horas extras
-                  }elseif ($checkPagoHorasExtras[1]==1) {
-                    //si ya se dio el cieere de las horas extras ya se puede pagar 
-                  }
-                  $PagosHorasExtras=getPagosHorasExtras($FechaInicio,$FechaFin,$TipoReporteVal,$formaPago,$_SESSION["empresa"]);
-                  $idPagos_Horas_Extras=$PagosHorasExtras["idPagos_Horas_Extras"];
-                  echo '
-                    <div class="row" style="padding-left:5%;">
-                      <div class="col-md-4">
-                      <h4>Generada Por: </h4><h6>'.$PagosHorasExtras["NombrePor"].'</h6>
-                      </div>
-                      <div class="col-md-4">
-                      <h4>Fecha: </h4><h6>'.$PagosHorasExtras["FechaCreacion"].'</h6>
-                      </div>
-                      <div class="col-md-4">
-                        <form method="POST" action="../php/bancos/recibo.php">
-                          <input type="hidden" name="idPagos_Horas_Extras" value="'.$idPagos_Horas_Extras.'">
-                          <input class="btn btn-primary"type="submit" value="Ver Recibo">
-                        </form>
-                      </div>
-                    </div>
-                  ';
-                  $generarTabla=1;
-                }else{
-                  echo '
-                  <p class="text-danger">
-                    El pago solo se puede realizar 1 vez, revise la informacion que se presenta en la tabla antes de continuar
-                    <br> Revise el Reporte de horas extras, recordando que solo las horas confirmadas seran efectuadas. Le recomendamos pagar las tarjetas de credito primero.
-                  </p>
-                  ';
-                  //$NombrePor
-                  echo '
-                  <div class="row">
-                      <div class="row">
+                    echo '
+                    <p class="text-danger">
+                      El pago solo se puede realizar 1 vez, revise la informacion que se presenta en la tabla antes de continuar
+                      <br> Revise el Reporte de horas extras, recordando que solo las horas confirmadas seran efectuadas. Le recomendamos pagar las tarjetas de credito primero.
+                    </p>
+                    ';
+                    //$NombrePor
+                    echo '
+                    <div class="row">
                         <div class="row">
-                          <input type="hidden" id="FFechaInicio" name="FFechaInicio" value="'.$FechaInicio.'" />
-                          <input type="hidden" id="FFechaFin" name="FFechaFin" value="'.$FechaFin.'" />
-                          <input type="hidden" id="TTPago" name="TTPago" value="'.$TipoReporte[0].'" />
-                          <input type="hidden" id="FFPago" name="FFPago" value="'.$formaPago.'" />
-                          <input type="hidden" id="nombrePor" name="nombrePor" value="'.$NombrePor.'" />
-                          <input type="hidden" id="NumeroDocumentoPor" name="NumeroDocumentoPor" value="'.$NumeroDocumentoPor.'" />
+                          <div class="row">
+                            <input type="hidden" id="FFechaInicio" name="FFechaInicio" value="'.$FechaInicio.'" />
+                            <input type="hidden" id="FFechaFin" name="FFechaFin" value="'.$FechaFin.'" />
+                            <input type="hidden" id="TTPago" name="TTPago" value="'.$TipoReporte[0].'" />
+                            <input type="hidden" id="FFPago" name="FFPago" value="'.$formaPago.'" />
+                            <input type="hidden" id="nombrePor" name="nombrePor" value="'.$NombrePor.'" />
+                            <input type="hidden" id="NumeroDocumentoPor" name="NumeroDocumentoPor" value="'.$NumeroDocumentoPor.'" />
+                          </div>
+                        </div>
+                        <div class="col-md-12">
+                          <a href="#" id="btnAgregarPagoHorasExtras" class="btn btn-primary btn-fill btn-wd pull-right">Generar Pago</a>
+                        </div>
+                        <div class="col-md-12">
+                          <div class="text-center" id="respuestaAlert"></div>
+                        </div>
+                    </div>
+                    ';
+                  }else {
+                    //si ya se dio el cieere de las horas extras ya se puede pagar
+                    $PagosHorasExtras=getPagosHorasExtras($FechaInicio,$FechaFin,$TipoReporteVal,$formaPago,$_SESSION["empresa"]);
+                    $idPagos_Horas_Extras=$PagosHorasExtras["idPagos_Horas_Extras"];
+                    echo '
+                      <div class="row" style="padding-left:5%;">
+                        <div class="col-md-4">
+                        <h4>Generada Por: </h4><h6>'.$PagosHorasExtras["NombrePor"].'</h6>
+                        </div>
+                        <div class="col-md-4">
+                        <h4>Fecha: </h4><h6>'.$PagosHorasExtras["FechaCreacion"].'</h6>
+                        </div>
+                        <div class="col-md-4">
+                          <form method="POST" action="../php/bancos/recibo.php">
+                            <input type="hidden" name="formaDePago" value="'.$formaPago.'">
+                            <input type="hidden" name="idPagos_Horas_Extras" value="'.$idPagos_Horas_Extras.'">
+                            <input class="btn btn-primary"type="submit" value="Ver Recibo">
+                          </form>
                         </div>
                       </div>
+                    ';
+                    $generarTabla=1;
+                  }
+                }else{
+                  //No se ha cerrado el cierre
+                  echo '
+                    <div class="row" style="padding-left:75%;">
                       <div class="col-md-12">
-                        <a href="#" id="btnAgregarPagoHorasExtras" class="btn btn-primary btn-fill btn-wd pull-right">Generar Pago</a>
+                        <p class="text-danger">No se ha generado el cierre estas horas extras</p>
                       </div>
-                      <div class="col-md-12">
-                        <div class="text-center" id="respuestaAlert"></div>
-                      </div>
-                  </div>
-                  ';
+                    </div>
+                    ';
                 }
 
               }
@@ -259,82 +271,32 @@ switch ($opc){
                     //revisemos si alguien se pasa de sus horas semanales
                     $.ajax({
                       type: 'POST',
-                      url: '../sistema/Agregar.php',
+                      url: '../php/AgregarPagoHorasExtras.php',
                       data: {
-                          opc:14,
                           FFechaInicio: FFechaInicio,
                           FFechaFin: FFechaFin,
                           TTPago: TTPago,
                           FFPago: FFPago,
                           nombrePor: nombrePor,
                           NumeroDocumentoPor: NumeroDocumentoPor,
-                          NDocumentoArray:NDocumentoArray
+                          NDocumentoArray: JSON.stringify(NDocumentoArray)
                       },
                       beforeSend: function() {
                         respAlert("info", "Verificando datos...");
                       },
                       success: function(response) {
                           var response = "" + response;
-                          var response = response.split("%&$");
-                          if (response[0] == 1) {
-                            //Si hay algo de preguntar
-                                swal({
-                                  title: 'Desea Continuar?',
-                                  text: "<div class='row'><div class='col-md-12'>A estas personas se les agregaran horas extras por sobrepasar Hora maxima de trabajo semanal :</div>"+response[1]+"</div> ",
-                                  type: 'warning',
-                                  showCancelButton: true,
-                                  allowOutsideClick: false,
-                                  confirmButtonColor: '#3085d6',
-                                  cancelButtonColor: '#d33',
-                                  confirmButtonText: 'Si, continuar!',
-                                  cancelButtonText: 'No, cancelar!'
-                                }).then(function () {
-                                  $.ajax({
-                                    type: 'POST',
-                                    url: '../php/AgregarPagoHorasExtras.php',
-                                    data: {
-                                        FFechaInicio: FFechaInicio,
-                                        FFechaFin: FFechaFin,
-                                        TTPago: TTPago,
-                                        FFPago: FFPago,
-                                        nombrePor: nombrePor,
-                                        NumeroDocumentoPor: NumeroDocumentoPor,
-                                        NDocumentoArray: JSON.stringify(NDocumentoArray)
-                                    },
-                                    beforeSend: function() {
-                                      respAlert("info", "Verificando datos...");
-                                    },
-                                    success: function(response) {
-                                        var response = "" + response;
-                                        var response = response.split(",");
-                                        if (response[0] == 0) {
-                                            respAlert("warning", response[1]);
-                                        }else {
-                                          setTimeout(function() {
-                                              respAlert("success", response[1]);
-                                              redireccionar("Pagos_Horas_Extras.php");
-                                          }, 3000);
-                                        }
-                                    }
-                                  });//Fin Ajax
-                                }, function (dismiss) {
-                                  // dismiss can be 'cancel', 'overlay',
-                                  // 'close', and 'timer'
-                                  if (dismiss === 'cancel') {
-                                    respAlert("info", "Cancelado");
-                                    swal(
-                                      'Cancelado',
-                                      'No se ha realizado el  pago',
-                                      'error'
-                                    )
-                                  }
-                              }).catch(swal.noop);
+                          var response = response.split(",");
+                          if (response[0] == 0) {
+                              respAlert("warning", response[1]);
                           }else {
-
+                            setTimeout(function() {
+                                respAlert("success", response[1]);
+                                redireccionar("Pagos_Horas_Extras.php");
+                            }, 3000);
                           }
                       }
-
-                    })
+                    });//Fin Ajax
 
                   }).catch(swal.noop);
 
@@ -2363,7 +2325,148 @@ switch ($opc){
       echo "1,Envio un valor vacio";
     }
     break;
+    case '25':
+      $flag=1;
+      if(!empty($_POST["mes"]) && !empty($_POST["annio"]) && !empty($_POST["TipoReporte"])){
+        // si todo se envio de forma correcta y validada, work
+        $NombrePor=$_SESSION['usuario_sesion']->getPrimernombre()." ".$_SESSION['usuario_sesion']->getSegundonombre()." ".$_SESSION['usuario_sesion']->getPrimerapellido();
+        $NumeroDocumentoPor=$_SESSION['usuario_sesion']->getNumerodocumento();
+        $NitEmpresa=$_SESSION["empresa"];
+        $mes=$_POST["mes"];
+        $annio=$_POST["annio"];
+        $days=cal_days_in_month(CAL_GREGORIAN,$mes,$annio);
+        $TipoReporteVal = $_POST['TipoReporte'];
+        $TipoReporte = str_split($TipoReporteVal);
+          if($TipoReporte[0]==1){
+            $FechaInicio=$annio."-".$mes."-"."1";//Y-M-D
+            $FechaFin=$annio."-".$mes."-".$days;//Y-M-D
+          }elseif ($TipoReporte[0]==2) {
+            //Catorcenal
+            $dayI=($TipoReporte[1]-1)*14;
+            $dayF=($TipoReporte[1])*14;
+            if($dayI==0){
+              $dayI=1;
+            }else $dayI=$dayI+1;
+            if($dayF>$days){
+              $dayF=$days;
+            }
+            $FechaInicio=$annio."-".$mes."-".$dayI;//Y-M-D
+            $FechaFin=$annio."-".$mes."-".$dayF;//Y-M-D
+          }elseif ($TipoReporte[0]==3) {
+            //quincenal
+            $dayI=($TipoReporte[1]-1)*15;
+            $dayF=($TipoReporte[1])*15;
+            if($dayI==0){
+              $dayI=1;
+            }else $dayI=$dayI+1;
+            if($dayF>16){
+              $dayF=$days;
+            }
+            $FechaInicio=$annio."-".$mes."-".$dayI;//Y-M-D
+            $FechaFin=$annio."-".$mes."-".$dayF;//Y-M-D
+          }elseif ($TipoReporte[0]==4) {
+            //Semanal
+            $dayI=($TipoReporte[1]-1)*7;
+            $dayF=($TipoReporte[1])*7;
+            if($dayI==0){
+              $dayI=1;
+            }else $dayI=$dayI+1;
+            if($dayF>$days){
+              $dayF=$days;
+            }
+            $FechaInicio=$annio."-".$mes."-".$dayI;//Y-M-D
+            $FechaFin=$annio."-".$mes."-".$dayF;//Y-M-D
+          }else{
+            echo "0,ERROR se envio un Tipo de Pago invalido";
+            $flag=0;
+          }
+          //Todo ya fue validado
+          //Hay que ver si ya fue cerrado o si se va a cerrar
+          if (ckeckCierreHorasExtras($mes,$annio,$_SESSION["empresa"],$TipoReporteVal)) {
+            //ya se cerro
+            $CierreHorasExtras=getCierreHorasExtras($mes,$annio,$_SESSION["empresa"],$TipoReporteVal);
+            if($CierreHorasExtras["exist"]){
+              $encabezado='<br>
+              <h4>Cerrado por: '.$CierreHorasExtras["NombrePor"].'</h4>
+              <h5>Fecha de cierre: '.$CierreHorasExtras["FechaGenerado"].' </h5>
+              <br><br>
+              ';
+            }else {
+              $encabezado='<br>
+              <h4>Hubo un error</h4>
+              <br>
+              ';
+            }
+          }else {
+            //Aun no se han cerrado
+            $encabezado='<br>
+            <form>
+              <div class="form-group col-md-4">
+                <input type="hidden" id="mes" name="mes" value="'.$mes.'">
+                <input type="hidden" id="annio" name="annio" value="'.$annio.'">
+                <input type="hidden" id="TipoPago" name="TipoPago" value="'.$TipoReporteVal.'">
+                <a href="#" id="btnAgregarCierreHorasExtras" class="btn btn-primary btn-fill btn-wd">Cerrar Horas Extras<div class="ripple-container"></div></a>
+              </div>
+            </form>
+            ';
+          }
+          //cuadro
+          if($flag==1){
+            $str='<br>
+                  <p class="text-danger">Se Mostraran las Horas Extras que se agregaran a los empleado de este tipo de Pago y se cerraran las fechas desde <b>'.$FechaInicio.'</b> a <b>'.$FechaFin.'</b> para todos los empleados </p>
+                  <br>
+                  <br>
+                  <table id="datatables" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                      <thead>
+                          <tr class="nameColumn">
+                              <th>Nombre</th>
+                              <th>Semana</th>
+                              <th>Tiempo Extra</th>
+                              <th>Monto sin descuentos</th>
+                          </tr>
+                      </thead>
+                      <tfoot>
+                          <tr class="nameColumn">
+                            <th>Nombre</th>
+                            <th>Semana</th>
+                            <th>Tiempo Extra</th>
+                            <th>Monto sin descuentos</th>
+                          </tr>
+                      </tfoot>
 
+                      <tbody>
+                      ';
+            $AreSomething=0;//Si vamos a mostrar la alerta de que alguien se paso
+            $NDocumentoArray=getNumberDocumentArray($NitEmpresa,$TipoReporte[0]);
+            for($i=0;$i<count($NDocumentoArray);$i++){
+              //el valor de los DUI's esta en $NDocumentoArray[$i]
+              $empleado=getInfoEmpleado($NDocumentoArray[$i]);
+              $data=getIfExtraTimePayMore($FechaInicio,$FechaFin,$empleado->getSalarionominal(),$NDocumentoArray[$i]);
+              if($data[0]==1){
+                $AreSomething=1;
+                for($j=0;$j<count($data[1]);$j++){
+                  //$str=$str.$data[1][$j]["NombreEmpleado"]." tiene un exeso de ".$data[1][$j]["TotaPagar"]." en la semana ".$data[1][$j]["Semana"]."<br>";
+                  $str=$str."<tr>
+                               <td>".$data[1][$j]["NombreEmpleado"]."</td>
+                               <td>".$data[1][$j]["Semana"]."</td>
+                               <td>".$data[1][$j]["TiempoExtra"]."</td>
+                               <td>$".$data[1][$j]["TotaPagar"]."</td>
+                            </tr>";
+                }
+              }
+            }
+            $str=$str.'
+                        </tbody>
+                    </table>
+
+                    <br>
+            ';
+            echo "1,".$encabezado.$str;
+          }
+      }else {
+        echo "0,ERROR No se pudieron enviar los datos correctamente";
+      }
+      break;
   default:
 
     break;

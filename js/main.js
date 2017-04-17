@@ -66,6 +66,143 @@ $(document).ready(function() {
         }
       })
     });
+
+    //btnAgregarCierreHorasExtras
+    $("#btnAgregarCierreHorasExtras").click(function(){
+      swal({
+        title: 'Esta seguro?',
+        text: "No se puede revertir esta accion, todas las horas en la tabla se agregaran proporcionalmente en cada dia, los dias se cerraran y si no fueron validados se eliminaran las horas extras ",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si, Cerrar',
+        cancelButtonText: 'No, Cancelar!',
+        confirmButtonClass: 'btn btn-success',
+        cancelButtonClass: 'btn btn-danger',
+        buttonsStyling: false
+      }).then(function () {
+
+        var mes = document.getElementById("mes").value;
+        var annio = document.getElementById("annio").value;
+        var TipoReporte = document.getElementById("TipoPago").value;
+        if (mes<13 && mes>0 && !isNaN(annio)) {
+          //Mes valido
+          $.ajax({
+              url: '../sistema/agregar.php',
+              type: 'POST',
+              data: {
+                  opc: 15,
+                  mes: mes,
+                  annio: annio,
+                  TipoReporte: TipoReporte
+              },
+              beforeSend: function() {
+                $("#ChangeTimePago").html('<img src="../img/loadingGIF.gif" alt="Loading" style="width:120px;height:120px;" title="Loading" />');
+              },
+              success: function(data) {
+                var cod=data.split(",");
+                alert("ERROR"+cod);
+                 if(cod.length<=1){
+                   alert("Error al recibir los datos en AJAX");
+                   $("#ChangeTimePago").html("<p>Error al recibir los datos en AJAX</p>");
+                 }else {
+                  if (cod[0]==0) {
+                    $("#ChangeTimePago").html("<p>"+cod[1]+"</p>");
+                  }else if (cod[0]==1) {
+                    //redireccionando
+                    setTimeout(function() {
+                        respAlert("success", " redireccionando..");
+                        redireccionar("Cierre_Horas_Extras.php");
+                    }, 2000);
+                  }else {
+                    alert("Se envio un error inesperado");
+                    $("#ChangeTimePago").html("<p>Se envio un error inesperado</p>");
+                  }
+                 }
+              },
+              error: function(data) {
+                  console.log(data);
+                  alert("ERROR");
+              }
+          });
+        }else{
+          //Mes invalido
+          alert("El mes que intenta enviar es erroneo");
+        }
+      }, function (dismiss) {
+        // dismiss can be 'cancel', 'overlay',
+        // 'close', and 'timer'
+        if (dismiss === 'cancel') {
+          swal(
+            'Cancelado',
+            'No se ha Cerrado',
+            'error'
+          )
+        }
+      })
+    });
+
+    //btnVerCierreHorasExtras
+    $("#btnVerCierreHorasExtras").click(function(){
+      var Fecha= $("#FInicio").val();
+      var TipoReporte = $("#TipoReporte").val();
+      Fecha=Fecha.split("/");
+      if (Fecha.length<1) {
+        alert("Se intenta enviar un valor erroneo");
+      }else{
+        if (Fecha[0]<13 && Fecha[0]>0 && !isNaN(Fecha[1])) {
+          //Mes valido
+          $("#ChangeTimePago").html("<h5>Cargando...</h5>");
+          $.ajax({
+				   type: "POST",
+				   url: "../php/Insert_Ajax.php",
+           data: {
+               opcAjax: 25,
+               mes: Fecha[0],
+               annio: Fecha[1],
+               TipoReporte: TipoReporte
+           },
+				   cache: false,
+           beforeSend: function() {
+               $("#ChangeTimePago").html('<img src="../img/loadingGIF.gif" alt="Loading" style="width:120px;height:120px;" title="Loading" />');
+           },
+           complete: function(){
+               $("#ChangeTimePago").html();
+           },
+				   success: function(html)
+				   {
+             var cod=html.split(",");
+             if(cod.length<=1){
+               alert("Error al recibir los datos en AJAX");
+             }else {
+              if (cod[0]==0) {
+                alert(cod[1]);
+              }else if (cod[0]==1) {
+                $("#ChangeTimePago").html(cod[1]);
+              }else {
+                alert("Se envio un error inesperado");
+              }
+             }
+             $.getScript("../js/jquery.datepicker.js", function(){
+                 var head= document.getElementsByTagName('head')[0];
+                 var script= document.createElement('script');
+                 script.type= 'text/javascript';
+                 script.src= '../js/ajax_Descuentos.js';
+                 head.appendChild(script);
+                 var script= document.createElement('script');
+                 script.type= 'text/javascript';
+                 script.src= '../js/main.js';
+                 head.appendChild(script);
+               });
+				   }
+				   });
+        }else{
+          //Mes invalido
+          alert("El mes que intenta enviar es erroneo");
+        }
+      }
+    });
     //confirmar Reporte llegadas tarde
     $("#btnConfirmarReporteLlegadasTarde").click(function(){
       var idReporteLlegadasTarde = document.getElementById("idLlegadasTarde").value;

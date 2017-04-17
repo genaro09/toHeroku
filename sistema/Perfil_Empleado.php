@@ -741,6 +741,7 @@
 																					echo '<input disabled  type="number" id="CuentaBanco" class="form-control" placeholder="SELECCIONE UN BANCO PARA VER CUENTA">';
 																				 ?>
 																			</div>
+																			<span class="help-block">Solo se permiten numeros</span>
 																		</div>
 																	</div>
 																</div>
