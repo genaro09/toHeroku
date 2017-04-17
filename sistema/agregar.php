@@ -303,10 +303,23 @@
 					}elseif(!((verify_date_format($FechaAusencia)))){
 						echo "0, El Formato de las fechas es incorrecto";
 					}else {
-						$estado=AgregarAusencia($_POST["TipoAusencia"],$_SESSION["usuario_sesion"]->getNumeroDocumento(),$_POST["EstadoAusencia"],$FechaAusencia,$_POST["Observacion"],$_POST["NumeroDocumento"]);
-						if($estado){
-							echo "1, ";
-						}else echo "2, ";
+						$checkIsInSemanal=checkIsInSemanal($_SESSION["empresa"],$_POST["NumeroDocumento"],$FechaAusencia,"00:00:00","00:00:00","2");//2 date,1 hour
+						if($checkIsInSemanal==0){
+                //No hay semanal
+								echo "0, No hay Semanal de este usuario";
+              }elseif ($checkIsInSemanal==1) {
+                //Si esta todo bien
+								$estado=AgregarAusencia($_POST["TipoAusencia"],$_SESSION["usuario_sesion"]->getNumeroDocumento(),$_POST["EstadoAusencia"],$FechaAusencia,$_POST["Observacion"],$_POST["NumeroDocumento"]);
+								if($estado){
+									echo "1, ";
+								}else echo "2, ";
+              }elseif ($checkIsInSemanal==2) {
+                //No laboro ese dia
+								echo "0, El usuario no laboro este dia";
+              }else {
+                //ERROR
+								echo "0,Error verificando semanal";
+              }
 					}
 				}
 			break;
@@ -368,10 +381,23 @@
 										echo "2, El tipo de suspension que intenta ingresar es incorrecto";
 									}else{
 										if(!isAlredySuspended($_POST["NumeroDocumento"],$fecha)){
-											$estado=AgregarSuspensionEmpleado($_POST["NumeroDocumento"],$_SESSION["usuario_sesion"]->getNumeroDocumento(),$_POST["TipoSuspension"],$fecha,$_POST["Descripcion"]);
-											if($estado){
-												echo "1, ";
-											}else echo "0, ";
+											$checkIsInSemanal=checkIsInSemanal($_SESSION["empresa"],$_SESSION["usuario_sesion"]->getNumeroDocumento(),$fecha,"00:00:00","00:00:00","2");//2 date,1 hour
+											if($checkIsInSemanal==0){
+				                //No hay semanal
+												echo "2, El usuario no tiene semanal en esta fecha";
+				              }elseif ($checkIsInSemanal==1) {
+				                //Si esta todo bien
+												$estado=AgregarSuspensionEmpleado($_POST["NumeroDocumento"],$_SESSION["usuario_sesion"]->getNumeroDocumento(),$_POST["TipoSuspension"],$fecha,$_POST["Descripcion"]);
+												if($estado){
+													echo "1, ";
+												}else echo "0, ";
+				              }elseif ($checkIsInSemanal==2) {
+				                //No laboro ese dia
+												echo "2, El usuario no labora este dia";
+				              }else {
+				                //ERROR
+												echo "2, Error intentando verificar el semanal";
+				              }
 											break;
 										}else echo "2, El usuario ya se encuentra suspendido";
 										break;
@@ -394,12 +420,14 @@
 							$DiaInicio  = date('Y-m-d', strtotime($DiaInicio));
 							$HoraInicio = "00:00:00";
 							$HoraFin = "00:00:00";
+							$checkIsInSemanal=checkIsInSemanal($_SESSION["empresa"],$_POST["NumeroDocumento"],$DiaInicio,$HoraInicio,$HoraFin,"2");//2 date,1 hour
 						}elseif ($_POST["TipoPermiso"]==2) {
 							//Horas
 							$DiaInicio = str_replace('/', '-', $_POST["DiaInicio"]);
 							$DiaInicio  = date('Y-m-d', strtotime($DiaInicio));
 							$HoraInicio = $_POST["HoraInicio"].":00";
 							$HoraFin = $_POST["HoraFin"].":00";
+							$checkIsInSemanal=checkIsInSemanal($_SESSION["empresa"],$_POST["NumeroDocumento"],$DiaInicio,$HoraInicio,$HoraFin,"1");//2 date,1 hour
 						}else{
 							echo "3,";
 							die();
@@ -414,13 +442,58 @@
 							//Horas
 							echo "0, La Hora de inicio no puede ser mayor";
 						}else {
-							$estadoPermiso=0;
-							$estado=AgregarPermisoSeccional($_POST["TipoPermiso"],$_SESSION["usuario_sesion"]->getNumeroDocumento(),$estadoPermiso,$DiaInicio,$HoraInicio,$HoraFin,$_POST["Observacion"],$_POST["NumeroDocumento"]);
-							if($estado){
-								echo "1, ";
-							}else echo "2, ";
+							if($checkIsInSemanal==0){
+								//No hay semanal
+								echo "0, El usuario no tiene semanal en esta fecha";
+							}elseif ($checkIsInSemanal==1) {
+								//Si esta todo bien
+								$estadoPermiso=0;
+								$estado=AgregarPermisoSeccional($_POST["TipoPermiso"],$_SESSION["usuario_sesion"]->getNumeroDocumento(),$estadoPermiso,$DiaInicio,$HoraInicio,$HoraFin,$_POST["Observacion"],$_POST["NumeroDocumento"]);
+								if($estado){
+									echo "1, ";
+								}else echo "2, ";
+							}elseif ($checkIsInSemanal==2) {
+								//No laboro ese dia
+								echo "0, Es su dia de descanso no se puede agregar";
+							}else {
+								//ERROR
+								echo "0, Error intentando verificar el semanal";
+							}
 						}
 					}
+				break;
+		case '14':
+					if((trim($_POST['FFechaInicio']) == "")||(trim($_POST['FFechaFin']) == "")||(trim($_POST['TTPago']) == "")||(trim($_POST['FFPago']) == "")||(trim($_POST['NDocumentoArray']) == "")){
+						header('Location: Pagos_Horas_Extras.php');
+						exit();
+					}
+					$cnx = cnx();
+					$AreSomething=0;//Si vamos a mostrar la alerta de que alguien se paso
+					$FechaInicio = $_POST["FFechaInicio"];
+					$FechaFin = $_POST["FFechaFin"];
+					$TPago = $_POST["TTPago"]."0";
+					$FPago = $_POST["FFPago"];
+					$NitEmpresa=$_SESSION["empresa"];
+					$NombrePor = $_POST["nombrePor"];
+					$NumeroDocumentoPor=$_POST["NumeroDocumentoPor"];
+					date_default_timezone_set('America/El_Salvador');
+					$dateTime = date("Y-m-d H:i:s");
+					$NDocumentoArray = $_POST["NDocumentoArray"];
+					$NDocumentoArray = json_decode("$NDocumentoArray", true);
+					//nombrePor
+					$str="";
+					for($i=0;$i<count($NDocumentoArray);$i++){
+						//el valor de los DUI's esta en $NDocumentoArray[$i]
+						$empleado=getInfoEmpleado($NDocumentoArray[$i]);
+						$data=getIfExtraTimePayMore($FechaInicio,$FechaFin,$empleado->getSalarionominal(),$NDocumentoArray[$i]);
+						if($data[0]==1){
+							$AreSomething=1;
+							for($i=0;$i<count($data[1]);$i++){
+								$str=$str.$data[1][$i]["NombreEmpleado"]." tiene un exeso de ".$data[1][$i]["TotaPagar"]." en la semana ".$data[1][$i]["Semana"]."<br>";
+							}
+						}
+					}
+					echo $AreSomething." %&$ ".$str;
 				break;
 		default:
 			# code...

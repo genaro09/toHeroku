@@ -29,10 +29,10 @@ $dateTime = date("Y-m-d H:i:s");
   if($TipoPago[0]==1){//mensual
     $tipoRenta=1;
   }elseif(($TipoPago[0]==2) || ($TipoPago[0]==3)){
-    # code...
+    //Quincenal, catorcenal
     $tipoRenta=2;
-  }elseif(($TipoPago[0]==2) || ($TipoPago[0]==3)){
-    # code...
+  }elseif(($TipoPago[0]==4)){
+    //Semanal
     $tipoRenta=3;
   }
   $TRAMO1= array();

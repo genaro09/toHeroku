@@ -3,6 +3,7 @@
 include '../php/funciones.php';
 include '../php/verificar_sesion.php';
 require_once('../php/clases/NumberToLetterConverter.class.php');
+header('Content-type: application/pdf');
 $user = $_SESSION['usuario_sesion'];
 $idRecibo=$_POST["idRecibo"];
 //$NumeroDocumento=$_POST["numDoc"];

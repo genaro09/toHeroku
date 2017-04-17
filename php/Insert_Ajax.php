@@ -71,7 +71,13 @@ switch ($opc){
               }
               $generarTabla=0;
               if($flag==1){
-                if (checkPagoHorasExtras($FechaInicio,$FechaFin,$TipoReporteVal,$formaPago,$_SESSION["empresa"])) {
+                $checkPagoHorasExtras=checkPagoHorasExtras($FechaInicio,$FechaFin,$TipoReporteVal,$formaPago,$_SESSION["empresa"]);
+                if ($checkPagoHorasExtras[0]) {
+                  if($checkPagoHorasExtras[1]==0){
+                    //Si aun no se ha insertado el cierre de las horas extras
+                  }elseif ($checkPagoHorasExtras[1]==1) {
+                    //si ya se dio el cieere de las horas extras ya se puede pagar 
+                  }
                   $PagosHorasExtras=getPagosHorasExtras($FechaInicio,$FechaFin,$TipoReporteVal,$formaPago,$_SESSION["empresa"]);
                   $idPagos_Horas_Extras=$PagosHorasExtras["idPagos_Horas_Extras"];
                   echo '
@@ -95,7 +101,7 @@ switch ($opc){
                   echo '
                   <p class="text-danger">
                     El pago solo se puede realizar 1 vez, revise la informacion que se presenta en la tabla antes de continuar
-                    <br> Revise el Reporte de horas extras antes. Le recomendamos pagar las tarjetas primero.
+                    <br> Revise el Reporte de horas extras, recordando que solo las horas confirmadas seran efectuadas. Le recomendamos pagar las tarjetas de credito primero.
                   </p>
                   ';
                   //$NombrePor
@@ -250,34 +256,86 @@ switch ($opc){
                     cancelButtonColor: '#d33',
                     confirmButtonText: 'Si, continuar!'
                   }).then(function () {
-                      $.ajax({
-                        type: 'POST',
-                        url: '../php/AgregarPagoHorasExtras.php',
-                        data: {
-                            FFechaInicio: FFechaInicio,
-                            FFechaFin: FFechaFin,
-                            TTPago: TTPago,
-                            FFPago: FFPago,
-                            nombrePor: nombrePor,
-                            NumeroDocumentoPor: NumeroDocumentoPor,
-                            NDocumentoArray: JSON.stringify(NDocumentoArray)
-                        },
-                        beforeSend: function() {
-                          respAlert("info", "Verificando datos...");
-                        },
-                        success: function(response) {
-                            var response = "" + response;
-                            var response = response.split(",");
-                            if (response[0] == 0) {
-                                respAlert("warning", response[1]);
-                            }else {
-                              setTimeout(function() {
-                                  respAlert("success", response[1]);
-                                  redireccionar("Pagos_Horas_Extras.php");
-                              }, 3000);
-                            }
-                        }
-                      });//Fin Ajax
+                    //revisemos si alguien se pasa de sus horas semanales
+                    $.ajax({
+                      type: 'POST',
+                      url: '../sistema/Agregar.php',
+                      data: {
+                          opc:14,
+                          FFechaInicio: FFechaInicio,
+                          FFechaFin: FFechaFin,
+                          TTPago: TTPago,
+                          FFPago: FFPago,
+                          nombrePor: nombrePor,
+                          NumeroDocumentoPor: NumeroDocumentoPor,
+                          NDocumentoArray:NDocumentoArray
+                      },
+                      beforeSend: function() {
+                        respAlert("info", "Verificando datos...");
+                      },
+                      success: function(response) {
+                          var response = "" + response;
+                          var response = response.split("%&$");
+                          if (response[0] == 1) {
+                            //Si hay algo de preguntar
+                                swal({
+                                  title: 'Desea Continuar?',
+                                  text: "<div class='row'><div class='col-md-12'>A estas personas se les agregaran horas extras por sobrepasar Hora maxima de trabajo semanal :</div>"+response[1]+"</div> ",
+                                  type: 'warning',
+                                  showCancelButton: true,
+                                  allowOutsideClick: false,
+                                  confirmButtonColor: '#3085d6',
+                                  cancelButtonColor: '#d33',
+                                  confirmButtonText: 'Si, continuar!',
+                                  cancelButtonText: 'No, cancelar!'
+                                }).then(function () {
+                                  $.ajax({
+                                    type: 'POST',
+                                    url: '../php/AgregarPagoHorasExtras.php',
+                                    data: {
+                                        FFechaInicio: FFechaInicio,
+                                        FFechaFin: FFechaFin,
+                                        TTPago: TTPago,
+                                        FFPago: FFPago,
+                                        nombrePor: nombrePor,
+                                        NumeroDocumentoPor: NumeroDocumentoPor,
+                                        NDocumentoArray: JSON.stringify(NDocumentoArray)
+                                    },
+                                    beforeSend: function() {
+                                      respAlert("info", "Verificando datos...");
+                                    },
+                                    success: function(response) {
+                                        var response = "" + response;
+                                        var response = response.split(",");
+                                        if (response[0] == 0) {
+                                            respAlert("warning", response[1]);
+                                        }else {
+                                          setTimeout(function() {
+                                              respAlert("success", response[1]);
+                                              redireccionar("Pagos_Horas_Extras.php");
+                                          }, 3000);
+                                        }
+                                    }
+                                  });//Fin Ajax
+                                }, function (dismiss) {
+                                  // dismiss can be 'cancel', 'overlay',
+                                  // 'close', and 'timer'
+                                  if (dismiss === 'cancel') {
+                                    respAlert("info", "Cancelado");
+                                    swal(
+                                      'Cancelado',
+                                      'No se ha realizado el  pago',
+                                      'error'
+                                    )
+                                  }
+                              }).catch(swal.noop);
+                          }else {
+
+                          }
+                      }
+
+                    })
+
                   }).catch(swal.noop);
 
                 });
@@ -1146,7 +1204,7 @@ switch ($opc){
                   </div>
                 ';
               }
-          }elseif ($row["TipoAusencia"]==1) {
+          }elseif ($row["TipoAusencia"]==2) {
             //CON JUSTIFICACION
             $tipoEstado='
             <div class="form-group col-md-4">
@@ -1683,7 +1741,7 @@ switch ($opc){
                 </div>
                 <div class="form-group col-md-2">
                   <input type="hidden" id="idPermiso" name="idPermiso" value="'.$_POST["idPermiso"].'">
-                  <input type="button"  class="btn btn-previous btn-fill btn-danger btn-wd" id="btnEliminarPermiso" name="btnEliminarAusencia" value="Eliminar" />
+                  <input type="button"  class="btn btn-previous btn-fill btn-danger btn-wd" id="btnEliminarPermiso" name="btnEliminarPermiso" value="Eliminar" />
                 </div>
               </div>
             ';

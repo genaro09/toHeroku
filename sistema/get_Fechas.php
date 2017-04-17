@@ -153,28 +153,51 @@ if($_POST['id']){
             <br>
             <div class='row'>
         ";
-        if(ExisteSP($semana-1,$annio,$NitEmpresa,$idTurno)){
+        //vamos a ver si ya hay algo colocado en el semanal
+        $SemanalHaveSomething=isSemanalHaveSomething($semana,$annio,$NitEmpresa,$idTurno);
+        $flagIsSomethingOnSemanal=$SemanalHaveSomething[0];
+        $BodyIsSomethingOnSemanal=$SemanalHaveSomething[1];
+        if ($flagIsSomethingOnSemanal==1) {
+          //Hay algo en el semanal
+          echo '
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h2>No se puede editar</h2>
+                <h5 class="card-title">No se puede editar este semanal por que contiene:</h5>
+              </div>
+          ';
+          echo $BodyIsSomethingOnSemanal;
+          echo "
+              </div>
+            </div>
+      	   </div>
+          ";
+        }else {
+            //Aun no hay nada :'(
+            if(ExisteSP($semana-1,$annio,$NitEmpresa,$idTurno)){
+                echo "
+                    <div class='col-md-4'>
+                    <a href='#' id='btnAnteriorSemana' class='btn btn-fill btn-primary btn-wd'>Guardar con formato pasado</a>
+                    </div>
+                    <div class='col-md-1'>
+                    </div>
+                ";
+            }
             echo "
-                <div class='col-md-4'>
-                <a href='#' id='btnAnteriorSemana' class='btn btn-fill btn-primary btn-wd'>Guardar con formato pasado</a>
-                </div>
-                <div class='col-md-1'>
-                </div>
+                    <div class='col-md-7'>
+                    <a href='#' id='btnGuardarSemana' class='btn btn-info btn-fill pull-left'>Guardar Modificacion</a>
+                    </div>
             ";
-        }
-        echo "
-                <div class='col-md-7'>
-                <a href='#' id='btnGuardarSemana' class='btn btn-info btn-fill pull-left'>Guardar Modificacion</a>
-                </div>
-        ";
 
-        echo "</div>";
-        echo "<div calss='row'>";
-        echo "
-                <div class='text-center' id='respuestaAlert'></div>
-                <div class='clearfix'></div>
-        ";
-        echo "</div>";
+            echo "</div>";
+            echo "<div calss='row'>";
+            echo "
+                    <div class='text-center' id='respuestaAlert'></div>
+                    <div class='clearfix'></div>
+            ";
+            echo "</div>";
+        }
 
     }else echo "Se necesita al menos un empleado en el Turno";
 

@@ -1586,7 +1586,6 @@ $(document).ready(function() {
             },
             success: function(data) {
                 var data = data.split(",");
-                alert(data);
                 switch (data[0]) {
                     case "0":
                         respAlert("warning", ""+data[1]);

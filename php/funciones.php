@@ -1,14 +1,87 @@
 <?php
 	include_once 'cn.php';
 	include_once 'include_classes.php';
-
 	function estadoCnx(){
 		return pruebaCnx();
+	}
+	function checkIsInSemanal($NitEmpresa,$NumeroDocumento,$Fecha,$HoraIni,$HoraFin,$HoD){
+		//The Hours Format 00:00:00
+		//The dates format 1995-04-19
+		$date = new DateTime($Fecha);
+	  $week = $date->format("W");
+		$year = $date->format("Y");
+		$day = (string)date("D",strtotime($Fecha));//Sun,Mon,Tue,Wed,Thu,Fri,Sat, with strcmp
+		$DaysOfWeek=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+		$val=-1;
+		for ($i=0; $i <sizeof($DaysOfWeek) ; $i++) {
+			if (strcmp($day,$DaysOfWeek[$i])==0) {
+				$val=$i;
+			}
+		}
+		if ($val<0) {
+			$flag=3;//ERROR
+		}else{
+			$flag=5;//Just Default value
+		}
+		if($flag!=3){
+			$DiasDeLaSemana=["Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo"];
+			$cnx=cnx();
+			$queryAux=sprintf("SELECT semanal.*, col_semanal.*, htrabajo.Desde, htrabajo.Hasta FROM semanal inner JOIN col_semanal INNER JOIN htrabajo WHERE semanal.NitEmpresa='%s' AND semanal.nSemana='%s' AND semanal.anno='%s' AND semanal.idSemanal=col_semanal.idSemanal AND col_semanal.NumeroDocumento='%s' AND htrabajo.NumeroDocumento='%s'",
+			mysqli_real_escape_string($cnx,$NitEmpresa),
+			mysqli_real_escape_string($cnx,$week),
+			mysqli_real_escape_string($cnx,$year),
+			mysqli_real_escape_string($cnx,$NumeroDocumento),
+			mysqli_real_escape_string($cnx,$NumeroDocumento));
+			$resulAux=mysqli_query($cnx,$queryAux);
+			$row=mysqli_fetch_array($resulAux);
+			if($row[0]=="") $flag=0;//No hay semanal
+			if ($flag!=0) {
+				if($HoD==1){
+					//check Horas
+					if ($row[$DiasDeLaSemana[$val]]==3) {
+						//su dia de descanso
+						$flag=2;
+					}else{
+						//Ese dia trabaja hay que ver a que horas
+						if (($row["Desde"]<=$HoraIni)&&($row["Hasta"]>=$HoraFin)) {
+							$flag=1;
+						}else {
+							$flag=2;
+						}
+						$flag=1;
+					}
+				}elseif ($HoD==2) {
+					//check only Date
+					if ($row[$DiasDeLaSemana[$val]]==3) {
+						//su dia de descanso
+						$flag=2;
+					}else{
+						//Ese dia trabaja
+						$flag=1;
+					}
+				}else{
+					$flag=3;
+				}
+			}
+			mysqli_close($cnx);
+		}
+		return $flag;//0 No hay semanal, 1 la hora o fecha si esta en el semanal, 2 no labora, 3 ERROR
 	}
 	function checkPagoHorasExtras($FechaIni,$FechaFin,$tipoPago,$formaPago,$NitEmpresa){
 		$cnx=cnx();
 		$flag=FALSE;
 		$query=sprintf("SELECT * FROM pagos_horas_extras where FechaIni='%s' AND FechaFin='%s'AND tipoPago='%s'AND formaPago='%s' AND NitEmpresa='%s'",mysqli_real_escape_string($cnx,$FechaIni),mysqli_real_escape_string($cnx,$FechaFin),mysqli_real_escape_string($cnx,$tipoPago),mysqli_real_escape_string($cnx,$formaPago),mysqli_real_escape_string($cnx,$NitEmpresa));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!="")
+			$flag=TRUE;
+		mysqli_close($cnx);
+		return $flag;
+	}
+	function ckeckCierreHorasExtras($mes,$annio,$NitEmpresa,$tipoPago){
+		$cnx=cnx();
+		$flag=FALSE;
+		$query=sprintf("SELECT * FROM cierre_horas_extras where Mes='%s' AND  tipoPago='%s' AND NitEmpresa	='%s'",mysqli_real_escape_string($cnx,$FechaIni),mysqli_real_escape_string($cnx,$FechaFin),mysqli_real_escape_string($cnx,$tipoPago),mysqli_real_escape_string($cnx,$formaPago),mysqli_real_escape_string($cnx,$NitEmpresa));
 		$resul=mysqli_query($cnx,$query);
 		$row=mysqli_fetch_array($resul);
 		if($row[0]!="")
@@ -38,6 +111,209 @@
 		return $flag;
 
 	}
+	function workTime($NumeroDocumento){
+			$cnx=cnx();
+			$query=sprintf("SELECT htrabajo.Desde,htrabajo.Hasta,htrabajo.H_Descanso FROM htrabajo WHERE htrabajo.NumeroDocumento ='%s'",mysqli_real_escape_string($cnx,$NumeroDocumento));
+			$resul=mysqli_query($cnx,$query);
+			$row=mysqli_fetch_array($resul);
+			mysqli_close($cnx);
+			return [$row["Desde"],$row["Hasta"],$row["H_Descanso"]];
+	}
+
+	function HalfTime($time){
+		$time_array = explode(':',$time);
+		$hours = (int)$time_array[0];
+		$minutes = (int)$time_array[1];
+		$seconds = (int)$time_array[2];
+		$total_seconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+		$average = floor($total_seconds/2);
+		$hours = floor($average / 3600);
+		$mins = floor($average / 60 % 60);
+		$secs = floor($average % 60);
+		$timeFormat = sprintf('%02d:%02d:%02d', $hours, $mins, $secs);
+		return $timeFormat;
+	}
+
+	function DiscountsTimeEmploy($Desde,$Hasta,$NumeroDocumento){
+		$workTime=workTime($NumeroDocumento);
+		$TiempoCompleto=gmdate("H:i:s", (int)subsTwoTimes(gmdate("H:i:s", (int)subsTwoTimes($workTime[1],$workTime[0])),$workTime[2]));
+		$MedioTiempo=HalfTime($TiempoCompleto);
+		$Fin= new DateTime($Hasta);
+		$Fin =$Fin->modify( '+1 day' );
+		$daterange = new DatePeriod(
+     new DateTime($Desde),
+     new DateInterval('P1D'),
+     $Fin
+	 	);
+		 //AddArrTime($time);  <-Array
+		 $str="";
+		 $body="";
+		 $cnx=cnx();
+		 $TotTimeToSubstrack="00:00:00";//el total entre fechas
+		 foreach($daterange as $date){
+			$AusenciaTotTime="00:00:00";
+			$LlegadasTardeTotTime="00:00:00";
+			$IncapacidadTotTime="00:00:00";
+			$Permiso="00:00:00";
+			$PermisoSeccional="00:00:00";
+			$Suspension="00:00:00";
+			$str="";
+			//vamos fecha por fecha
+			$Fecha=$date->format("Y-m-d");
+		 	$date = new DateTime($Fecha);
+		 	$week = $date->format("W");
+		 	$year = $date->format("Y");
+			$semanal=getSemanal($week,$year,$NumeroDocumento);
+		  $day = (string)date("D",strtotime($Fecha));//Sun,Mon,Tue,Wed,Thu,Fri,Sat, with strcmp
+			$DaysOfWeek=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+			$val=-1;
+		 	for ($i=0; $i <sizeof($DaysOfWeek) ; $i++) {
+				if (strcmp($day,$DaysOfWeek[$i])==0) {
+		 			$val=$i;
+		 		}
+		 	}
+		 	$DiasDeLaSemana=["Lunes","Martes","Miercoles","Jueves","Viernes","Sabado","Domingo"];
+			if($val<0){
+				//Hubo un error
+			}else{
+				//Si existe ese semanal puede que encontremos algo
+				if($semanal["exist"]==1){
+					$TheDayisGone=0;//if substract all the day
+					$DayTime="00:00:00";//How many substract of the day
+					if($semanal[$DiasDeLaSemana[$val]]==1){
+						$MaxThisDayTime=$TiempoCompleto;
+					}elseif ($semanal[$DiasDeLaSemana[$val]]==2) {
+						$MaxThisDayTime=$MedioTiempo;
+					}else{
+						$MaxThisDayTime="00:00:00";
+					}
+
+	 				//Ausencia es de todo un dia
+				  $query=sprintf("SELECT * FROM ausencia WHERE FechaAusencia='%s' AND EstadoAusencia=1 AND NumeroDocumento='%s'",
+					mysqli_real_escape_string($cnx,$Fecha),
+					mysqli_real_escape_string($cnx,$NumeroDocumento));
+			 	  $result=mysqli_query($cnx,$query);
+			 	  while ($row=mysqli_fetch_array($result)) {
+						$TheDayisGone=1;//if substract all the day
+						$DayTime=$MaxThisDayTime;//How many substract of the day
+						$str="Ausencia <br>".$str;
+				  }
+
+					//Llegadas Tarde
+					if($TheDayisGone==0){
+						$query=sprintf("SELECT * FROM col_llegadas_tarde INNER JOIN llegadas_tarde WHERE col_llegadas_tarde.NumeroDocumento='%s' AND col_llegadas_tarde.idLlegadasTarde=llegadas_tarde.idLlegadasTarde and llegadas_tarde.Fecha='%s'",
+						mysqli_real_escape_string($cnx,$NumeroDocumento),
+						mysqli_real_escape_string($cnx,$Fecha));
+				 	  $result=mysqli_query($cnx,$query);
+				 	  while ($row=mysqli_fetch_array($result)) {
+							$LlegadasTardeTotTime=AddArrTime([$row["Tiempo"],$LlegadasTardeTotTime]);
+							$str="Llegada Tarde <br>".$str;
+					  }
+					}
+	 			 	//Incapacidad
+					if($TheDayisGone==0){
+						$query=sprintf("SELECT * FROM incapacidad WHERE NumeroDocumento='%s' AND '%s'>=DiaInicio AND '%s'<=DiaFin",
+						mysqli_real_escape_string($cnx,$NumeroDocumento),
+						mysqli_real_escape_string($cnx,$Fecha),
+						mysqli_real_escape_string($cnx,$Fecha));
+				 	  $result=mysqli_query($cnx,$query);
+				 	  while ($row=mysqli_fetch_array($result)) {
+							$TheDayisGone=1;//if substract all the day
+							$DayTime=$MaxThisDayTime;//How many substract of the day
+							$str= "Incapacidad <br>".$str;
+					  }
+					}
+	 			 	//Permiso
+					if($TheDayisGone==0){
+						//Si es todo el dia
+							$query=sprintf("SELECT * FROM `permiso` WHERE TipoPermiso=1 AND NumeroDocumento='%s' AND'%s'>=DiaInicio AND '%s'<=DiaFin",
+							mysqli_real_escape_string($cnx,$NumeroDocumento),
+							mysqli_real_escape_string($cnx,$Fecha),
+							mysqli_real_escape_string($cnx,$Fecha));
+					 	  $result=mysqli_query($cnx,$query);
+					 	  while ($row=mysqli_fetch_array($result)) {
+								$TheDayisGone=1;//if substract all the day
+								$DayTime=$MaxThisDayTime;//How many substract of the day
+								$str="PERMISO <br>".$str;
+						  }
+						//Si es solo un Tiempo
+							$query=sprintf("SELECT * FROM `permiso` WHERE TipoPermiso=2 AND NumeroDocumento='%s' AND DiaInicio='%s'",
+							mysqli_real_escape_string($cnx,$NumeroDocumento),
+							mysqli_real_escape_string($cnx,$Fecha));
+							$result=mysqli_query($cnx,$query);
+							while ($row=mysqli_fetch_array($result)) {
+								$HoraIni=$row["HoraInicio"];
+								$HoraIni=explode(":",$HoraIni);
+								$HoraIni=$HoraIni[0].":".$HoraIni[1];
+								$HoraFin=$row["HoraFin"];
+								$HoraFin=explode(":",$HoraFin);
+								$HoraFin=$HoraFin[0].":".$HoraFin[1];
+								$Permiso=AddArrTime([gmdate("H:i:s", (int)subsTwoTimes($HoraIni,$HoraFin)),$Permiso]);
+								$str= "PERMISO tiempo <br>".$str;
+							}
+					}
+
+	 			 	//Permiso seccional
+						if($TheDayisGone==0){
+							//Si es todo el dia
+								$query=sprintf("SELECT * FROM `permiso_seccional` WHERE TipoPermisoSeccional=1 AND NumeroDocumento='%s' AND Dia='%s'",
+								mysqli_real_escape_string($cnx,$NumeroDocumento),
+								mysqli_real_escape_string($cnx,$Fecha));
+								$result=mysqli_query($cnx,$query);
+								while ($row=mysqli_fetch_array($result)) {
+									$TheDayisGone=1;//if substract all the day
+									$DayTime=$MaxThisDayTime;//How many substract of the day
+									$str= "PERMISO Seccional <br>".$str;
+								}
+							//Si es solo un Tiempo
+								$query=sprintf("SELECT * FROM `permiso_seccional` WHERE TipoPermisoSeccional=2 AND NumeroDocumento='%s' AND Dia='%s'",
+								mysqli_real_escape_string($cnx,$NumeroDocumento),
+								mysqli_real_escape_string($cnx,$Fecha));
+								$result=mysqli_query($cnx,$query);
+								while ($row=mysqli_fetch_array($result)) {
+									$HoraIni=$row["HoraInicio"];
+									$HoraIni=explode(":",$HoraIni);
+									$HoraIni=$HoraIni[0].":".$HoraIni[1];
+									$HoraFin=$row["HoraFin"];
+									$HoraFin=explode(":",$HoraFin);
+									$HoraFin=$HoraFin[0].":".$HoraFin[1];
+									$PermisoSeccional=AddArrTime([gmdate("H:i:s", (int)subsTwoTimes($HoraIni,$HoraFin)),$PermisoSeccional]);
+									$str= "PERMISO Seccional Tiempo <br>".$str;
+								}
+						}
+
+	 			 	//Suspension
+					if($TheDayisGone==0){
+						$query=sprintf("SELECT * FROM `suspension` WHERE NumeroDocumento='%s' AND Fecha='%s'",
+						mysqli_real_escape_string($cnx,$NumeroDocumento),
+						mysqli_real_escape_string($cnx,$Fecha));
+						$result=mysqli_query($cnx,$query);
+						while ($row=mysqli_fetch_array($result)) {
+							$TheDayisGone=1;//if substract all the day
+							$DayTime=$MaxThisDayTime;//How many substract of the day
+							$str= "Suspension <br>".$str;
+						}
+					}
+					$AusenciaTotTime=AddArrTime([$LlegadasTardeTotTime,$IncapacidadTotTime,$Permiso,$PermisoSeccional,$Suspension]);
+					if($AusenciaTotTime>=$MaxThisDayTime){
+						$TheDayisGone=1;
+					}
+					if($TheDayisGone==1){
+						$TotTimeToSubstrack=AddArrTime([$MaxThisDayTime,$TotTimeToSubstrack]);
+					}else{
+						$TotTimeToSubstrack=AddArrTime([$AusenciaTotTime,$TotTimeToSubstrack]);
+					}
+					$body= $body."El dia ".$DiasDeLaSemana[$val]." ".$Fecha." Trabaja? ".$semanal[$DiasDeLaSemana[$val]]." se tienen los descuentos de:<br>".$str."con un total de ".$TotTimeToSubstrack."<br>";
+				}
+			}
+		}
+
+		//echo $body;
+		//echo "Total:".$TotTimeToSubstrack;
+		mysqli_close($cnx);
+		return $TotTimeToSubstrack;
+	}
+
 	function getReporteSuspensionEmpleado($NitEmpresa){
 		$cnx=cnx();
 		$query=sprintf("SELECT empleado.NumeroDocumento, empleado.PrimerNombre, empleado.SegundoNombre, empleado.PrimerApellido, empleado.SegundoApellido FROM empleado INNER JOIN cargos INNER JOIN departamento INNER JOIN empresa WHERE empresa.NitEmpresa=departamento.NitEmpresa AND departamento.idDepartamento= cargos.idDepartamento AND cargos.idCargos=empleado.idCargos and empresa.NitEmpresa='%s'",mysqli_real_escape_string($cnx,$NitEmpresa));
@@ -176,6 +452,29 @@
 		mysqli_close($cnx);
 		return [$row["tipoDocumento"],$row["rutaDocumento"]];
 	}
+	function getSemanal($week,$year,$NumeroDocumento){
+		$cnx=cnx();
+		$data = array();
+		$data['exist']="0";
+		$query=sprintf("SELECT col_semanal.* FROM col_semanal INNER JOIN semanal WHERE col_semanal.NumeroDocumento='%s' AND col_semanal.idSemanal=semanal.idSemanal AND semanal.nSemana='%s' AND semanal.anno='%s'",
+		mysqli_real_escape_string($cnx,$NumeroDocumento),
+		mysqli_real_escape_string($cnx,$week),
+		mysqli_real_escape_string($cnx,$year));
+		$resul=mysqli_query($cnx,$query);
+		$row=mysqli_fetch_array($resul);
+		if($row[0]!=""){
+			$data['exist']="1";
+			$data['Lunes']=$row["Lunes"];
+			$data['Martes']=$row["Martes"];
+			$data['Miercoles']=$row["Miercoles"];
+			$data['Jueves']=$row["Jueves"];
+			$data['Viernes']=$row["Viernes"];
+			$data['Sabado']=$row["Sabado"];
+			$data['Domingo']=$row["Domingo"];
+		}
+		mysqli_close($cnx);
+		return $data;
+	}
 	function getReporteLlegadasTarde($idLlegadasTarde){
 		$cnx=cnx();
 		$data = array();
@@ -191,6 +490,161 @@
 		}
 		mysqli_close($cnx);
 		return $data;
+	}
+	function isSemanalHaveSomething($semana,$annio,$NitEmpresa,$idTurno){
+		$cnx=cnx();
+		$week_array = getStartAndEndDate($semana,$annio);
+		$HaveExtraHours=0;
+		$strExtraHours="";
+		$HaveAbsence=0;
+		$strAbsence="";
+		$HaveSuspension=0;
+		$strSuspension="";
+		$HaveSeccionAbsence=0;
+		$strSeccionAbsence="";
+		foreach($week_array as $key => $value){
+			//$value tiene la fecha u $key tiene el dia(Lunes, Martes, etc)
+			//Horas extras
+
+			$query=sprintf("SELECT horas_extras.idHorasExtras,horas_extras.Fecha,col_horas_extras.IdColHorasExtras ,col_horas_extras.NHorasDiurnas,col_horas_extras.NHorasNocturnas,empleado.PrimerNombre,empleado.SegundoNombre,empleado.PrimerApellido,empleado.SegundoApellido FROM htrabajo INNER JOIN col_horas_extras INNER JOIN horas_extras INNER JOIN empleado WHERE htrabajo.idTurno='%s' AND col_horas_extras.NumeroDocumentoPara=htrabajo.NumeroDocumento AND col_horas_extras.idHorasExtras=horas_extras.idHorasExtras AND horas_extras.Fecha='%s' AND htrabajo.NumeroDocumento=empleado.NumeroDocumento",
+			mysqli_real_escape_string($cnx,(string)$idTurno)
+			,mysqli_real_escape_string($cnx,(string)$value));
+			$result=mysqli_query($cnx,$query);
+			while ($row=mysqli_fetch_array($result)) {
+				$HaveExtraHours=1;
+				$strExtraHours=$strExtraHours."<a>".$key." ".$value." ".$row["PrimerNombre"]." ".$row["SegundoNombre"]." ".$row["PrimerApellido"]." ".$row["SegundoApellido"]." Diurnas:".$row["NHorasDiurnas"]." Nocturnas:".$row["NHorasNocturnas"]." </a><br>";
+			}
+
+			//Ausencias
+			$query=sprintf("SELECT ausencia.*,empleado.PrimerNombre,empleado.SegundoNombre,empleado.PrimerApellido,empleado.SegundoApellido FROM htrabajo INNER JOIN ausencia INNER JOIN empleado WHERE htrabajo.idTurno='%s' AND ausencia.NumeroDocumento=htrabajo.NumeroDocumento AND ausencia.FechaAusencia='%s' AND htrabajo.NumeroDocumento=empleado.NumeroDocumento",
+			mysqli_real_escape_string($cnx,(string)$idTurno)
+			,mysqli_real_escape_string($cnx,(string)$value));
+			$result=mysqli_query($cnx,$query);
+			while ($row=mysqli_fetch_array($result)) {
+				$HaveAbsence=1;
+				$strAbsence=$strAbsence."<a>".$key." ".$value." ".$row["PrimerNombre"]." ".$row["SegundoNombre"]." ".$row["PrimerApellido"]." ".$row["SegundoApellido"]."</a><br>";
+			}
+
+			//suspension
+			$query=sprintf("SELECT suspension.*,empleado.PrimerNombre,empleado.SegundoNombre,empleado.PrimerApellido,empleado.SegundoApellido FROM htrabajo INNER JOIN suspension INNER JOIN empleado WHERE htrabajo.idTurno='%s' AND suspension.NumeroDocumento=htrabajo.NumeroDocumento AND suspension.Fecha='%s' AND htrabajo.NumeroDocumento=empleado.NumeroDocumento",
+			mysqli_real_escape_string($cnx,(string)$idTurno)
+			,mysqli_real_escape_string($cnx,(string)$value));
+			$result=mysqli_query($cnx,$query);
+			while ($row=mysqli_fetch_array($result)) {
+				$HaveSuspension=1;
+				$strSuspension=$strSuspension."<a>".$key." ".$value." ".$row["PrimerNombre"]." ".$row["SegundoNombre"]." ".$row["PrimerApellido"]." ".$row["SegundoApellido"]."</a><br>";
+			}
+
+			//permiso Seccional
+			$query=sprintf("SELECT permiso_seccional.*,empleado.PrimerNombre,empleado.SegundoNombre,empleado.PrimerApellido,empleado.SegundoApellido FROM htrabajo INNER JOIN permiso_seccional INNER JOIN empleado WHERE htrabajo.idTurno='%s' AND permiso_seccional.NumeroDocumento=htrabajo.NumeroDocumento AND permiso_seccional.Dia='%s' AND htrabajo.NumeroDocumento=empleado.NumeroDocumento",
+			mysqli_real_escape_string($cnx,(string)$idTurno)
+			,mysqli_real_escape_string($cnx,(string)$value));
+			$result=mysqli_query($cnx,$query);
+			while ($row=mysqli_fetch_array($result)) {
+				$HaveSeccionAbsence=1;
+				$strSeccionAbsence=$strSeccionAbsence."<a>".$key." ".$value." ".$row["PrimerNombre"]." ".$row["SegundoNombre"]." ".$row["PrimerApellido"]." ".$row["SegundoApellido"]."</a><br>";
+			}
+
+		}
+
+		$body='
+			<div class="card-content">
+				<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+					<div class="panel panel-default">
+						<div class="panel-heading" role="tab" id="headingOne">
+							<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+								<h4 class="panel-title">
+									Vacaciones
+									<i class="material-icons">keyboard_arrow_down</i>
+								</h4>
+							</a>
+						</div>
+					<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+						<div class="panel-body">
+							'.$strExtraHours.'
+						</div>
+					</div>
+				</div>
+
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingTwo">
+				  	<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+				    	<h4 class="panel-title">
+				      	Ausencia
+				        <i class="material-icons">keyboard_arrow_down</i>
+				      </h4>
+				   </a>
+				  </div>
+				  <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+				  	<div class="panel-body">
+							'.$strAbsence.'
+						</div>
+				  </div>
+				</div>
+
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingThree">
+						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+							<h4 class="panel-title">
+								Suspención
+								<i class="material-icons">keyboard_arrow_down</i>
+							</h4>
+						</a>
+					</div>
+					<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+						<div class="panel-body">
+							'.$strSuspension.'
+						</div>
+					</div>
+				</div>
+
+				<div class="panel panel-default">
+					<div class="panel-heading" role="tab" id="headingFour">
+						<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+							<h4 class="panel-title">
+								Permiso Seccional
+								<i class="material-icons">keyboard_arrow_down</i>
+							</h4>
+						</a>
+					</div>
+					<div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+						<div class="panel-body">
+							'.$strSeccionAbsence.'
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		';
+		if ($HaveExtraHours==1||$HaveAbsence==1||$HaveSuspension==1||$HaveSeccionAbsence==1) {
+			$flag=1;
+		}else{
+			$flag=0;
+		}
+		mysqli_close($cnx);
+		return [$flag,$body];
+	}
+
+	function getStartAndEndDate($week, $year) {
+	  $dto = new DateTime();
+	  $dto->setISODate($year, $week,1);
+	  $ret['Lunes'] = $dto->format('Y-m-d');
+	  $dto->modify('+1 days');
+	  $ret['Martes'] = $dto->format('Y-m-d');
+	  $dto->modify('+1 days');
+	  $ret['Miercoles'] = $dto->format('Y-m-d');
+	  $dto->modify('+1 days');
+	  $ret['Jueves'] = $dto->format('Y-m-d');
+	  $dto->modify('+1 days');
+	  $ret['Viernes'] = $dto->format('Y-m-d');
+	  $dto->modify('+1 days');
+	  $ret['Sabado'] = $dto->format('Y-m-d');
+	  $dto->modify('+1 days');
+	  $ret['Domingo'] = $dto->format('Y-m-d');
+
+	  return $ret;
 	}
 	function getAusencia($idAusencia){
 		$cnx=cnx();
@@ -810,6 +1264,81 @@
 
 	return $valorN;
 
+	}
+	function giveSemanalTimeAndIfDiurnOrNoctu($NumeroDocumento,$Semana,$annio){
+		$cnx=cnx();
+		$flag=0;//0 el empleado no se pasa
+		$str="";
+		$query = sprintf("SELECT htrabajo.*,col_semanal.* FROM htrabajo INNER JOIN semanal INNER JOIN col_semanal WHERE htrabajo.NumeroDocumento='%s' AND htrabajo.NumeroDocumento=col_semanal.NumeroDocumento AND col_semanal.idSemanal=semanal.idSemanal AND semanal.nSemana='%s' AND semanal.anno='%s'"
+		,mysqli_real_escape_string($cnx,$NumeroDocumento)
+		,mysqli_real_escape_string($cnx,$Semana)
+		,mysqli_real_escape_string($cnx,$annio));
+		$result=mysqli_query($cnx,$query);
+		while ($row=mysqli_fetch_array($result)) {
+			$tot=0;
+			$HoraInicio=$row["Desde"];
+			$HoraInicio=explode(":",$HoraInicio);
+			$HoraInicio=$HoraInicio[0].":".$HoraInicio[1];
+			$HoraFin=$row["Hasta"];
+			$HoraFin=explode(":",$HoraFin);
+			$HoraFin=$HoraFin[0].":".$HoraFin[1];
+			$HoraDescanso=$row["H_Descanso"];
+			$HoraDescanso=explode(":",$HoraDescanso);
+			$HoraDescanso=$HoraDescanso[0].":".$HoraDescanso[1];
+			//Cuantos dias trabaja horario completo o mysqlnd_ms_get_last_used_connection
+			$totHorasLaborales=  array();
+			$LunesT=RevisarTiempo($row["Lunes"],$row["Desde"],$row["Hasta"],$row["H_Descanso"]);
+			if(strcmp("D",(string)$LunesT)!=0){
+				$totHorasLaborales[]=$LunesT;
+			}
+			$MartesT=RevisarTiempo($row["Martes"],$row["Desde"],$row["Hasta"],$row["H_Descanso"]);
+			if(strcmp("D",(string)$MartesT)!=0){
+				$totHorasLaborales[]=$MartesT;
+			}
+			$MiercolesT=RevisarTiempo($row["Miercoles"],$row["Desde"],$row["Hasta"],$row["H_Descanso"]);
+			if(strcmp("D",(string)$MiercolesT)!=0){
+				$totHorasLaborales[]=$MiercolesT;
+			}
+			$JuevesT=RevisarTiempo($row["Jueves"],$row["Desde"],$row["Hasta"],$row["H_Descanso"]);
+			if(strcmp("D",(string)$JuevesT)!=0){
+				$totHorasLaborales[]=$JuevesT;
+			}
+			$ViernesT=RevisarTiempo($row["Viernes"],$row["Desde"],$row["Hasta"],$row["H_Descanso"]);
+			if(strcmp("D",(string)$ViernesT)!=0){
+				$totHorasLaborales[]=$ViernesT;
+			}
+			$SabadoT=RevisarTiempo($row["Sabado"],$row["Desde"],$row["Hasta"],$row["H_Descanso"]);
+			if(strcmp("D",(string)$SabadoT)!=0){
+				$totHorasLaborales[]=$SabadoT;
+			}
+			$DomingoT=RevisarTiempo($row["Domingo"],$row["Desde"],$row["Hasta"],$row["H_Descanso"]);
+			if(strcmp("D",(string)$DomingoT)!=0){
+				$totHorasLaborales[]=$DomingoT;
+			}
+			//diurna 6-19
+			//tot horas ->
+			$totHorasLaborales=AddArrTime($totHorasLaborales);
+			$totHorasLaborales=explode(":",$totHorasLaborales);
+			$totHorasLaborales=$totHorasLaborales[0].":".$totHorasLaborales[1];
+			//is hornada is D or N
+			if (strcmp("D",isBetwenNightTime($HoraInicio,$HoraFin))==0) {
+				$MaxHoursWeek=44;//Max diurno
+				$tipoSemanaL="Diurna";
+			}else {
+				$MaxHoursWeek=39;//MAX nocturna
+				$tipoSemanaL="Nocturna";
+			}
+			if(HourToNum($totHorasLaborales)>$MaxHoursWeek){
+				//Si se pasa el total de horas semanales al permitido
+				$flag=1;
+				//Se pasa por
+				$str="".gmdate("H:i:s", (int)subsTwoTimes($totHorasLaborales.":00",$MaxHoursWeek.":00"))."";
+			}
+
+		}
+		mysqli_close($cnx);
+
+		return $flag.",".$str;
 	}
 	function revisarSemanalConEmpleado($idTurno,$lunes,$martes,$miercoles,$jueves,$viernes,$sabado,$domingo){
 		$cnx=cnx();
@@ -1853,6 +2382,79 @@ function checkIsTheyPayExtraHours($NumeroDocumento,$NitEmpresa,$FechaIni,$FechaF
 		return number_format((float)$totAPagar, 2, '.', '');
 
 	}
+	function getIfExtraTimePayMore($FechaIni,$FechaFin,$SalarioNominal,$NumeroDocumento){
+		$NombreEmpleado=getNombreEmpleado($NumeroDocumento);
+		$flagIsGonnaPaySomething=0;//se le pagara algo si o no
+		$strData=array();//Informacion que vamos a enviar para presentarla en pantalla
+		$countData=0;
+		$startTime = strtotime($FechaIni);
+		$endTime = strtotime($FechaFin);
+		$lastWeek = new DateTime($FechaFin);
+		$lastWeek = $lastWeek->format("W");
+		do {
+			$weeks[] = date('W', $startTime);
+			$startTime += strtotime('+1 week', 0);
+		} while (date('W', $startTime) <= $lastWeek);
+		//Tenemos todas las semanas que toca el lapso de tiempo dado
+		$PassIniFecha=0;
+		$PassFinFecha=0;
+		$ValorMinuto=number_format(((float)$SalarioNominal)/30/8/60, 4, '.', '');
+		foreach($weeks as $key => $value){
+		  $ValorMD=0;
+			$year = DateTime::createFromFormat("Y-m-d", $FechaIni);
+			$year=$year->format("Y");
+			//hay que ver
+			if($value==52 &&  1==date("m",strtotime($FechaIni))){
+				$year=$year-1;
+			}
+		  $daysOfTheWeek=getStartAndEndDate($value,$year);
+		  //echo  "Semana:".$value."<br>";
+		  $ExistSemanal=getSemanal($value,$year,$NumeroDocumento);
+		  if($ExistSemanal["exist"]==1){
+				$TotTimeToDiscount="00:00:00";
+		    //tiene semanal
+		    $cod1=giveSemanalTimeAndIfDiurnOrNoctu($NumeroDocumento,$value,$year);
+		    $cod1=explode(",",$cod1);
+		    if($cod1[0]==1){
+		      //Si hay tiempo extra en el semanal
+		      $TotTimeToDiscount=DiscountsTimeEmploy($daysOfTheWeek["Lunes"],$daysOfTheWeek["Domingo"],$NumeroDocumento);
+		    }
+		    if ($cod1[1]>$TotTimeToDiscount) {
+		      //Si hay mas en el exedente que en los descuentos
+		      $TimResul=gmdate("H:i:s", (int)subsTwoTimes($TotTimeToDiscount,$cod1[1]));
+		      $MD=TimeToMinut($TimResul);
+		      $ValorMD=number_format($ValorMinuto*2*$MD, 2, '.', '');
+					$flagIsGonnaPaySomething=1;
+		    }
+		    $CountdaysOfTheWeek=0;
+		    foreach($daysOfTheWeek as $keyDOW => $valueDOW){
+		      if(strtotime($valueDOW)==strtotime($FechaIni)){
+		        $PassIniFecha=1;
+		      }
+		      if((strtotime($valueDOW)>=strtotime($FechaIni)) && (strtotime($valueDOW)<=strtotime($FechaFin))){
+		        //Tenemos los dias validos, la fecha en $valueDow y el numero de la semana en $value
+		          $CountdaysOfTheWeek++;
+		      }
+		      if(strtotime($valueDOW)==strtotime($FechaFin)) {
+		        $PassFinFecha=1;
+		      }
+		    }
+		    //Cuanto Extra se le pagara
+		    //echo "Del Tot semanal a pagar:".$ValorMD." por  ".$CountdaysOfTheWeek."  dias  solo se le dara:".number_format((double)$ValorMD*($CountdaysOfTheWeek/7), 2, '.', '')."<br>";
+				if (number_format((double)$ValorMD*($CountdaysOfTheWeek/7), 2, '.', '')>0) {
+					$strData[$countData]= array('NombreEmpleado' => $NombreEmpleado,'TotaPagar' => number_format((double)$ValorMD*($CountdaysOfTheWeek/7), 2, '.', ''), 'NumeroDocumento' => $NumeroDocumento, "Semana" =>$value, "annio" => $year );
+					$countData++;
+				}
+			}
+		}
+
+		return [$flagIsGonnaPaySomething,$strData];
+	}
+	function getNombreEmpleado($NumeroDocumento){
+		$empleado=getInfoUser($NumeroDocumento);
+		$NombreCompleto="".$empleado->getPrimernombre()." ".$empleado->getSegundonombre()." ".$empleado->getPrimerapellido()." ".$empleado->getSegundoapellido();
+		return $NombreCompleto;
+	}
 	function getRowPagoHorasExtrasN($NitEmpresa,$FechaInicio,$FechaFin,$PeriodoPago,$FormaPago){
 		$cnx = cnx();
 		//Sacar datos de la RENTA
@@ -1861,10 +2463,10 @@ function checkIsTheyPayExtraHours($NumeroDocumento,$NitEmpresa,$FechaIni,$FechaF
 		  if($TipoPago[0]==1){//mensual
 		    $tipoRenta=1;
 		  }elseif(($TipoPago[0]==2) || ($TipoPago[0]==3)){
-		    # code...
+		    //Quincena y Catorcena
 		    $tipoRenta=2;
-		  }elseif(($TipoPago[0]==2) || ($TipoPago[0]==3)){
-		    # code...
+		  }elseif(($TipoPago[0]==4)){
+		    //Semanal
 		    $tipoRenta=3;
 		  }
 		  $TRAMO1= array();

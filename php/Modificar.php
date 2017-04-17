@@ -75,14 +75,28 @@
 					$FechaAusencia = str_replace('/', '-', $_POST["FechaAusencia"]);
 					$FechaAusencia  = date('Y-m-d', strtotime($FechaAusencia));
 					if(!isAusenExist($_POST["idAusencia"])){
-						echo "3, ERROR";
+						echo "3, ERROR Ausencia no existe recargue la pagina";
 					}elseif(!((verify_date_format($FechaAusencia)))){
 						echo "0, El Formato de las fechas es incorrecto";
 					}else {
-						$estado=UpdateAusencia($_POST["idAusencia"],$_POST["TipoAusencia"],$_POST["EstadoAusencia"],$FechaAusencia,$_POST["Observacion"]);
-						if($estado){
-							echo "1, ";
-						}else echo "2, ";
+						$AusenciaData=getAusencia($_POST["idAusencia"]);
+						$checkIsInSemanal=checkIsInSemanal($_SESSION["empresa"],$AusenciaData["NumeroDocumento"],$FechaAusencia,"00:00:00","00:00:00","2");//2 date,1 hour
+						if($checkIsInSemanal==0){
+                //No hay semanal
+								echo "0, No existe semanal en esta fecha";
+              }elseif ($checkIsInSemanal==1) {
+                //Si esta todo bien
+								$estado=UpdateAusencia($_POST["idAusencia"],$_POST["TipoAusencia"],$_POST["EstadoAusencia"],$FechaAusencia,$_POST["Observacion"]);
+								if($estado){
+									echo "1, ";
+								}else echo "2, ";
+              }elseif ($checkIsInSemanal==2) {
+                //No laboro ese dia
+								echo "0, El empleado no labora este dia";
+              }else {
+                //ERROR
+								echo "0, Error revisando el semanal";
+              }
 					}
 				}
 				break;
@@ -160,18 +174,21 @@
 						if(empty($_POST["TipoPermisoSeccional"])||empty($_POST["Fecha"])||empty($_POST["idPermisoSeccional"])){
 							echo "0, Ingrese todos los datos";
 						}else if (isPermisoSeccionalExist($_POST["idPermisoSeccional"])){
+							$PermisoSeccionData=getPermisoSeccional($_POST["idPermisoSeccional"]);
 							if ($_POST["TipoPermisoSeccional"]==1) {
 								//Dias
 								$DiaInicio = str_replace('/', '-', $_POST["Fecha"]);
 								$DiaInicio  = date('Y-m-d', strtotime($DiaInicio));
 								$HoraInicio = "00:00:00";
 								$HoraFin = "00:00:00";
+								$checkIsInSemanal=checkIsInSemanal($_SESSION["empresa"],$PermisoSeccionData["NumeroDocumento"],$DiaInicio,$HoraInicio,$HoraFin,"2");//2 date,1 hour
 							}elseif ($_POST["TipoPermisoSeccional"]==2) {
 								//Horas
 								$DiaInicio = str_replace('/', '-', $_POST["Fecha"]);
 								$DiaInicio  = date('Y-m-d', strtotime($DiaInicio));
 								$HoraInicio = $_POST["HoraInicio"].":00";
 								$HoraFin = $_POST["HoraFin"].":00";
+								$checkIsInSemanal=checkIsInSemanal($_SESSION["empresa"],$PermisoSeccionData["NumeroDocumento"],$DiaInicio,$HoraInicio,$HoraFin,"1");//2 date,1 hour
 							}else{
 								echo "3,";
 								die();
@@ -184,12 +201,26 @@
 								//Horas
 								echo "0, La Hora de inicio no puede ser mayor";
 							}else {
+								if($checkIsInSemanal==0){
+									//No hay semanal
+									echo "0, No hay semanal en esta fecha";
+								}elseif ($checkIsInSemanal==1) {
+									//Si esta todo bien
+									$estado=UpdatePermisoSeccional($_POST["idPermisoSeccional"],$_POST["TipoPermisoSeccional"],$DiaInicio,$HoraInicio,$HoraFin,$_POST["Observacion"]);
+									if($estado){
+										echo "1, ";
+									}else echo "0, No fue posible conectar con la base de datos ";
+								}elseif ($checkIsInSemanal==2) {
+									//No laboro ese dia
+									echo "0, Este dia no labora el empleado";
+								}else {
+									//ERROR
+									echo "0, Error intentando revisar semanal";
+								}
 								// orden $idPermisoSeccional,$TipoPermisoSeccional,$Dia,$HoraInicio,$HoraFin,$Observacion)
-								$estado=UpdatePermisoSeccional($_POST["idPermisoSeccional"],$_POST["TipoPermisoSeccional"],$DiaInicio,$HoraInicio,$HoraFin,$_POST["Observacion"]);
-								if($estado){
-									echo "1, ";
-								}else echo "0, No fue posible conectar con la base de datos ";
 							}
+						}else{
+							echo "0, Permiso seccional no existe, recargue la pagina";
 						}
 		break;
 		default:
